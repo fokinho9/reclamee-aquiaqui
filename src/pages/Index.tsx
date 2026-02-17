@@ -1,5 +1,6 @@
 import { Home, Building2, MessageSquare, Tag, HelpCircle, FileText, AlertTriangle, Eye, ExternalLink, ThumbsUp, MoreVertical, Globe, Info, Calendar } from "lucide-react";
 import { useState, useEffect } from "react";
+import { useSiteContent, useContentValue } from "@/hooks/use-site-content";
 
 /* ───────────── HEADER ───────────── */
 const Header = () => (
@@ -144,21 +145,21 @@ const ReputationCard = () => (
 );
 
 /* ───────────── PERFORMANCE ───────────── */
-const PerformanceCard = () => {
+const PerformanceCard = ({ content, cv }: { content?: any[]; cv: (key: string, fallback: string) => string }) => {
   const [period, setPeriod] = useState("6 meses");
   const periods = ["6 meses", "12 meses", "2025", "2024", "Geral"];
   const stats = [
-    { icon: "/images/icons/bullhorn.svg", text: <>Esta empresa recebeu <strong>106194 reclamações.</strong></> },
-    { icon: "/images/icons/check-circle.svg", text: <>Respondeu <strong>88.4% das reclamações</strong> recebidas.</> },
-    { icon: "/images/icons/comment-question.svg", text: <>Há <strong>10690 reclamações</strong> aguardando resposta.</> },
-    { icon: "/images/icons/star-box.svg", text: <>Há <strong>46196 reclamações</strong> avaliadas, e a nota média dos consumidores é <strong>7.36.</strong></> },
-    { icon: "/images/icons/handshake.svg", text: <>Dos que avaliaram, <strong>80% voltariam a fazer negócio.</strong></> },
-    { icon: "/images/icons/comment-check.svg", text: <>A empresa resolveu <strong>88% das reclamações recebidas.</strong></> },
-    { icon: "/images/icons/timer.svg", text: <>O tempo médio de resposta é <strong>19 dias e 13 horas.</strong></> },
+    { icon: "/images/icons/bullhorn.svg", text: <>Esta empresa recebeu <strong>{cv('stat_reclamacoes', '106194')} reclamações.</strong></> },
+    { icon: "/images/icons/check-circle.svg", text: <>Respondeu <strong>{cv('stat_respondidas_pct', '88.4%')} das reclamações</strong> recebidas.</> },
+    { icon: "/images/icons/comment-question.svg", text: <>Há <strong>{cv('stat_aguardando', '10690')} reclamações</strong> aguardando resposta.</> },
+    { icon: "/images/icons/star-box.svg", text: <>Há <strong>{cv('stat_avaliadas', '46196')} reclamações</strong> avaliadas, e a nota média dos consumidores é <strong>{cv('stat_nota_media', '7.36')}.</strong></> },
+    { icon: "/images/icons/handshake.svg", text: <>Dos que avaliaram, <strong>{cv('stat_voltariam_pct', '80%')} voltariam a fazer negócio.</strong></> },
+    { icon: "/images/icons/comment-check.svg", text: <>A empresa resolveu <strong>{cv('stat_resolvidas_pct', '88%')} das reclamações recebidas.</strong></> },
+    { icon: "/images/icons/timer.svg", text: <>O tempo médio de resposta é <strong>{cv('stat_tempo_resposta', '19 dias e 13 horas')}.</strong></> },
   ];
   return (
     <div className="bg-background rounded-xl border border-border p-5">
-      <h3 className="text-[17px] font-bold mb-4" style={{ color: '#1A2B3D' }}>Desempenho de Amazon</h3>
+      <h3 className="text-[17px] font-bold mb-4" style={{ color: '#1A2B3D' }}>Desempenho de {cv('company_name', 'Amazon')}</h3>
       {/* Tabs como texto underline - igual ao print */}
       <div className="flex gap-4 border-b border-border mb-5">
         {periods.map(p => (
@@ -185,7 +186,7 @@ const PerformanceCard = () => {
 };
 
 /* ───────────── EVOLUÇÃO ───────────── */
-const EvolutionCard = () => (
+const EvolutionCard = ({ companyName }: { companyName?: string }) => (
   <div className="bg-background rounded-xl border border-border p-4 mt-4">
     <div className="flex items-center justify-between">
       <h3 className="text-[15px] font-bold" style={{ color: '#1A2B3D' }}>Evolução</h3>
@@ -193,7 +194,7 @@ const EvolutionCard = () => (
     </div>
     <div className="flex items-center gap-3 mt-3">
       <img src="/images/icons/chart-trending.svg" alt="" className="w-5 h-5 flex-none" />
-      <p className="text-[13px]" style={{ color: '#5A6872' }}>Confira a evolução de Amazon nos últimos 12 meses</p>
+      <p className="text-[13px]" style={{ color: '#5A6872' }}>Confira a evolução de {companyName || 'Amazon'} nos últimos 12 meses</p>
     </div>
   </div>
 );
@@ -251,7 +252,7 @@ const VisitedAlso = () => {
 
   return (
     <div className="mt-8">
-      <h2 className="text-[17px] font-bold mb-4" style={{ color: '#1A2B3D' }}>Quem visitou Amazon também visitou</h2>
+      <h2 className="text-[17px] font-bold mb-4" style={{ color: '#1A2B3D' }}>Quem visitou também visitou</h2>
       <div className="relative">
         {/* Seta Prev */}
         <button
@@ -305,7 +306,7 @@ const VisitedAlso = () => {
 };
 
 /* ───────────── COMPLAINTS (com reações coloridas e badge) ───────────── */
-const ComplaintsSection = () => {
+const ComplaintsSection = ({ companyName }: { companyName?: string }) => {
   const [tab, setTab] = useState("Respondidas");
   const tabs = ["Últimas", "Não respondidas", "Respondidas", "Avaliadas"];
   const complaints = [
@@ -314,7 +315,7 @@ const ComplaintsSection = () => {
   ];
   return (
     <div className="mt-8">
-      <h2 className="text-[17px] font-bold mb-4" style={{ color: '#1A2B3D' }}>O que estão falando sobre Amazon</h2>
+      <h2 className="text-[17px] font-bold mb-4" style={{ color: '#1A2B3D' }}>O que estão falando sobre {companyName || 'Amazon'}</h2>
       <div className="bg-background rounded-xl overflow-hidden" style={{ border: '1px solid #E8ECF0' }}>
         <div className="px-4 pt-4">
           <p className="text-sm font-bold mb-0" style={{ color: '#1A2B3D' }}>Reclamações</p>
@@ -400,7 +401,7 @@ const FAQSection = () => {
 };
 
 /* ───────────── PROBLEMAS (com categorias e dropdowns) ───────────── */
-const ProblemsSection = () => {
+const ProblemsSection = ({ companyName }: { companyName?: string }) => {
   const problems = [
     { category: "Tipos de problemas", pct: "23.4%", label: "Produto não recebido" },
     { category: "Produtos e Serviços", pct: "15.1%", label: "Produtos" },
@@ -408,7 +409,7 @@ const ProblemsSection = () => {
   ];
   return (
     <div className="mt-8">
-      <h2 className="text-[17px] font-bold mb-4" style={{ color: '#1A2B3D' }}>Saiba quais são os principais problemas de Amazon</h2>
+      <h2 className="text-[17px] font-bold mb-4" style={{ color: '#1A2B3D' }}>Saiba quais são os principais problemas de {companyName || 'Amazon'}</h2>
       <div className="bg-background rounded-xl overflow-hidden" style={{ border: '1px solid #E8ECF0' }}>
         <div className="px-5 pt-4 pb-2">
           <h3 className="text-sm font-bold" style={{ color: '#1A2B3D' }}>Principais problemas</h3>
@@ -437,14 +438,14 @@ const ProblemsSection = () => {
 };
 
 /* ───────────── SIDEBAR (botões azul claro, layout fiel) ───────────── */
-const Sidebar = () => (
+const SidebarSection = ({ cv }: { cv: (key: string, fallback: string) => string }) => (
   <aside className="space-y-5">
     <div>
-      <h3 className="text-[17px] font-bold mb-3 lg:hidden" style={{ color: '#1A2B3D' }}>Veja mais informações sobre Amazon</h3>
+      <h3 className="text-[17px] font-bold mb-3 lg:hidden" style={{ color: '#1A2B3D' }}>Veja mais informações sobre {cv('company_name', 'Amazon')}</h3>
       <div className="rounded-xl p-4 bg-background" style={{ border: '1px solid #E8ECF0' }}>
         <h4 className="font-bold text-sm mb-2" style={{ color: '#1A2B3D' }}>Sobre</h4>
-        <p className="text-[13px] leading-relaxed mb-3" style={{ color: '#5A6872' }}>A Amazon.com.br oferece milhares de ofertas e produtos em diversas categorias, que incluem itens vendidos e entregues pela Amazon ou por vendedores parceiros.</p>
-        <p className="text-[13px]" style={{ color: '#1A2B3D' }}><strong>CNPJ:</strong> <span style={{ color: '#2B6CB0' }}>15.436.940/0001-03</span></p>
+        <p className="text-[13px] leading-relaxed mb-3" style={{ color: '#5A6872' }}>{cv('about_text', 'A Amazon.com.br oferece milhares de ofertas e produtos em diversas categorias.')}</p>
+        <p className="text-[13px]" style={{ color: '#1A2B3D' }}><strong>CNPJ:</strong> <span style={{ color: '#2B6CB0' }}>{cv('cnpj', '15.436.940/0001-03')}</span></p>
         <p className="text-xs mt-1" style={{ color: '#8A9BAE' }}>Informações cadastradas pela empresa</p>
         <div className="flex items-center gap-1.5 mt-3 text-xs" style={{ color: '#8A9BAE' }}>
           <img src="/images/icons/calendar-star.svg" alt="" className="w-4 h-4" /> Cadastrada há 20 anos
@@ -456,8 +457,8 @@ const Sidebar = () => (
       <h4 className="font-bold text-sm mb-3" style={{ color: '#1A2B3D' }}>Contatos da empresa</h4>
       <p className="text-xs mb-2" style={{ color: '#8A9BAE' }}>Site</p>
       {/* Botões azul claro igual ao print */}
-      <a href="https://www.amazon.com.br" className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg text-sm font-medium mb-2" style={{ backgroundColor: '#E5EEFB', color: '#2B6CB0' }}>
-        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="#2B6CB0"><path d="M16.36,14C16.44,13.34 16.5,12.68 16.5,12C16.5,11.32 16.44,10.66 16.36,10H19.74C19.9,10.64 20,11.31 20,12C20,12.69 19.9,13.36 19.74,14M14.59,19.56C15.19,18.45 15.65,17.25 15.97,16H18.92C17.96,17.65 16.43,18.93 14.59,19.56M14.34,14H9.66C9.56,13.34 9.5,12.68 9.5,12C9.5,11.32 9.56,10.65 9.66,10H14.34C14.43,10.65 14.5,11.32 14.5,12C14.5,12.68 14.43,13.34 14.34,14M12,19.96C11.17,18.76 10.5,17.43 10.09,16H13.91C13.5,17.43 12.83,18.76 12,19.96M8,8H5.08C6.03,6.34 7.57,5.06 9.4,4.44C8.8,5.55 8.35,6.75 8,8M5.08,16H8C8.35,17.25 8.8,18.45 9.4,19.56C7.57,18.93 6.03,17.65 5.08,16M4.26,14C4.1,13.36 4,12.69 4,12C4,11.31 4.1,10.64 4.26,10H7.64C7.56,10.66 7.5,11.32 7.5,12C7.5,12.68 7.56,13.34 7.64,14M12,4.03C12.83,5.23 13.5,6.57 13.91,8H10.09C10.5,6.57 11.17,5.23 12,4.03M18.92,8H15.97C15.65,6.75 15.19,5.55 14.59,4.44C16.43,5.07 17.96,6.34 18.92,8M12,2C6.47,2 2,6.5 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z" /></svg> amazon.com.br
+      <a href={cv('website_url', 'https://www.amazon.com.br')} className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg text-sm font-medium mb-2" style={{ backgroundColor: '#E5EEFB', color: '#2B6CB0' }}>
+        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="#2B6CB0"><path d="M16.36,14C16.44,13.34 16.5,12.68 16.5,12C16.5,11.32 16.44,10.66 16.36,10H19.74C19.9,10.64 20,11.31 20,12C20,12.69 19.9,13.36 19.74,14M14.59,19.56C15.19,18.45 15.65,17.25 15.97,16H18.92C17.96,17.65 16.43,18.93 14.59,19.56M14.34,14H9.66C9.56,13.34 9.5,12.68 9.5,12C9.5,11.32 9.56,10.65 9.66,10H14.34C14.43,10.65 14.5,11.32 14.5,12C14.5,12.68 14.43,13.34 14.34,14M12,19.96C11.17,18.76 10.5,17.43 10.09,16H13.91C13.5,17.43 12.83,18.76 12,19.96M8,8H5.08C6.03,6.34 7.57,5.06 9.4,4.44C8.8,5.55 8.35,6.75 8,8M5.08,16H8C8.35,17.25 8.8,18.45 9.4,19.56C7.57,18.93 6.03,17.65 5.08,16M4.26,14C4.1,13.36 4,12.69 4,12C4,11.31 4.1,10.64 4.26,10H7.64C7.56,10.66 7.5,11.32 7.5,12C7.5,12.68 7.56,13.34 7.64,14M12,4.03C12.83,5.23 13.5,6.57 13.91,8H10.09C10.5,6.57 11.17,5.23 12,4.03M18.92,8H15.97C15.65,6.75 15.19,5.55 14.59,4.44C16.43,5.07 17.96,6.34 18.92,8M12,2C6.47,2 2,6.5 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z" /></svg> {cv('website_url', 'amazon.com.br').replace('https://', '').replace('www.', '')}
       </a>
       <a href="#" className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg text-sm font-medium" style={{ backgroundColor: '#E5EEFB', color: '#2B6CB0' }}>
         <svg className="w-5 h-5" viewBox="0 0 24 24" fill="#2B6CB0"><path d="M16.36,14C16.44,13.34 16.5,12.68 16.5,12C16.5,11.32 16.44,10.66 16.36,10H19.74C19.9,10.64 20,11.31 20,12C20,12.69 19.9,13.36 19.74,14M14.59,19.56C15.19,18.45 15.65,17.25 15.97,16H18.92C17.96,17.65 16.43,18.93 14.59,19.56M14.34,14H9.66C9.56,13.34 9.5,12.68 9.5,12C9.5,11.32 9.56,10.65 9.66,10H14.34C14.43,10.65 14.5,11.32 14.5,12C14.5,12.68 14.43,13.34 14.34,14M12,19.96C11.17,18.76 10.5,17.43 10.09,16H13.91C13.5,17.43 12.83,18.76 12,19.96M8,8H5.08C6.03,6.34 7.57,5.06 9.4,4.44C8.8,5.55 8.35,6.75 8,8M5.08,16H8C8.35,17.25 8.8,18.45 9.4,19.56C7.57,18.93 6.03,17.65 5.08,16M4.26,14C4.1,13.36 4,12.69 4,12C4,11.31 4.1,10.64 4.26,10H7.64C7.56,10.66 7.5,11.32 7.5,12C7.5,12.68 7.56,13.34 7.64,14M12,4.03C12.83,5.23 13.5,6.57 13.91,8H10.09C10.5,6.57 11.17,5.23 12,4.03M18.92,8H15.97C15.65,6.75 15.19,5.55 14.59,4.44C16.43,5.07 17.96,6.34 18.92,8M12,2C6.47,2 2,6.5 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z" /></svg> Ir para o atendimento
@@ -471,12 +472,12 @@ const Sidebar = () => (
 
     {/* Posição card */}
     <div className="rounded-xl p-4 bg-background" style={{ border: '1px solid #E8ECF0' }}>
-      <p className="text-xs mb-2" style={{ color: '#8A9BAE' }}>Qual a posição de Amazon ?</p>
+      <p className="text-xs mb-2" style={{ color: '#8A9BAE' }}>Qual a posição de {cv('company_name', 'Amazon')} ?</p>
       <div className="flex items-center gap-3">
-        <span className="text-3xl font-bold" style={{ color: '#1A2B3D' }}>12º</span>
-        <span className="text-sm font-bold" style={{ color: '#1A2B3D' }}>Melhor empresa</span>
+        <span className="text-3xl font-bold" style={{ color: '#1A2B3D' }}>{cv('company_position', '12º')}</span>
+        <span className="text-sm font-bold" style={{ color: '#1A2B3D' }}>{cv('company_position_label', 'Melhor empresa')}</span>
       </div>
-      <p className="text-xs mt-1" style={{ color: '#8A9BAE' }}>na lista de melhores em Marketplaces</p>
+      <p className="text-xs mt-1" style={{ color: '#8A9BAE' }}>{cv('company_position_category', 'na lista de melhores em Marketplaces')}</p>
       <a href="#" className="text-xs font-bold mt-2 inline-flex items-center gap-1" style={{ color: '#2B6CB0' }}>
         Confira a classificação <img src="/images/icons/chevron-right-circle.svg" alt="" className="w-4 h-4" />
       </a>
@@ -484,7 +485,7 @@ const Sidebar = () => (
 
     {/* Marcas */}
     <div>
-      <h4 className="text-sm font-bold mb-2" style={{ color: '#1A2B3D' }}>Marcas Amazon</h4>
+      <h4 className="text-sm font-bold mb-2" style={{ color: '#1A2B3D' }}>Marcas {cv('company_name', 'Amazon')}</h4>
       <div className="flex gap-2">
         <span className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-full" style={{ border: '1px solid #E8ECF0', color: '#1A2B3D', backgroundColor: '#F7F9FB' }}>
           <span className="w-5 h-5 rounded-full bg-[#1A2B3D] text-white text-[10px] font-bold flex items-center justify-center">A</span> Alexa
@@ -674,67 +675,165 @@ const Footer = () => {
 
 /* ───────────── MAIN PAGE ───────────── */
 const Index = () => {
+  const { data: content } = useSiteContent();
+  const cv = (key: string, fallback: string) => {
+    if (!content) return fallback;
+    const item = content.find((i) => i.content_key === key);
+    return item?.content_value ?? fallback;
+  };
+
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#F2F4F6' }}>
       <Header />
-      <CompanyHero />
+      <div className="relative">
+        <div className="w-full h-[105px] md:h-[280px]" style={{ backgroundColor: cv('banner_bg_color', '#EF6509') }}>
+          <img src={cv('company_banner', '/images/amazon-banner.jpg')} alt="Banner" className="w-full h-full object-cover max-w-[1920px] mx-auto hidden md:block" />
+          <img src={cv('company_banner_mobile', '/images/amazon-banner-mobile.jpg')} alt="Banner" className="w-full h-full object-cover md:hidden" />
+        </div>
+        <div className="max-w-[1286px] mx-auto px-4 md:px-10 relative">
+          <div className="hidden md:flex items-end gap-6 -mt-16">
+            <a href="#" className="flex-none w-[188px] h-[188px] rounded-full bg-[#FAFAFA] shadow-md flex items-center justify-center -mt-8 border-4 border-background overflow-hidden">
+              <img src={cv('company_logo', '/images/amazon-logo.jpg')} alt="Logo" className="w-[170px] h-[170px] rounded-full object-cover" />
+            </a>
+            <div className="flex-1 pb-2">
+              <div className="flex items-center gap-2">
+                <h1 className="text-2xl font-bold text-foreground">{cv('company_name', 'Amazon')}</h1>
+                <img src="/images/seal-ra-verified.png" alt="RA Verificada" className="w-6 h-6" />
+              </div>
+              <div className="flex items-center gap-4 text-sm text-muted-foreground mt-1">
+                <span className="flex items-center gap-1"><img src="/images/icons/store.svg" alt="" className="w-4 h-4" /> {cv('company_category', 'Varejo - Marketplaces')}</span>
+                <span className="flex items-center gap-1"><img src="/images/icons/eye.svg" alt="" className="w-4 h-4" /> {cv('company_views', '+ 2.4 milhões de visualizações')}</span>
+              </div>
+            </div>
+            <button className="mb-3 px-6 py-2.5 rounded-md font-semibold text-sm flex items-center gap-2 text-white hover:opacity-90" style={{ backgroundColor: '#D11F26' }}>
+              <MessageSquare className="w-4 h-4" /> Reclamar
+            </button>
+          </div>
+          <div className="md:hidden flex flex-col items-center -mt-10">
+            <a href="#" className="w-[80px] h-[80px] rounded-full bg-[#FAFAFA] shadow-md flex items-center justify-center border-4 border-background overflow-hidden">
+              <img src={cv('company_logo', '/images/amazon-logo.jpg')} alt="Logo" className="w-[72px] h-[72px] rounded-full object-cover" />
+            </a>
+            <div className="flex items-center gap-1.5 mt-2">
+              <h1 className="text-lg font-bold text-foreground">{cv('company_name', 'Amazon')}</h1>
+              <img src="/images/seal-ra-verified.png" alt="RA Verificada" className="w-5 h-5" />
+            </div>
+            <div className="flex items-center gap-3 text-xs text-muted-foreground mt-1">
+              <span className="flex items-center gap-1"><img src="/images/icons/store.svg" alt="" className="w-3.5 h-3.5" /> {cv('company_category', 'Varejo - Marketplaces')}</span>
+              <span className="flex items-center gap-1"><img src="/images/icons/eye.svg" alt="" className="w-3.5 h-3.5" /> {cv('company_views', '+ 2.4 milhões de visualizações')}</span>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 mt-3 mb-2 md:justify-start justify-center">
+            <a href="#" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold" style={{ backgroundColor: '#F1F9E6', color: '#0A213D' }}>
+              <img src="/images/reputation-otimo.webp" alt="Ótimo" className="w-[18px] h-[18px]" /> {cv('reputation_label', 'Ótimo')}
+            </a>
+            <a href="#" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold" style={{ backgroundColor: '#E5EEFB', color: '#0A213D' }}>
+              <img src="/images/seal-ra-verified.png" alt="Verificada" className="w-[18px] h-[18px]" /> Verificada
+            </a>
+          </div>
+          <button className="md:hidden w-full py-3 rounded-md font-semibold text-sm flex items-center justify-center gap-2 text-white mt-2 mb-2" style={{ backgroundColor: '#D11F26' }}>
+            <MessageSquare className="w-4 h-4" /> Reclamar
+          </button>
+        </div>
+      </div>
       <TabNav />
 
       <main className="max-w-[1286px] mx-auto px-4 md:px-6 py-6">
         {/* Mobile */}
         <div className="lg:hidden">
-          <h2 className="text-[17px] font-bold mb-4" style={{ color: '#1A2B3D' }}>Amazon é confiável?</h2>
+          <h2 className="text-[17px] font-bold mb-4" style={{ color: '#1A2B3D' }}>{cv('company_name', 'Amazon')} é confiável?</h2>
           <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
-            <div className="flex-none w-[75%]"><ReputationCard /></div>
-            <div className="flex-none w-[75%]"><TrustCard /></div>
+            <div className="flex-none w-[75%]">
+              <div className="rounded-xl p-4 shadow-sm min-w-[220px] md:min-w-0" style={{ background: '#EDF7E1' }}>
+                <p className="text-xs font-medium mb-3" style={{ color: '#5A6872' }}>Qual a reputação de {cv('company_name', 'Amazon')}?</p>
+                <div className="flex items-center gap-3 mb-2">
+                  <img src="/images/reputation-otimo.webp" alt="Ótimo" className="w-11 h-11" />
+                  <div>
+                    <p className="text-xs" style={{ color: '#5A6872' }}>Reputação</p>
+                    <p className="font-extrabold text-base uppercase" style={{ color: '#1A2B3D' }}>{cv('reputation_label', 'ÓTIMO')}</p>
+                  </div>
+                </div>
+                <p className="text-[13px] leading-relaxed mb-3" style={{ color: '#5A6872' }} dangerouslySetInnerHTML={{ __html: cv('reputation_description', '') }} />
+                <a href="#" className="text-[13px] font-bold" style={{ color: '#2B6CB0' }}>Saiba mais</a>
+              </div>
+            </div>
+            <div className="flex-none w-[75%]">
+              <div className="rounded-xl p-4 shadow-sm min-w-[220px] md:min-w-0" style={{ background: '#EDF7E1' }}>
+                <p className="text-xs font-medium mb-3" style={{ color: '#5A6872' }}>{cv('company_name', 'Amazon')} existe?</p>
+                <div className="flex items-center gap-3 mb-2">
+                  <img src="/images/seal-ra-verified.png" alt="Verificada" className="w-9 h-9" />
+                  <p className="font-bold text-[15px]" style={{ color: '#1A2B3D' }}>Empresa verificada</p>
+                </div>
+                <p className="text-[13px] leading-relaxed mb-3" style={{ color: '#5A6872' }}>{cv('trust_description', 'Essa empresa é verificada e possui o selo de confiança do Reclame AQUI.')}</p>
+                <a href="#" className="text-[13px] font-bold" style={{ color: '#2B6CB0' }}>Saiba mais</a>
+              </div>
+            </div>
           </div>
-          <div className="mt-6"><PerformanceCard /></div>
-          <EvolutionCard />
+          <div className="mt-6"><PerformanceCard content={content} cv={cv} /></div>
+          <EvolutionCard companyName={cv('company_name', 'Amazon')} />
           <div className="mt-6">
-            <h3 className="text-[17px] font-bold mb-3" style={{ color: '#1A2B3D' }}>Veja mais informações sobre Amazon</h3>
+            <h3 className="text-[17px] font-bold mb-3" style={{ color: '#1A2B3D' }}>Veja mais informações sobre {cv('company_name', 'Amazon')}</h3>
             <div className="rounded-xl overflow-hidden mb-4" style={{ border: '1px solid #E8ECF0' }}>
-              <iframe width="100%" height="200" src="https://www.youtube.com/embed/MVaaQ8Qu7Iw" title="Ofertas do Dia da Amazon" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen className="w-full" />
+              <iframe width="100%" height="200" src={cv('youtube_url', 'https://www.youtube.com/embed/MVaaQ8Qu7Iw')} title="Vídeo" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen className="w-full" />
             </div>
             <div className="mb-4">
-              <h3 className="text-[15px] font-bold mb-3" style={{ color: '#1A2B3D' }}>O que Amazon está postando</h3>
+              <h3 className="text-[15px] font-bold mb-3" style={{ color: '#1A2B3D' }}>O que {cv('company_name', 'Amazon')} está postando</h3>
               <PostCard title="Proteja-se contra fraudes e golpes por mensagens" image="/images/post-3.jpg" />
               <a href="#" className="text-sm font-bold mt-3 inline-block" style={{ color: '#2B6CB0' }}>Ver todos os posts</a>
             </div>
-            <ComplaintsSection />
+            <ComplaintsSection companyName={cv('company_name', 'Amazon')} />
             <FAQSection />
-            <ProblemsSection />
+            <ProblemsSection companyName={cv('company_name', 'Amazon')} />
           </div>
           <VisitedAlso />
-          <div className="mt-6"><Sidebar /></div>
+          <div className="mt-6"><SidebarSection cv={cv} /></div>
         </div>
 
         {/* Desktop */}
         <div className="hidden lg:grid grid-cols-[280px_1fr_280px] gap-6">
           <div>
-            <h2 className="text-xl font-bold mb-4" style={{ color: '#1A2B3D' }}>Amazon é confiável?</h2>
+            <h2 className="text-xl font-bold mb-4" style={{ color: '#1A2B3D' }}>{cv('company_name', 'Amazon')} é confiável?</h2>
             <div className="space-y-4">
-              <TrustCard />
-              <ReputationCard />
+              <div className="rounded-xl p-4 shadow-sm" style={{ background: '#EDF7E1' }}>
+                <p className="text-xs font-medium mb-3" style={{ color: '#5A6872' }}>{cv('company_name', 'Amazon')} existe?</p>
+                <div className="flex items-center gap-3 mb-2">
+                  <img src="/images/seal-ra-verified.png" alt="Verificada" className="w-9 h-9" />
+                  <p className="font-bold text-[15px]" style={{ color: '#1A2B3D' }}>Empresa verificada</p>
+                </div>
+                <p className="text-[13px] leading-relaxed mb-3" style={{ color: '#5A6872' }}>{cv('trust_description', 'Essa empresa é verificada e possui o selo de confiança do Reclame AQUI.')}</p>
+                <a href="#" className="text-[13px] font-bold" style={{ color: '#2B6CB0' }}>Saiba mais</a>
+              </div>
+              <div className="rounded-xl p-4 shadow-sm" style={{ background: '#EDF7E1' }}>
+                <p className="text-xs font-medium mb-3" style={{ color: '#5A6872' }}>Qual a reputação de {cv('company_name', 'Amazon')}?</p>
+                <div className="flex items-center gap-3 mb-2">
+                  <img src="/images/reputation-otimo.webp" alt="Ótimo" className="w-11 h-11" />
+                  <div>
+                    <p className="text-xs" style={{ color: '#5A6872' }}>Reputação</p>
+                    <p className="font-extrabold text-base uppercase" style={{ color: '#1A2B3D' }}>{cv('reputation_label', 'ÓTIMO')}</p>
+                  </div>
+                </div>
+                <p className="text-[13px] leading-relaxed mb-3" style={{ color: '#5A6872' }} dangerouslySetInnerHTML={{ __html: cv('reputation_description', '') }} />
+                <a href="#" className="text-[13px] font-bold" style={{ color: '#2B6CB0' }}>Saiba mais</a>
+              </div>
             </div>
-            <div className="mt-6"><PerformanceCard /></div>
-            <EvolutionCard />
+            <div className="mt-6"><PerformanceCard content={content} cv={cv} /></div>
+            <EvolutionCard companyName={cv('company_name', 'Amazon')} />
             <VisitedAlso />
           </div>
           <div>
-            <h3 className="text-lg font-bold mb-3" style={{ color: '#1A2B3D' }}>Veja mais informações sobre Amazon</h3>
+            <h3 className="text-lg font-bold mb-3" style={{ color: '#1A2B3D' }}>Veja mais informações sobre {cv('company_name', 'Amazon')}</h3>
             <div className="rounded-xl overflow-hidden mb-4" style={{ border: '1px solid #E8ECF0' }}>
-              <iframe width="100%" height="280" src="https://www.youtube.com/embed/MVaaQ8Qu7Iw" title="Ofertas do Dia da Amazon" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen className="w-full" />
+              <iframe width="100%" height="280" src={cv('youtube_url', 'https://www.youtube.com/embed/MVaaQ8Qu7Iw')} title="Vídeo" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen className="w-full" />
             </div>
             <div className="mb-4">
-              <h3 className="text-base font-bold mb-3" style={{ color: '#1A2B3D' }}>O que Amazon está postando</h3>
+              <h3 className="text-base font-bold mb-3" style={{ color: '#1A2B3D' }}>O que {cv('company_name', 'Amazon')} está postando</h3>
               <PostCard title="Proteja-se contra fraudes e golpes por mensagens" image="/images/post-3.jpg" />
               <a href="#" className="text-sm font-bold mt-3 inline-block" style={{ color: '#2B6CB0' }}>Ver todos os posts</a>
             </div>
-            <ComplaintsSection />
+            <ComplaintsSection companyName={cv('company_name', 'Amazon')} />
             <FAQSection />
-            <ProblemsSection />
+            <ProblemsSection companyName={cv('company_name', 'Amazon')} />
           </div>
-          <div><Sidebar /></div>
+          <div><SidebarSection cv={cv} /></div>
         </div>
       </main>
 
