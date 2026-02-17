@@ -521,6 +521,157 @@ const PostCard = ({ title, image }: { title: string; image: string }) => (
   </div>
 );
 
+/* ───────────── FOOTER ───────────── */
+const Footer = () => {
+  const consumerLinks = [
+    { label: "Faça uma reclamação", href: "#" },
+    { label: "Minhas Reclamações", href: "#" },
+    { label: "Compare empresas", href: "#" },
+    { label: "Melhores empresas", href: "#" },
+    { label: "Buscar descontos", href: "#" },
+    { label: "Rankings", href: "#" },
+    { label: "Cadastre uma empresa", href: "#" },
+  ];
+  const companyLinks = [
+    { label: "Por que estar AQUI?", href: "#" },
+    { label: "Cadastrar empresa", href: "#" },
+    { label: "Responder reclamações", href: "#" },
+    { label: "Meus Produtos Reclame AQUI", href: "#" },
+  ];
+  const aboutLinks = [
+    { label: "Institucional", href: "#" },
+    { label: "Fale conosco", href: "#" },
+    { label: "RA Educa", href: "#" },
+    { label: "Conheça a extensão", href: "#" },
+    { label: "Prêmio", href: "#" },
+    { label: "Blog RA", href: "#" },
+  ];
+  const helpLinks = [
+    { label: "Quero trocar minha senha", href: "#" },
+    { label: "Não encontrei uma empresa", href: "#" },
+    { label: "Reclamei e ainda não responderam", href: "#" },
+    { label: "Quero cadastrar uma empresa", href: "#" },
+    { label: "Fale com o Reclame AQUI", href: "#" },
+  ];
+
+  const FooterColumn = ({ title, links, cta }: { title: string; links: { label: string; href: string }[]; cta?: { label: string; href: string; red?: boolean } }) => (
+    <div className="flex flex-col w-full">
+      <h2 className="text-sm font-bold mb-3" style={{ color: '#1A2B3D' }}>{title}</h2>
+      {cta && (
+        <a href={cta.href} className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-semibold mb-3 w-fit" style={{ backgroundColor: cta.red ? '#D11F26' : '#1B8B4F', color: '#fff' }}>
+          {cta.label}
+          <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z" /></svg>
+        </a>
+      )}
+      {links.map((link, i) => (
+        <a key={i} href={link.href} className="text-sm mt-2 hover:underline" style={{ color: '#5A6872' }}>{link.label}</a>
+      ))}
+    </div>
+  );
+
+  return (
+    <footer className="mt-12" style={{ backgroundColor: '#fff', borderTop: '1px solid #E8ECF0' }}>
+      {/* Desktop footer links */}
+      <section className="py-10 hidden md:block">
+        <div className="max-w-[1184px] mx-auto w-full flex flex-row justify-center gap-12 px-4">
+          <div className="w-1/4">
+            <FooterColumn title="Para consumidor" links={consumerLinks} cta={{ label: "Área do consumidor", href: "#" }} />
+            <div className="mt-6 flex flex-col gap-3">
+              <a href="#" target="_blank" rel="noreferrer">
+                <img width="135" height="40" src="https://play.google.com/intl/en_us/badges/static/images/badges/pt-br_badge_web_generic.png" alt="Disponível no Google Play" className="h-[40px] w-auto object-contain" />
+              </a>
+              <a href="#" target="_blank" rel="noreferrer">
+                <img width="135" height="40" src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg" alt="Baixar na App Store" className="h-[40px] w-auto object-contain" />
+              </a>
+            </div>
+          </div>
+          <div className="w-1/4">
+            <FooterColumn title="Para empresas" links={companyLinks} cta={{ label: "Área da empresa", href: "#" }} />
+            <p className="mt-6 text-sm" style={{ color: '#5A6872' }}>
+              Entre em sua área restrita para administrar suas respostas aos consumidores,{" "}
+              <a href="#" className="underline font-semibold" style={{ color: '#2B6CB0' }}>acesse aqui</a>
+            </p>
+          </div>
+          <div className="w-1/4">
+            <FooterColumn title="Sobre o RA" links={aboutLinks} />
+          </div>
+          <div className="w-1/4">
+            <FooterColumn title="Central de ajuda" links={helpLinks} cta={{ label: "Reclamar de uma empresa", href: "#", red: true }} />
+          </div>
+        </div>
+      </section>
+
+      {/* Mobile footer links */}
+      <section className="flex md:hidden flex-col pl-4 py-6 text-sm" style={{ color: '#5A6872' }}>
+        {[...consumerLinks.slice(0, 3), { label: "Melhores empresas", href: "#" }, { label: "Buscar descontos", href: "#" }, { label: "Ranking", href: "#" }, { label: "Cadastre uma empresa", href: "#" }, { label: "Por que estar AQUI?", href: "#" }, { label: "Tire suas dúvidas sobre o Reclame AQUI", href: "#" }].map((link, i) => (
+          <a key={i} href={link.href} className="my-2">{link.label}</a>
+        ))}
+      </section>
+
+      {/* Bottom bar */}
+      <section className="py-8 mt-0 md:mt-0" style={{ borderTop: '1px solid #E8ECF0' }}>
+        <div className="max-w-[1184px] mx-auto w-full flex flex-col md:flex-row justify-center items-center gap-4 md:gap-12 px-4">
+          <span className="md:hidden text-sm" style={{ color: '#8A9BAE' }}>Siga a gente nas redes sociais</span>
+
+          {/* Social links */}
+          <div className="w-full flex justify-center">
+            <ul className="mx-auto flex flex-row list-none gap-4">
+              {/* Facebook */}
+              <li>
+                <a href="https://www.facebook.com/ReclameAqui" target="_blank" rel="noopener noreferrer" title="Facebook">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" className="w-5 h-5" fill="#5A6872"><path d="M279.14 288l14.22-92.66h-88.91v-60.13c0-25.35 12.42-50.06 52.24-50.06h40.42V6.26S260.43 0 225.36 0c-73.22 0-121.08 44.38-121.08 124.72v70.62H22.89V288h81.39v224h100.17V288z" /></svg>
+                </a>
+              </li>
+              {/* X/Twitter */}
+              <li>
+                <a href="https://twitter.com/reclameaqui" target="_blank" rel="noopener noreferrer" title="X (Twitter)">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" className="w-5 h-5" fill="#5A6872"><path d="M389.2 48h70.6L305.6 224.2 487 464H345L233.7 318.6 106.5 464H35.8L200.7 275.5 26.8 48H172.4L272.9 180.9 389.2 48zM364.4 421.8h39.1L151.1 88h-42L364.4 421.8z" /></svg>
+                </a>
+              </li>
+              {/* YouTube */}
+              <li>
+                <a href="https://www.youtube.com/channel/UCHSTgEYmopZluZ7N4BSGPpw" target="_blank" rel="noopener noreferrer" title="YouTube">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" className="w-5 h-5" fill="#5A6872"><path d="M549.655 124.083c-6.281-23.65-24.787-42.276-48.284-48.597C458.781 64 288 64 288 64S117.22 64 74.629 75.486c-23.497 6.322-42.003 24.947-48.284 48.597-11.412 42.867-11.412 132.305-11.412 132.305s0 89.438 11.412 132.305c6.281 23.65 24.787 41.5 48.284 47.821C117.22 448 288 448 288 448s170.78 0 213.371-11.486c23.497-6.321 42.003-24.171 48.284-47.821 11.412-42.867 11.412-132.305 11.412-132.305s0-89.438-11.412-132.305zm-317.51 213.508V175.185l142.739 81.205-142.739 81.201z" /></svg>
+                </a>
+              </li>
+              {/* Instagram */}
+              <li>
+                <a href="https://www.instagram.com/reclameaqui/" target="_blank" rel="noopener noreferrer" title="Instagram">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" className="w-5 h-5" fill="#5A6872"><path d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z" /></svg>
+                </a>
+              </li>
+              {/* LinkedIn */}
+              <li>
+                <a href="https://www.linkedin.com/company/reclame-aqui/" target="_blank" rel="noopener noreferrer" title="LinkedIn">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" className="w-5 h-5" fill="#5A6872"><path d="M100.28 448H7.4V148.9h92.88zM53.79 108.1C24.09 108.1 0 83.5 0 53.8a53.79 53.79 0 0 1 107.58 0c0 29.7-24.1 54.3-53.79 54.3zM447.9 448h-92.68V302.4c0-34.7-.7-79.2-48.29-79.2-48.29 0-55.69 37.7-55.69 76.7V448h-92.78V148.9h89.08v40.8h1.3c12.4-23.5 42.69-48.3 87.88-48.3 94 0 111.28 61.9 111.28 142.3V448z" /></svg>
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          {/* Logo RA */}
+          <div className="w-full flex justify-center">
+            <a href="#" className="mx-auto flex items-center" title="Reclame Aqui - Início">
+              <svg viewBox="0 0 257 41" xmlns="http://www.w3.org/2000/svg" className="h-8 opacity-40">
+                <g fill="none">
+                  <path d="M14.463 9.812l-1.45 7.791c1.313-.028 2.326-.353 3.04-.974.714-.62 1.195-1.594 1.443-2.921.241-1.3.138-2.274-.308-2.922-.445-.652-1.228-.974-2.347-.974h-.378zM0 35.717l6.083-32.69h11.084c3.75 0 6.534.903 8.357 2.709 1.822 1.806 2.444 4.262 1.866 7.367-.355 1.91-1.142 3.54-2.363 4.893-1.22 1.349-2.874 2.428-4.961 3.233l4.133 14.488h-10.21l-1.992-12.652L9.64 35.717H0zm35.448-14.353h5.175c.241-1.298.206-2.272-.106-2.92-.313-.652-.902-.976-1.768-.976-.678 0-1.285.318-1.82.952-.535.634-1.03 1.615-1.48 2.944M46.77 27.7c-.847 2.687-2.34 4.803-4.479 6.348-2.138 1.545-4.656 2.317-7.555 2.317-3.403 0-5.832-1.04-7.29-3.123-1.454-2.085-1.824-5.049-1.107-8.902.72-3.864 2.208-6.863 4.464-8.998 2.256-2.135 5.054-3.202 8.394-3.202 3.64 0 6.18.948 7.624 2.843 1.442 1.895 1.808 4.754 1.097 8.576-.083.445-.15.788-.201 1.018-.051.233-.11.443-.178.637H34.731l-.058.314c-.314 1.688-.338 2.897-.072 3.627.265.732.855 1.097 1.768 1.097.678 0 1.264-.209 1.76-.625.495-.42.918-1.062 1.268-1.927h7.373m15.116 7.658a9.337 9.337 0 01-2.185.76c-.764.165-1.61.247-2.54.247-3.119 0-5.375-1.077-6.77-3.235-1.395-2.156-1.742-5.115-1.043-8.877.687-3.688 2.16-6.629 4.42-8.822 2.26-2.193 4.924-3.29 7.997-3.29.85 0 1.629.074 2.333.221.705.151 1.35.383 1.938.694l-1.308 7.031a2.887 2.887 0 00-.85-.392 3.832 3.832 0 00-.992-.123c-.914 0-1.72.42-2.42 1.254-.698.836-1.182 1.98-1.451 3.427-.273 1.462-.227 2.562.141 3.303.366.738 1.047 1.107 2.038 1.107.283 0 .595-.042.933-.123.338-.084.702-.2 1.092-.347l-1.333 7.165m2.698.359L71.222.049h8.767l-6.637 35.668h-8.768m23-11.464c-.303 1.629-.353 2.851-.151 3.67.201.823.656 1.232 1.366 1.232.71 0 1.327-.42 1.854-1.266.527-.84.938-2.055 1.233-3.636.3-1.612.342-2.842.129-3.686-.212-.84-.674-1.265-1.382-1.265-.694 0-1.3.42-1.817 1.258-.519.834-.928 2.064-1.232 3.693m2.357 11.464l.47-2.531c-1.072 1.103-2.115 1.91-3.131 2.419a6.993 6.993 0 01-3.155.76c-2.41 0-4.1-1.063-5.065-3.19-.968-2.126-1.095-5.1-.384-8.922.717-3.85 1.945-6.834 3.684-8.946 1.74-2.11 3.832-3.167 6.273-3.167 1.104 0 2.065.25 2.886.75.82.499 1.563 1.294 2.227 2.384l.462-2.486h8.767l-4.266 22.929H89.94m11.982 0l4.267-22.929h8.413l-.635 3.404c1.064-1.314 2.21-2.285 3.437-2.912 1.228-.627 2.582-.938 4.063-.938 1.386 0 2.473.315 3.261.952.788.634 1.266 1.601 1.434 2.898.922-1.314 1.969-2.285 3.141-2.912 1.172-.627 2.507-.938 4.004-.938 1.843 0 3.152.522 3.927 1.565.773 1.048.975 2.568.602 4.569l-3.209 17.24h-8.766l2.483-13.345c.133-.714.099-1.245-.106-1.587-.204-.345-.582-.518-1.133-.518-.505 0-.936.2-1.293.595-.356.396-.6.945-.73 1.645l-2.459 13.21h-8.72l2.484-13.345c.133-.714.098-1.245-.107-1.587-.203-.345-.581-.518-1.132-.518-.52 0-.963.2-1.328.595-.365.396-.612.945-.743 1.645l-2.458 13.21h-8.697m46.176-14.352h5.175c.242-1.298.207-2.272-.105-2.92-.312-.652-.903-.976-1.768-.976-.678 0-1.285.318-1.82.952-.536.634-1.03 1.615-1.482 2.944M159.42 27.7c-.847 2.687-2.34 4.803-4.478 6.348s-4.657 2.317-7.556 2.317c-3.403 0-5.833-1.04-7.288-3.123-1.456-2.085-1.826-5.049-1.108-8.902.72-3.864 2.206-6.863 4.463-8.998 2.256-2.135 5.054-3.202 8.394-3.202 3.64 0 6.18.948 7.624 2.843 1.443 1.895 1.81 4.754 1.098 8.576-.084.445-.151.788-.201 1.018a5.42 5.42 0 01-.179.637h-12.808l-.058.314c-.314 1.688-.338 2.897-.072 3.627.265.732.855 1.097 1.77 1.097.677 0 1.263-.209 1.757-.625.496-.42.919-1.062 1.269-1.927h7.373" fill="#90B823" />
+                  <path d="M171.845 24.298h3.828l.317-12.114-4.145 12.114zm-13.207 11.419l13.645-32.69h10.847l1.454 32.69h-9.381l.163-4.815h-5.695l-1.629 4.815h-9.404zm39.164-16.547c-.632 3.39-.827 5.71-.587 6.964.239 1.254.95 1.881 2.13 1.881 1.166 0 2.096-.617 2.79-1.848.693-1.231 1.36-3.564 1.999-6.998.64-3.433.84-5.766.608-7.006-.236-1.24-.936-1.86-2.101-1.86-1.181 0-2.125.628-2.83 1.88-.707 1.255-1.377 3.585-2.01 6.986M201.75 41l-2.839-4.679c-.11 0-.28.007-.512.021a9.863 9.863 0 01-.512.023c-4.144 0-7.075-1.476-8.794-4.433-1.717-2.954-2.074-7.137-1.07-12.538 1.008-5.402 2.916-9.59 5.73-12.56 2.814-2.97 6.268-4.456 10.365-4.456 4.08 0 6.966 1.48 8.66 4.444 1.694 2.962 2.037 7.154 1.028 12.572-.58 3.121-1.462 5.83-2.647 8.127-1.183 2.298-2.695 4.239-4.534 5.823l3.48 4.163L201.748 41m13.818-16.972l3.908-21.002h9.618l-4.07 21.876c-.18.955-.13 1.66.149 2.115.277.455.795.683 1.551.683.77 0 1.38-.228 1.828-.683.447-.454.76-1.16.937-2.115l4.072-21.876h9.665l-3.908 21.002c-.795 4.27-2.333 7.392-4.615 9.372-2.283 1.977-5.48 2.965-9.592 2.965-4.096 0-6.909-.988-8.44-2.965-1.53-1.98-1.898-5.101-1.103-9.372m25.544 11.689l6.083-32.69h9.642l-6.082 32.69h-9.643" fill="#007535" />
+                </g>
+              </svg>
+            </a>
+          </div>
+
+          {/* Terms */}
+          <div className="w-full flex flex-row justify-center items-center">
+            <a href="#" className="text-sm mr-4" style={{ color: '#8A9BAE' }} title="Termos de uso">Termos de uso</a>
+            <a href="#" className="text-sm ml-4" style={{ color: '#8A9BAE' }} title="Política de privacidade">Política de privacidade</a>
+          </div>
+        </div>
+      </section>
+    </footer>
+  );
+};
+
 /* ───────────── MAIN PAGE ───────────── */
 const Index = () => {
   return (
@@ -587,11 +738,7 @@ const Index = () => {
         </div>
       </main>
 
-      <footer className="py-8 mt-12" style={{ backgroundColor: '#1A2B3D' }}>
-        <div className="max-w-[1286px] mx-auto px-4 md:px-6 text-center text-sm text-white/60">
-          © 2025 Reclame AQUI - Todos os direitos reservados
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 };
