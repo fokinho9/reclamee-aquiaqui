@@ -1,16 +1,17 @@
-import { Search, ChevronDown, Home, Building2, MessageSquare, Tag, HelpCircle, FileText, AlertTriangle, Eye, ExternalLink, ThumbsUp, Share2 } from "lucide-react";
+import { Search, ChevronDown, Home, Building2, MessageSquare, Tag, HelpCircle, FileText, AlertTriangle, Eye, ExternalLink, ThumbsUp, Share2, MoreVertical } from "lucide-react";
 import { useState } from "react";
 
 const Header = () => (
   <header className="bg-background border-b border-border">
-    <div className="max-w-[1286px] mx-auto flex items-center justify-between px-6 py-2">
+    <div className="max-w-[1286px] mx-auto flex items-center justify-between px-4 md:px-6 py-2">
       <div className="flex items-center gap-2">
-        <span className="text-2xl font-bold" style={{ color: '#1B8B4F', fontFamily: 'Open Sans' }}>
+        <span className="text-xl md:text-2xl font-bold" style={{ color: '#1B8B4F', fontFamily: 'Open Sans' }}>
           Reclame<span style={{ color: '#333' }}>AQUI</span>
         </span>
-        <span className="text-xs text-muted-foreground font-semibold">25 ANOS</span>
+        <span className="text-xs text-muted-foreground font-semibold hidden sm:inline">25 ANOS</span>
       </div>
-      <div className="flex-1 max-w-md mx-8">
+      {/* Desktop search */}
+      <div className="flex-1 max-w-md mx-8 hidden md:block">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <input
@@ -20,12 +21,16 @@ const Header = () => (
           />
         </div>
       </div>
-      <div className="flex items-center gap-3">
-        <button className="px-4 py-2 text-sm font-semibold border border-primary rounded-full text-primary hover:bg-primary/5">Entrar</button>
-        <button className="px-4 py-2 text-sm font-semibold bg-primary text-primary-foreground rounded-full hover:opacity-90">Criar conta</button>
+      {/* Mobile search icon */}
+      <button className="md:hidden p-2 border border-border rounded-lg">
+        <Search className="w-5 h-5 text-foreground" />
+      </button>
+      <div className="flex items-center gap-2 md:gap-3">
+        <button className="px-3 md:px-4 py-1.5 md:py-2 text-xs md:text-sm font-semibold border border-primary rounded-full text-primary hover:bg-primary/5">Entrar</button>
+        <button className="px-3 md:px-4 py-1.5 md:py-2 text-xs md:text-sm font-semibold bg-primary text-primary-foreground rounded-full hover:opacity-90">Criar conta</button>
       </div>
     </div>
-    <nav className="max-w-[1286px] mx-auto px-6 flex items-center gap-8 py-2 text-sm font-semibold text-foreground">
+    <nav className="max-w-[1286px] mx-auto px-6 hidden md:flex items-center gap-8 py-2 text-sm font-semibold text-foreground">
       <span className="flex items-center gap-1 cursor-pointer hover:text-primary">Para você <ChevronDown className="w-3 h-3" /></span>
       <span className="flex items-center gap-1 cursor-pointer hover:text-primary">Melhores empresas <ChevronDown className="w-3 h-3" /></span>
       <span className="cursor-pointer hover:text-primary">Detector de Site Confiável</span>
@@ -38,11 +43,13 @@ const Header = () => (
 
 const CompanyHero = () => (
   <div className="relative">
-    <div className="w-full h-[280px] max-md:h-[105px]" style={{ backgroundColor: '#EF6509' }}>
-      <img src="/images/amazon-banner.jpg" alt="Banner Amazon" className="w-full h-full object-cover max-w-[1920px] mx-auto" />
+    <div className="w-full h-[105px] md:h-[280px]" style={{ backgroundColor: '#EF6509' }}>
+      <img src="/images/amazon-banner.jpg" alt="Banner Amazon" className="w-full h-full object-cover max-w-[1920px] mx-auto hidden md:block" />
+      <img src="/images/amazon-banner-mobile.jpg" alt="Banner Amazon" className="w-full h-full object-cover md:hidden" />
     </div>
-    <div className="max-w-[1286px] mx-auto px-10 relative">
-      <div className="flex items-end gap-6 -mt-16">
+    <div className="max-w-[1286px] mx-auto px-4 md:px-10 relative">
+      {/* Desktop layout */}
+      <div className="hidden md:flex items-end gap-6 -mt-16">
         <a href="#" className="flex-none w-[188px] h-[188px] rounded-full bg-[#FAFAFA] shadow-md flex items-center justify-center -mt-8 border-4 border-background overflow-hidden">
           <img src="/images/amazon-logo.jpg" alt="Amazon Logo" className="w-[170px] h-[170px] rounded-full object-cover" />
         </a>
@@ -60,7 +67,22 @@ const CompanyHero = () => (
           <MessageSquare className="w-4 h-4" /> Reclamar
         </button>
       </div>
-      <div className="flex items-center gap-2 mt-3 mb-2">
+      {/* Mobile layout - centered */}
+      <div className="md:hidden flex flex-col items-center -mt-10">
+        <a href="#" className="w-[80px] h-[80px] rounded-full bg-[#FAFAFA] shadow-md flex items-center justify-center border-4 border-background overflow-hidden">
+          <img src="/images/amazon-logo.jpg" alt="Amazon Logo" className="w-[72px] h-[72px] rounded-full object-cover" />
+        </a>
+        <div className="flex items-center gap-1.5 mt-2">
+          <h1 className="text-lg font-bold text-foreground">Amazon</h1>
+          <img src="/images/seal-ra-verified.svg" alt="RA Verificada" className="w-5 h-5" />
+        </div>
+        <div className="flex items-center gap-3 text-xs text-muted-foreground mt-1">
+          <span className="flex items-center gap-1"><Building2 className="w-3 h-3" /> Varejo - Marketplaces</span>
+          <span className="flex items-center gap-1"><Eye className="w-3 h-3" /> + 2.4 milhões de visualizações</span>
+        </div>
+      </div>
+      {/* Badges */}
+      <div className="flex items-center gap-2 mt-3 mb-2 md:justify-start justify-center">
         <a href="#" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold transition-colors hover:opacity-80" style={{ backgroundColor: '#F1F9E6', color: '#0A213D' }}>
           <img src="/images/reputation-otimo.webp" alt="Ótimo" className="w-[18px] h-[18px]" /> Ótimo
         </a>
@@ -68,13 +90,17 @@ const CompanyHero = () => (
           <img src="/images/seal-ra-verified.svg" alt="Verificada" className="w-[18px] h-[18px]" /> Verificada
         </a>
       </div>
+      {/* Mobile full-width Reclamar button */}
+      <button className="md:hidden w-full py-3 rounded-md font-semibold text-sm flex items-center justify-center gap-2 text-white hover:opacity-90 mt-2 mb-2" style={{ backgroundColor: '#D11F26' }}>
+        <MessageSquare className="w-4 h-4" /> Reclamar
+      </button>
     </div>
   </div>
 );
 
 const TabNav = () => {
   const [active, setActive] = useState("Home");
-  const tabs = [
+  const allTabs = [
     { icon: Home, label: "Home" },
     { icon: Building2, label: "Sobre" },
     { icon: MessageSquare, label: "Reclamações" },
@@ -85,25 +111,28 @@ const TabNav = () => {
   ];
   return (
     <div className="border-b border-border bg-background sticky top-0 z-10">
-      <div className="max-w-[1286px] mx-auto px-6 flex gap-1">
-        {tabs.map(({ icon: Icon, label }) => (
+      <div className="max-w-[1286px] mx-auto px-4 md:px-6 flex gap-1 overflow-x-auto scrollbar-hide">
+        {allTabs.map(({ icon: Icon, label }, idx) => (
           <button
             key={label}
             onClick={() => setActive(label)}
-            className={`flex items-center gap-1.5 px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
+            className={`flex items-center gap-1.5 px-3 md:px-4 py-3 text-xs md:text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
               active === label ? "border-primary text-primary" : "border-transparent text-muted-foreground hover:text-foreground"
-            }`}
+            } ${idx > 2 ? "hidden md:flex" : ""}`}
           >
             <Icon className="w-4 h-4" /> {label}
           </button>
         ))}
+        <button className="md:hidden flex items-center px-2 py-3 text-muted-foreground">
+          <MoreVertical className="w-4 h-4" />
+        </button>
       </div>
     </div>
   );
 };
 
 const TrustCard = () => (
-  <div className="rounded-lg p-4 shadow" style={{ background: 'hsl(var(--ra-light-green))' }}>
+  <div className="rounded-lg p-4 shadow min-w-[200px] md:min-w-0" style={{ background: 'hsl(var(--ra-light-green))' }}>
     <p className="text-xs font-medium text-foreground/70 mb-3">Amazon existe?</p>
     <div className="flex items-center gap-3 mb-2">
       <img src="/images/seal-ra-verified.svg" alt="Verificada" className="w-8 h-8" />
@@ -117,7 +146,7 @@ const TrustCard = () => (
 );
 
 const ReputationCard = () => (
-  <div className="rounded-lg p-4 shadow" style={{ background: 'hsl(var(--ra-light-green))' }}>
+  <div className="rounded-lg p-4 shadow min-w-[200px] md:min-w-0" style={{ background: 'hsl(var(--ra-light-green))' }}>
     <p className="text-xs font-medium text-foreground/70 mb-3">Qual a reputação de Amazon?</p>
     <div className="flex items-center gap-3 mb-2">
       <img src="/images/reputation-otimo.webp" alt="Ótimo" className="w-10 h-10" />
@@ -179,10 +208,10 @@ const VisitedAlso = () => {
   ];
   return (
     <div className="mt-8">
-      <h2 className="text-xl font-bold text-foreground mb-4">Quem visitou Amazon também visitou</h2>
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+      <h2 className="text-lg md:text-xl font-bold text-foreground mb-4">Quem visitou Amazon também visitou</h2>
+      <div className="flex md:grid md:grid-cols-5 gap-3 overflow-x-auto pb-2 scrollbar-hide">
         {companies.map(c => (
-          <div key={c.name} className="bg-background border border-border rounded-lg p-3 text-center hover:shadow-md transition-shadow cursor-pointer">
+          <div key={c.name} className="bg-background border border-border rounded-lg p-3 text-center hover:shadow-md transition-shadow cursor-pointer min-w-[120px] flex-none md:min-w-0">
             <img src={c.logo} alt={c.name} className="w-12 h-12 rounded-full mx-auto mb-2 object-cover" />
             <p className="text-xs font-semibold text-foreground truncate">{c.name}</p>
             <p className={`text-xs ${c.color}`}>{c.rep}</p>
@@ -203,11 +232,11 @@ const ComplaintsSection = () => {
   ];
   return (
     <div className="mt-8">
-      <h2 className="text-xl font-bold text-foreground mb-4">O que estão falando sobre Amazon</h2>
+      <h2 className="text-lg md:text-xl font-bold text-foreground mb-4">O que estão falando sobre Amazon</h2>
       <h3 className="text-base font-semibold text-foreground mb-3">Reclamações</h3>
-      <div className="flex gap-2 mb-4">
+      <div className="flex gap-2 mb-4 overflow-x-auto pb-1 scrollbar-hide">
         {tabs.map(t => (
-          <button key={t} onClick={() => setTab(t)} className={`px-3 py-1.5 text-xs font-semibold rounded-full border ${tab === t ? "bg-primary text-primary-foreground border-primary" : "border-border text-muted-foreground"}`}>
+          <button key={t} onClick={() => setTab(t)} className={`px-3 py-1.5 text-xs font-semibold rounded-full border whitespace-nowrap ${tab === t ? "bg-primary text-primary-foreground border-primary" : "border-border text-muted-foreground"}`}>
             {t}
           </button>
         ))}
@@ -239,7 +268,7 @@ const FAQSection = () => {
   ];
   return (
     <div className="mt-8">
-      <h2 className="text-xl font-bold text-foreground mb-2">Amazon tem uma informação importante para você</h2>
+      <h2 className="text-lg md:text-xl font-bold text-foreground mb-2">Amazon tem uma informação importante para você</h2>
       <p className="text-sm text-muted-foreground mb-4">Precisa de ajuda? Conteúdos disponibilizados pela empresa</p>
       <div className="space-y-2">
         {faqs.map((f, i) => (
@@ -262,7 +291,7 @@ const ProblemsSection = () => {
   ];
   return (
     <div className="mt-8">
-      <h2 className="text-xl font-bold text-foreground mb-4">Principais problemas</h2>
+      <h2 className="text-lg md:text-xl font-bold text-foreground mb-4">Principais problemas</h2>
       <div className="space-y-2">
         {problems.map((p, i) => (
           <div key={i} className="flex items-center gap-3 border border-border rounded-lg p-3 cursor-pointer hover:shadow-sm">
@@ -338,10 +367,50 @@ const Index = () => {
       <CompanyHero />
       <TabNav />
 
-      <main className="max-w-[1286px] mx-auto px-6 py-6">
-        <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr_280px] gap-6">
+      <main className="max-w-[1286px] mx-auto px-4 md:px-6 py-6">
+        {/* Mobile: single column with trust cards as horizontal scroll, then performance, then content */}
+        <div className="lg:hidden">
+          <h2 className="text-lg font-bold text-foreground mb-4">Amazon é confiável?</h2>
+          <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
+            <div className="flex-none w-[75%]"><ReputationCard /></div>
+            <div className="flex-none w-[75%]"><TrustCard /></div>
+          </div>
+          <div className="mt-6">
+            <PerformanceCard />
+          </div>
+          <div className="mt-6">
+            <h3 className="text-lg font-bold text-foreground mb-3">Veja mais informações sobre Amazon</h3>
+            <div className="rounded-lg overflow-hidden border border-border mb-4">
+              <iframe
+                width="100%"
+                height="200"
+                src="https://www.youtube.com/embed/MVaaQ8Qu7Iw"
+                title="Ofertas do Dia da Amazon"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                className="w-full"
+              />
+            </div>
+            <div className="mb-4">
+              <h3 className="text-base font-bold text-foreground mb-3">O que Amazon está postando</h3>
+              <PostCard title="Proteja-se contra fraudes e golpes por mensagens" image="/images/post-3.jpg" />
+              <a href="#" className="text-sm font-semibold mt-2 inline-block" style={{ color: 'hsl(var(--ra-blue))' }}>Ver todos os posts</a>
+            </div>
+            <ComplaintsSection />
+            <FAQSection />
+            <ProblemsSection />
+          </div>
+          <VisitedAlso />
+          <div className="mt-6">
+            <Sidebar />
+          </div>
+        </div>
+
+        {/* Desktop: 3-column grid */}
+        <div className="hidden lg:grid grid-cols-[280px_1fr_280px] gap-6">
           {/* Left Column */}
-          <div className="lg:col-span-1 order-2 lg:order-1">
+          <div>
             <h2 className="text-xl font-bold text-foreground mb-4">Amazon é confiável?</h2>
             <div className="space-y-4">
               <TrustCard />
@@ -353,8 +422,8 @@ const Index = () => {
             <VisitedAlso />
           </div>
 
-          {/* Center Column - Posts & Video */}
-          <div className="order-1 lg:order-2">
+          {/* Center Column */}
+          <div>
             <h3 className="text-lg font-bold text-foreground mb-3">Veja mais informações sobre Amazon</h3>
             <div className="rounded-lg overflow-hidden border border-border mb-4">
               <iframe
@@ -378,15 +447,15 @@ const Index = () => {
             <ProblemsSection />
           </div>
 
-          {/* Right Column - Sidebar */}
-          <div className="order-3">
+          {/* Right Column */}
+          <div>
             <Sidebar />
           </div>
         </div>
       </main>
 
       <footer className="bg-foreground text-background py-8 mt-12">
-        <div className="max-w-[1286px] mx-auto px-6 text-center text-sm opacity-70">
+        <div className="max-w-[1286px] mx-auto px-4 md:px-6 text-center text-sm opacity-70">
           © 2025 Reclame AQUI - Todos os direitos reservados
         </div>
       </footer>
