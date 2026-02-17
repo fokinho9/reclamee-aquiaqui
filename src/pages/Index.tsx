@@ -242,7 +242,7 @@ const VisitedAlso = () => {
         </div>
         <p className="text-[13px] font-semibold truncate px-1" style={{ color: '#1A2B3D' }}>{c.name}</p>
         <div className="flex items-center justify-center gap-1.5 mt-2">
-          <img src={c.repImg} alt="Reputação" className="w-[27px] h-[27px]" />
+          <img src={c.repImg} alt="Reputação" className="w-[27px] h-[27px] object-contain" />
           <span className="text-[22px] font-bold leading-none" style={{ color: '#1A2B3D' }}>{c.score}</span>
           <span className="text-xs" style={{ color: '#8A9BAE' }}>/10</span>
         </div>
@@ -503,7 +503,7 @@ const SidebarSection = ({ cv }: { cv: (key: string, fallback: string) => string 
 
 /* ───────────── POST CARD (botão sobreposto na imagem) ───────────── */
 const PostCard = ({ title, image }: { title: string; image: string }) => (
-  <div className="rounded-xl overflow-hidden cursor-pointer hover:shadow-md transition-shadow" style={{ border: '1px solid #E8ECF0' }}>
+  <div className="rounded-xl overflow-hidden cursor-pointer hover:shadow-md transition-shadow bg-background" style={{ border: '1px solid #E8ECF0' }}>
     <div className="relative">
       <img src={image} alt={title} className="w-full h-40 object-cover" />
       <div className="absolute bottom-3 left-3">
