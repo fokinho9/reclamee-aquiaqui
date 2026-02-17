@@ -166,6 +166,33 @@ const PerformanceCard = ({ content, cv }: { content?: any[]; cv: (key: string, f
       { icon: "/images/icons/check-circle.svg", text: <>A empresa resolveu <strong style={{ color: '#1F69C1' }}>88.7% das reclamações recebidas.</strong></> },
       { icon: "/images/icons/timer.svg", text: <>O tempo médio de resposta é <strong style={{ color: '#1F69C1' }}>17 dias.</strong></> },
     ],
+    "2025": [
+      { icon: "/images/icons/bullhorn.svg", text: <>Esta empresa recebeu <strong style={{ color: '#1F69C1' }}>17893 reclamações.</strong></> },
+      { icon: "/images/icons/comment-check.svg", text: <>Respondeu <strong style={{ color: '#1F69C1' }}>85.3% das reclamações</strong> recebidas.</> },
+      { icon: "/images/icons/comment-question.svg", text: <>Há <strong style={{ color: '#1F69C1' }}>2518 reclamações</strong> aguardando resposta.</> },
+      { icon: "/images/icons/star-box.svg", text: <>Há <strong style={{ color: '#1F69C1' }}>5214 reclamações</strong> avaliadas, e a nota média dos consumidores é <strong style={{ color: '#1F69C1' }}>7.18.</strong></> },
+      { icon: "/images/icons/handshake.svg", text: <>Dos que avaliaram, <strong style={{ color: '#1F69C1' }}>78.5% voltariam a fazer negócio.</strong></> },
+      { icon: "/images/icons/check-circle.svg", text: <>A empresa resolveu <strong style={{ color: '#1F69C1' }}>86.2% das reclamações recebidas.</strong></> },
+      { icon: "/images/icons/timer.svg", text: <>O tempo médio de resposta é <strong style={{ color: '#1F69C1' }}>15 dias.</strong></> },
+    ],
+    "2024": [
+      { icon: "/images/icons/bullhorn.svg", text: <>Esta empresa recebeu <strong style={{ color: '#1F69C1' }}>203542 reclamações.</strong></> },
+      { icon: "/images/icons/comment-check.svg", text: <>Respondeu <strong style={{ color: '#1F69C1' }}>92.1% das reclamações</strong> recebidas.</> },
+      { icon: "/images/icons/comment-question.svg", text: <>Há <strong style={{ color: '#1F69C1' }}>8247 reclamações</strong> aguardando resposta.</> },
+      { icon: "/images/icons/star-box.svg", text: <>Há <strong style={{ color: '#1F69C1' }}>102847 reclamações</strong> avaliadas, e a nota média dos consumidores é <strong style={{ color: '#1F69C1' }}>7.64.</strong></> },
+      { icon: "/images/icons/handshake.svg", text: <>Dos que avaliaram, <strong style={{ color: '#1F69C1' }}>82.3% voltariam a fazer negócio.</strong></> },
+      { icon: "/images/icons/check-circle.svg", text: <>A empresa resolveu <strong style={{ color: '#1F69C1' }}>89.5% das reclamações recebidas.</strong></> },
+      { icon: "/images/icons/timer.svg", text: <>O tempo médio de resposta é <strong style={{ color: '#1F69C1' }}>18 dias.</strong></> },
+    ],
+    "Geral": [
+      { icon: "/images/icons/bullhorn.svg", text: <>Esta empresa recebeu <strong style={{ color: '#1F69C1' }}>1247832 reclamações.</strong></> },
+      { icon: "/images/icons/comment-check.svg", text: <>Respondeu <strong style={{ color: '#1F69C1' }}>89.4% das reclamações</strong> recebidas.</> },
+      { icon: "/images/icons/comment-question.svg", text: <>Há <strong style={{ color: '#1F69C1' }}>45219 reclamações</strong> aguardando resposta.</> },
+      { icon: "/images/icons/star-box.svg", text: <>Há <strong style={{ color: '#1F69C1' }}>587423 reclamações</strong> avaliadas, e a nota média dos consumidores é <strong style={{ color: '#1F69C1' }}>7.38.</strong></> },
+      { icon: "/images/icons/handshake.svg", text: <>Dos que avaliaram, <strong style={{ color: '#1F69C1' }}>79.8% voltariam a fazer negócio.</strong></> },
+      { icon: "/images/icons/check-circle.svg", text: <>A empresa resolveu <strong style={{ color: '#1F69C1' }}>87.1% das reclamações recebidas.</strong></> },
+      { icon: "/images/icons/timer.svg", text: <>O tempo médio de resposta é <strong style={{ color: '#1F69C1' }}>20 dias.</strong></> },
+    ],
   };
 
   const stats = statsByPeriod[period] || statsByPeriod["6 meses"];
