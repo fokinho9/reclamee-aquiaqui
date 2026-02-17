@@ -1,5 +1,5 @@
 import { Search, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, Home, Building2, MessageSquare, Tag, HelpCircle, FileText, AlertTriangle, Eye, ExternalLink, ThumbsUp, Share2, MoreVertical, TrendingDown, Globe, Info, Calendar } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 /* ───────────── HEADER ───────────── */
 const Header = () => (
@@ -216,11 +216,11 @@ const VisitedAlso = () => {
   const [perPage, setPerPage] = useState(getPerPage());
 
   // Update perPage on resize
-  useState(() => {
+  useEffect(() => {
     const handler = () => setPerPage(getPerPage());
     window.addEventListener('resize', handler);
     return () => window.removeEventListener('resize', handler);
-  });
+  }, []);
 
   const totalDots = Math.ceil(companies.length / perPage);
   const currentDot = Math.floor(currentIndex / perPage);
