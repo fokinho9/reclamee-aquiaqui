@@ -38,10 +38,14 @@ const Header = () => (
 
 const CompanyHero = () => (
   <div className="relative">
-    <img src="/images/amazon-banner.jpg" alt="Banner Amazon" className="w-full h-[200px] object-cover" />
+    <div className="w-full h-[280px] max-md:h-[105px]" style={{ backgroundColor: '#EF6509' }}>
+      <img src="/images/amazon-banner.jpg" alt="Banner Amazon" className="w-full h-full object-cover max-w-[1920px] mx-auto" />
+    </div>
     <div className="max-w-[1200px] mx-auto px-4 relative">
-      <div className="flex items-end gap-6 -mt-12">
-        <img src="/images/amazon-logo.jpg" alt="Amazon Logo" className="w-28 h-28 rounded-xl border-4 border-background shadow-lg bg-background" />
+      <div className="flex items-end gap-6 -mt-16">
+        <a href="#" className="flex-none w-[188px] h-[188px] rounded-full bg-[#FAFAFA] shadow-md flex items-center justify-center -mt-8 border-4 border-background overflow-hidden">
+          <img src="/images/amazon-logo.jpg" alt="Amazon Logo" className="w-[170px] h-[170px] rounded-full object-cover" />
+        </a>
         <div className="flex-1 pb-2">
           <div className="flex items-center gap-2">
             <h1 className="text-2xl font-bold text-foreground">Amazon</h1>
@@ -52,16 +56,16 @@ const CompanyHero = () => (
             <span className="flex items-center gap-1"><Eye className="w-3.5 h-3.5" /> + 2.4 milhões de visualizações</span>
           </div>
         </div>
-        <button className="mb-3 px-6 py-2.5 bg-primary text-primary-foreground rounded-full font-semibold text-sm flex items-center gap-2 hover:opacity-90">
+        <button className="mb-3 px-6 py-2.5 rounded-md font-semibold text-sm flex items-center gap-2 text-white hover:opacity-90" style={{ backgroundColor: '#D11F26' }}>
           <MessageSquare className="w-4 h-4" /> Reclamar
         </button>
       </div>
-      <div className="flex items-center gap-3 mt-3 mb-2">
-        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-primary/30 text-sm font-semibold text-primary bg-primary/5">
+      <div className="flex items-center gap-2 mt-3 mb-2">
+        <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold" style={{ backgroundColor: '#F1F9E6', color: '#0A213D' }}>
           <span className="text-lg">😊</span> Ótimo
         </span>
-        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-blue-300 text-sm font-semibold text-blue-600 bg-blue-50">
-          <CheckCircle className="w-4 h-4" /> Verificada
+        <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold" style={{ backgroundColor: '#E5EEFB', color: '#0A213D' }}>
+          <CheckCircle className="w-4 h-4 text-blue-500 fill-blue-500" /> Verificada
         </span>
       </div>
     </div>
