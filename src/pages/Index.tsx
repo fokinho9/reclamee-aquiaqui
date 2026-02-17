@@ -201,11 +201,11 @@ const EvolutionCard = () => (
 /* ───────────── VISITED ALSO (carrossel slick-style) ───────────── */
 const VisitedAlso = () => {
   const companies = [
-    { name: "Mercado Livre", logo: "/images/mercado-livre-logo.png", score: "7.6", rep: "Bom", color: "#4CAF50" },
-    { name: "Total Express", logo: "/images/total-express-logo.jpg", score: "6.7", rep: "Regular", color: "#FFC107" },
-    { name: "Shopee", logo: "/images/shopee-logo.png", score: "7.0", rep: "Bom", color: "#4CAF50" },
-    { name: "Samsung Oficial", logo: "/images/samsung-logo.png", score: "--", rep: "Não recomendada", color: "#F44336" },
-    { name: "Magazine Luiza", logo: "/images/magalu-logo.png", score: "8.3", rep: "RA1000", color: "#2196F3" },
+    { name: "Mercado Livre", logo: "/images/mercado-livre-logo.png", score: "7.6", repImg: "/images/icons/rep-otimo.webp" },
+    { name: "Total Express", logo: "/images/total-express-logo.jpg", score: "6.7", repImg: "/images/icons/rep-regular.png" },
+    { name: "Shopee", logo: "/images/shopee-logo.png", score: "7.0", repImg: "/images/icons/rep-otimo.webp" },
+    { name: "Samsung Oficial", logo: "/images/samsung-logo.png", score: "--", repImg: "/images/icons/rep-nao-recomendada.png" },
+    { name: "Magazine Luiza", logo: "/images/magalu-logo.png", score: "8.3", repImg: "/images/icons/rep-otimo.webp" },
   ];
 
   const itemsPerPage = { mobile: 2, desktop: 2 };
@@ -241,9 +241,7 @@ const VisitedAlso = () => {
         </div>
         <p className="text-[13px] font-semibold truncate px-1" style={{ color: '#1A2B3D' }}>{c.name}</p>
         <div className="flex items-center justify-center gap-1.5 mt-2">
-          <div className="w-[27px] h-[27px] rounded-full flex items-center justify-center" style={{ backgroundColor: c.color }}>
-            <span className="text-white text-[10px] font-bold">{c.rep === "RA1000" ? "★" : c.rep === "Não recomendada" ? "✕" : "●"}</span>
-          </div>
+          <img src={c.repImg} alt="Reputação" className="w-[27px] h-[27px]" />
           <span className="text-[22px] font-bold leading-none" style={{ color: '#1A2B3D' }}>{c.score}</span>
           <span className="text-xs" style={{ color: '#8A9BAE' }}>/10</span>
         </div>
