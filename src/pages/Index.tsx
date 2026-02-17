@@ -1,5 +1,6 @@
 import { Home, Building2, MessageSquare, Tag, HelpCircle, FileText, AlertTriangle, Eye, ExternalLink, ThumbsUp, MoreVertical, Globe, Info, Calendar } from "lucide-react";
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { useSiteContent, useContentValue } from "@/hooks/use-site-content";
 
 /* ───────────── HEADER ───────────── */
@@ -351,8 +352,8 @@ const ComplaintsSection = ({ companyName }: { companyName?: string }) => {
         </div>
         {/* Footer links */}
         <div className="py-4 text-center space-y-2" style={{ borderTop: '1px solid #E8ECF0' }}>
-          <a href="#" className="text-sm font-semibold block" style={{ color: '#2B6CB0' }}>Ler mais</a>
-          <a href="#" className="text-sm font-bold block" style={{ color: '#2B6CB0' }}>Ver todas as reclamações</a>
+          <Link to="/reclamacoes" className="text-sm font-semibold block" style={{ color: '#2B6CB0' }}>Ler mais</Link>
+          <Link to="/reclamacoes" className="text-sm font-bold block" style={{ color: '#2B6CB0' }}>Ver todas as reclamações</Link>
         </div>
       </div>
     </div>
