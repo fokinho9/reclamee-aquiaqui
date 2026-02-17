@@ -8,8 +8,12 @@ export function useAuth() {
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
+    let initialLoad = true;
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (_event, session) => {
+        // Skip setting loading=false on initial event; getSession handles that
+        if (initialLoad) return;
         const u = session?.user ?? null;
         setUser(u);
         if (u) {
@@ -21,11 +25,11 @@ export function useAuth() {
         } else {
           setIsAdmin(false);
         }
-        setLoading(false);
       }
     );
 
     supabase.auth.getSession().then(async ({ data: { session } }) => {
+      initialLoad = false;
       const u = session?.user ?? null;
       setUser(u);
       if (u) {
