@@ -201,14 +201,14 @@ const EvolutionCard = () => (
 /* ───────────── VISITED ALSO (carrossel slick-style) ───────────── */
 const VisitedAlso = () => {
   const companies = [
-    { name: "Mercado Livre", logo: "/images/mercado-livre-logo.png", score: "7.6", rep: "Bom", repImg: "/images/reputation-otimo.webp" },
-    { name: "Total Express", logo: "/images/total-express-logo.jpg", score: "6.7", rep: "Regular", repImg: "/images/reputation-otimo.webp" },
-    { name: "Shopee", logo: "/images/shopee-logo.png", score: "7.0", rep: "Bom", repImg: "/images/reputation-otimo.webp" },
-    { name: "Samsung Oficial", logo: "/images/samsung-logo.png", score: "--", rep: "Não recomendada", repImg: "/images/reputation-otimo.webp" },
-    { name: "Magazine Luiza", logo: "/images/magalu-logo.png", score: "8.3", rep: "RA1000", repImg: "/images/reputation-otimo.webp" },
+    { name: "Mercado Livre", logo: "/images/mercado-livre-logo.png", score: "7.6", rep: "Bom", color: "#4CAF50" },
+    { name: "Total Express", logo: "/images/total-express-logo.jpg", score: "6.7", rep: "Regular", color: "#FFC107" },
+    { name: "Shopee", logo: "/images/shopee-logo.png", score: "7.0", rep: "Bom", color: "#4CAF50" },
+    { name: "Samsung Oficial", logo: "/images/samsung-logo.png", score: "--", rep: "Não recomendada", color: "#F44336" },
+    { name: "Magazine Luiza", logo: "/images/magalu-logo.png", score: "8.3", rep: "RA1000", color: "#2196F3" },
   ];
 
-  const itemsPerPage = { mobile: 2, desktop: 3 };
+  const itemsPerPage = { mobile: 2, desktop: 2 };
   const [currentIndex, setCurrentIndex] = useState(0);
 
   // Calculate visible items based on screen (we'll use mobile=2, desktop=3)
@@ -241,7 +241,9 @@ const VisitedAlso = () => {
         </div>
         <p className="text-[13px] font-semibold truncate px-1" style={{ color: '#1A2B3D' }}>{c.name}</p>
         <div className="flex items-center justify-center gap-1.5 mt-2">
-          <img src={c.repImg} alt={c.rep} className="w-[27px] h-[27px]" />
+          <div className="w-[27px] h-[27px] rounded-full flex items-center justify-center" style={{ backgroundColor: c.color }}>
+            <span className="text-white text-[10px] font-bold">{c.rep === "RA1000" ? "★" : c.rep === "Não recomendada" ? "✕" : "●"}</span>
+          </div>
           <span className="text-[22px] font-bold leading-none" style={{ color: '#1A2B3D' }}>{c.score}</span>
           <span className="text-xs" style={{ color: '#8A9BAE' }}>/10</span>
         </div>
@@ -441,7 +443,7 @@ const Sidebar = () => (
   <aside className="space-y-5">
     <div>
       <h3 className="text-[17px] font-bold mb-3 lg:hidden" style={{ color: '#1A2B3D' }}>Veja mais informações sobre Amazon</h3>
-      <div className="rounded-xl p-4" style={{ border: '1px solid #E8ECF0' }}>
+      <div className="rounded-xl p-4 bg-background" style={{ border: '1px solid #E8ECF0' }}>
         <h4 className="font-bold text-sm mb-2" style={{ color: '#1A2B3D' }}>Sobre</h4>
         <p className="text-[13px] leading-relaxed mb-3" style={{ color: '#5A6872' }}>A Amazon.com.br oferece milhares de ofertas e produtos em diversas categorias, que incluem itens vendidos e entregues pela Amazon ou por vendedores parceiros.</p>
         <p className="text-[13px]" style={{ color: '#1A2B3D' }}><strong>CNPJ:</strong> <span style={{ color: '#2B6CB0' }}>15.436.940/0001-03</span></p>
@@ -452,7 +454,7 @@ const Sidebar = () => (
       </div>
     </div>
 
-    <div className="rounded-xl p-4" style={{ border: '1px solid #E8ECF0' }}>
+    <div className="rounded-xl p-4 bg-background" style={{ border: '1px solid #E8ECF0' }}>
       <h4 className="font-bold text-sm mb-3" style={{ color: '#1A2B3D' }}>Contatos da empresa</h4>
       <p className="text-xs mb-2" style={{ color: '#8A9BAE' }}>Site</p>
       {/* Botões azul claro igual ao print */}
@@ -470,7 +472,7 @@ const Sidebar = () => (
     </div>
 
     {/* Posição card */}
-    <div className="rounded-xl p-4" style={{ border: '1px solid #E8ECF0' }}>
+    <div className="rounded-xl p-4 bg-background" style={{ border: '1px solid #E8ECF0' }}>
       <p className="text-xs mb-2" style={{ color: '#8A9BAE' }}>Qual a posição de Amazon ?</p>
       <div className="flex items-center gap-3">
         <span className="text-3xl font-bold" style={{ color: '#1A2B3D' }}>12º</span>
