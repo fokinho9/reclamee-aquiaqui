@@ -198,68 +198,106 @@ const EvolutionCard = () => (
   </div>
 );
 
-/* ───────────── VISITED ALSO (carrossel com setas e dots) ───────────── */
+/* ───────────── VISITED ALSO (carrossel slick-style) ───────────── */
 const VisitedAlso = () => {
-  const [page, setPage] = useState(0);
   const companies = [
-    { name: "Mercado Livre", logo: "/images/mercado-livre-logo.png", score: "7.6" },
-    { name: "Total Express", logo: "/images/total-express-logo.jpg", score: "6.7" },
-    { name: "Shopee", logo: "/images/shopee-logo.png", score: "7.0" },
-    { name: "Samsung Oficial", logo: "/images/samsung-logo.png", score: "--" },
-    { name: "Magazine Luiza", logo: "/images/magalu-logo.png", score: "8.3" },
+    { name: "Mercado Livre", logo: "/images/mercado-livre-logo.png", score: "7.6", rep: "Bom", repImg: "/images/reputation-otimo.webp" },
+    { name: "Total Express", logo: "/images/total-express-logo.jpg", score: "6.7", rep: "Regular", repImg: "/images/reputation-otimo.webp" },
+    { name: "Shopee", logo: "/images/shopee-logo.png", score: "7.0", rep: "Bom", repImg: "/images/reputation-otimo.webp" },
+    { name: "Samsung Oficial", logo: "/images/samsung-logo.png", score: "--", rep: "Não recomendada", repImg: "/images/reputation-otimo.webp" },
+    { name: "Magazine Luiza", logo: "/images/magalu-logo.png", score: "8.3", rep: "RA1000", repImg: "/images/reputation-otimo.webp" },
   ];
-  const perPage = 2;
-  const totalPages = Math.ceil(companies.length / perPage);
-  const visible = companies.slice(page * perPage, page * perPage + perPage);
+
+  const itemsPerPage = { mobile: 2, desktop: 3 };
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  // Calculate visible items based on screen (we'll use mobile=2, desktop=3)
+  const getPerPage = () => (typeof window !== 'undefined' && window.innerWidth >= 768 ? itemsPerPage.desktop : itemsPerPage.mobile);
+  const [perPage, setPerPage] = useState(getPerPage());
+
+  // Update perPage on resize
+  useState(() => {
+    const handler = () => setPerPage(getPerPage());
+    window.addEventListener('resize', handler);
+    return () => window.removeEventListener('resize', handler);
+  });
+
+  const totalDots = Math.ceil(companies.length / perPage);
+  const currentDot = Math.floor(currentIndex / perPage);
+  const isFirst = currentIndex === 0;
+  const isLast = currentIndex + perPage >= companies.length;
+
+  const prev = () => setCurrentIndex(i => Math.max(0, i - perPage));
+  const next = () => setCurrentIndex(i => Math.min(companies.length - perPage, i + perPage));
+  const goToDot = (dot: number) => setCurrentIndex(Math.min(dot * perPage, companies.length - perPage));
+
+  const visibleCompanies = companies.slice(currentIndex, currentIndex + perPage);
+
+  const CompanyCard = ({ c }: { c: typeof companies[0] }) => (
+    <a href="#" className="block flex-1 min-w-0" style={{ maxWidth: `${100 / perPage}%` }}>
+      <div className="bg-background rounded-2xl px-3 py-5 text-center mx-1.5 h-full" style={{ border: '1px solid #E8ECF0', boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}>
+        <div className="w-[72px] h-[72px] mx-auto mb-3 rounded-full overflow-hidden" style={{ border: '1px solid #E8ECF0' }}>
+          <img src={c.logo} alt={c.name} className="w-full h-full object-cover" />
+        </div>
+        <p className="text-[13px] font-semibold truncate px-1" style={{ color: '#1A2B3D' }}>{c.name}</p>
+        <div className="flex items-center justify-center gap-1.5 mt-2">
+          <img src={c.repImg} alt={c.rep} className="w-[27px] h-[27px]" />
+          <span className="text-[22px] font-bold leading-none" style={{ color: '#1A2B3D' }}>{c.score}</span>
+          <span className="text-xs" style={{ color: '#8A9BAE' }}>/10</span>
+        </div>
+      </div>
+    </a>
+  );
 
   return (
     <div className="mt-8">
       <h2 className="text-[17px] font-bold mb-4" style={{ color: '#1A2B3D' }}>Quem visitou Amazon também visitou</h2>
-      {/* Mobile carousel */}
-      <div className="md:hidden relative">
-        <div className="flex gap-3">
-          {visible.map(c => (
-            <div key={c.name} className="flex-1 bg-background rounded-2xl p-5 text-center shadow-sm" style={{ border: '1px solid #E8ECF0' }}>
-              <img src={c.logo} alt={c.name} className="w-16 h-16 rounded-full mx-auto mb-3 object-cover" />
-              <p className="text-sm font-semibold" style={{ color: '#1A2B3D' }}>{c.name}</p>
-              <div className="flex items-center justify-center gap-1.5 mt-2">
-                <img src="/images/reputation-otimo.webp" alt="" className="w-5 h-5" />
-                <span className="text-xl font-bold" style={{ color: '#1A2B3D' }}>{c.score}</span>
-                <span className="text-xs" style={{ color: '#8A9BAE' }}>/10</span>
-              </div>
-            </div>
-          ))}
+      <div className="relative">
+        {/* Seta Prev */}
+        <button
+          onClick={prev}
+          disabled={isFirst}
+          className="absolute left-[-16px] top-[calc(50%-24px)] z-10 w-9 h-9 rounded-full bg-background flex items-center justify-center transition-opacity"
+          style={{
+            border: '1px solid #E0E4E8',
+            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+            opacity: isFirst ? 0.35 : 1,
+            cursor: isFirst ? 'default' : 'pointer',
+          }}
+        >
+          <svg className="w-5 h-5" viewBox="0 0 24 24" fill="#5A6872"><path d="M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z" /></svg>
+        </button>
+
+        {/* Cards */}
+        <div className="flex mx-2">
+          {visibleCompanies.map(c => <CompanyCard key={c.name} c={c} />)}
         </div>
-        {/* Setas */}
-        {page > 0 && (
-          <button onClick={() => setPage(p => p - 1)} className="absolute left-[-12px] top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-background shadow-md flex items-center justify-center" style={{ border: '1px solid #E8ECF0' }}>
-            <ChevronLeft className="w-4 h-4" style={{ color: '#5A6872' }} />
-          </button>
-        )}
-        {page < totalPages - 1 && (
-          <button onClick={() => setPage(p => p + 1)} className="absolute right-[-12px] top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-background shadow-md flex items-center justify-center" style={{ border: '1px solid #E8ECF0' }}>
-            <ChevronRight className="w-4 h-4" style={{ color: '#5A6872' }} />
-          </button>
-        )}
-        {/* Dots */}
-        <div className="flex justify-center gap-2 mt-4">
-          {Array.from({ length: totalPages }).map((_, i) => (
-            <button key={i} onClick={() => setPage(i)} className="w-2.5 h-2.5 rounded-full transition-colors" style={{ backgroundColor: i === page ? '#1B8B4F' : '#D1D5DB' }} />
-          ))}
-        </div>
+
+        {/* Seta Next */}
+        <button
+          onClick={next}
+          disabled={isLast}
+          className="absolute right-[-16px] top-[calc(50%-24px)] z-10 w-9 h-9 rounded-full bg-background flex items-center justify-center transition-opacity"
+          style={{
+            border: '1px solid #E0E4E8',
+            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+            opacity: isLast ? 0.35 : 1,
+            cursor: isLast ? 'default' : 'pointer',
+          }}
+        >
+          <svg className="w-5 h-5" viewBox="0 0 24 24" fill="#5A6872"><path d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z" /></svg>
+        </button>
       </div>
-      {/* Desktop grid */}
-      <div className="hidden md:grid grid-cols-5 gap-3">
-        {companies.map(c => (
-          <div key={c.name} className="bg-background rounded-2xl p-4 text-center shadow-sm cursor-pointer hover:shadow-md transition-shadow" style={{ border: '1px solid #E8ECF0' }}>
-            <img src={c.logo} alt={c.name} className="w-14 h-14 rounded-full mx-auto mb-2 object-cover" />
-            <p className="text-sm font-semibold" style={{ color: '#1A2B3D' }}>{c.name}</p>
-            <div className="flex items-center justify-center gap-1.5 mt-1">
-              <img src="/images/reputation-otimo.webp" alt="" className="w-5 h-5" />
-              <span className="text-lg font-bold" style={{ color: '#1A2B3D' }}>{c.score}</span>
-              <span className="text-xs" style={{ color: '#8A9BAE' }}>/10</span>
-            </div>
-          </div>
+
+      {/* Dots de paginação */}
+      <div className="flex justify-center gap-2 mt-4">
+        {Array.from({ length: totalDots }).map((_, i) => (
+          <button
+            key={i}
+            onClick={() => goToDot(i)}
+            className="w-2.5 h-2.5 rounded-full transition-colors"
+            style={{ backgroundColor: i === currentDot ? '#1B8B4F' : '#D1D5DB' }}
+          />
         ))}
       </div>
     </div>
