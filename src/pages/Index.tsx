@@ -122,7 +122,6 @@ const TrustCard = () => (
       <p className="font-bold text-[15px]" style={{ color: '#1A2B3D' }}>Empresa verificada</p>
     </div>
     <p className="text-[13px] leading-relaxed mb-3" style={{ color: '#5A6872' }}>Essa empresa é verificada e possui o selo de confiança do Reclame AQUI.</p>
-    <a href="#" className="text-[13px] font-bold" style={{ color: '#2B6CB0' }}>Saiba mais</a>
   </div>
 );
 
@@ -137,7 +136,6 @@ const ReputationCard = () => (
       </div>
     </div>
     <p className="text-[13px] leading-relaxed mb-3" style={{ color: '#5A6872' }}>O consumidor avaliou o atendimento dessa empresa como ÓTIMO. A nota média nos últimos 6 meses é <strong>8.2/10.</strong></p>
-    <a href="#" className="text-[13px] font-bold" style={{ color: '#2B6CB0' }}>Saiba mais</a>
   </div>
 );
 
@@ -812,7 +810,6 @@ const Index = () => {
                       </div>
                     </div>
                     <p className="text-[13px] leading-relaxed mb-3" style={{ color: '#5A6872' }} dangerouslySetInnerHTML={{ __html: cv('reputation_description', '') }} />
-                    <a href="#" className="text-[13px] font-bold" style={{ color: '#2B6CB0' }}>Saiba mais</a>
                   </div>
                 </div>
                 <div className="flex-none w-[75%]">
@@ -823,7 +820,6 @@ const Index = () => {
                       <p className="font-bold text-[15px]" style={{ color: '#1A2B3D' }}>Empresa verificada</p>
                     </div>
                     <p className="text-[13px] leading-relaxed mb-3" style={{ color: '#5A6872' }}>{cv('trust_description', 'Essa empresa é verificada e possui o selo de confiança do Reclame AQUI.')}</p>
-                    <a href="#" className="text-[13px] font-bold" style={{ color: '#2B6CB0' }}>Saiba mais</a>
                   </div>
                 </div>
               </div>
@@ -877,7 +873,6 @@ const Index = () => {
                       <p className="font-bold text-[15px]" style={{ color: '#1A2B3D' }}>Empresa verificada</p>
                     </div>
                     <p className="text-[13px] leading-relaxed mb-3" style={{ color: '#5A6872' }}>{cv('trust_description', 'Essa empresa é verificada e possui o selo de confiança do Reclame AQUI.')}</p>
-                    <a href="#" className="text-[13px] font-bold" style={{ color: '#2B6CB0' }}>Saiba mais</a>
                   </div>
                   <div className="rounded-xl p-4 shadow-sm" style={{ background: '#EDF7E1' }}>
                     <p className="text-xs font-medium mb-3" style={{ color: '#5A6872' }}>Qual a reputação de {cv('company_name', 'Amazon')}?</p>
@@ -889,7 +884,7 @@ const Index = () => {
                       </div>
                     </div>
                     <p className="text-[13px] leading-relaxed mb-3" style={{ color: '#5A6872' }} dangerouslySetInnerHTML={{ __html: cv('reputation_description', '') }} />
-                    <a href="#" className="text-[13px] font-bold" style={{ color: '#2B6CB0' }}>Saiba mais</a>
+                    
                   </div>
                 </div>
                 <div className="mt-6"><PerformanceCard content={content} cv={cv} /></div>
