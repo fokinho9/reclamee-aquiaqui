@@ -1,4 +1,4 @@
-import { Search, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, Home, Building2, MessageSquare, Tag, HelpCircle, FileText, AlertTriangle, Eye, ExternalLink, ThumbsUp, Share2, MoreVertical, TrendingDown, Globe, Info, Calendar } from "lucide-react";
+import { Home, Building2, MessageSquare, Tag, HelpCircle, FileText, AlertTriangle, Eye, ExternalLink, ThumbsUp, Share2, MoreVertical, Globe, Info, Calendar } from "lucide-react";
 import { useState, useEffect } from "react";
 
 /* ───────────── HEADER ───────────── */
@@ -13,23 +13,23 @@ const Header = () => (
       </div>
       <div className="flex-1 max-w-md mx-8 hidden md:block">
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <img src="/images/icons/search.svg" alt="" className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 opacity-50" />
           <input type="text" placeholder="O que você procura?" className="w-full pl-10 pr-4 py-2 border border-border rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
         </div>
       </div>
-      <button className="md:hidden p-2 border border-border rounded-lg"><Search className="w-5 h-5 text-foreground" /></button>
+      <button className="md:hidden p-2 border border-border rounded-lg"><img src="/images/icons/search.svg" alt="" className="w-5 h-5" /></button>
       <div className="flex items-center gap-2 md:gap-3">
         <button className="px-3 md:px-4 py-1.5 md:py-2 text-xs md:text-sm font-semibold border border-primary rounded-full text-primary hover:bg-primary/5">Entrar</button>
         <button className="px-3 md:px-4 py-1.5 md:py-2 text-xs md:text-sm font-semibold bg-primary text-primary-foreground rounded-full hover:opacity-90">Criar conta</button>
       </div>
     </div>
     <nav className="max-w-[1286px] mx-auto px-6 hidden md:flex items-center gap-8 py-2 text-sm font-semibold text-foreground">
-      <span className="flex items-center gap-1 cursor-pointer hover:text-primary">Para você <ChevronDown className="w-3 h-3" /></span>
-      <span className="flex items-center gap-1 cursor-pointer hover:text-primary">Melhores empresas <ChevronDown className="w-3 h-3" /></span>
+      <span className="flex items-center gap-1 cursor-pointer hover:text-primary">Para você <img src="/images/icons/chevron-down-official.svg" alt="" className="w-3 h-3" /></span>
+      <span className="flex items-center gap-1 cursor-pointer hover:text-primary">Melhores empresas <img src="/images/icons/chevron-down-official.svg" alt="" className="w-3 h-3" /></span>
       <span className="cursor-pointer hover:text-primary">Detector de Site Confiável</span>
       <span className="cursor-pointer hover:text-primary">Compare</span>
       <span className="cursor-pointer hover:text-primary">Descontos</span>
-      <span className="flex items-center gap-1 cursor-pointer hover:text-primary">Para empresas <ChevronDown className="w-3 h-3" /></span>
+      <span className="flex items-center gap-1 cursor-pointer hover:text-primary">Para empresas <img src="/images/icons/chevron-down-official.svg" alt="" className="w-3 h-3" /></span>
     </nav>
   </header>
 );
@@ -189,10 +189,10 @@ const EvolutionCard = () => (
   <div className="bg-background rounded-xl border border-border p-4 mt-4">
     <div className="flex items-center justify-between">
       <h3 className="text-[15px] font-bold" style={{ color: '#1A2B3D' }}>Evolução</h3>
-      <ChevronDown className="w-5 h-5" style={{ color: '#8A9BAE' }} />
+      <img src="/images/icons/chevron-down-official.svg" alt="" className="w-5 h-5" style={{ opacity: 0.5 }} />
     </div>
     <div className="flex items-center gap-3 mt-3">
-      <TrendingDown className="w-5 h-5 flex-none" style={{ color: '#2B6CB0' }} />
+      <img src="/images/icons/chart-trending.svg" alt="" className="w-5 h-5 flex-none" />
       <p className="text-[13px]" style={{ color: '#5A6872' }}>Confira a evolução de Amazon nos últimos 12 meses</p>
     </div>
   </div>
@@ -381,7 +381,7 @@ const FAQSection = () => {
             </h2>
             <p className="text-xs text-white/70 mt-0.5">Veja se temos a resposta para seu problema</p>
           </div>
-          <ChevronUp className="w-5 h-5 text-white/60" />
+          <img src="/images/icons/chevron-up.svg" alt="" className="w-5 h-5 opacity-60 invert" />
         </div>
         <div className="divide-y" style={{ borderColor: '#E8ECF0' }}>
           {faqs.map((f, i) => (
@@ -418,7 +418,7 @@ const ProblemsSection = () => {
             <div key={i} className="px-5 py-3">
               <div className="flex items-center justify-between mb-1.5">
                 <span className="text-xs" style={{ color: '#8A9BAE' }}>{p.category}</span>
-                <ChevronDown className="w-4 h-4" style={{ color: '#8A9BAE' }} />
+                <img src="/images/icons/chevron-down-official.svg" alt="" className="w-4 h-4" style={{ opacity: 0.5 }} />
               </div>
               <div className="flex items-baseline gap-3">
                 <span className="text-2xl font-bold" style={{ color: '#2B6CB0' }}>{p.pct}</span>
@@ -507,7 +507,7 @@ const PostCard = ({ title, image }: { title: string; image: string }) => (
       <img src={image} alt={title} className="w-full h-40 object-cover" />
       <div className="absolute bottom-3 left-3">
         <a href="#" className="inline-flex items-center gap-1 px-4 py-2 rounded-md text-xs font-bold text-white" style={{ backgroundColor: '#2B6CB0' }}>
-          Saiba mais <ChevronRight className="w-3 h-3" />
+          Saiba mais <img src="/images/icons/chevron-right.svg" alt="" className="w-3 h-3 invert" />
         </a>
       </div>
     </div>
