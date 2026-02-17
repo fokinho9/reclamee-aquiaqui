@@ -146,19 +146,40 @@ const ReputationCard = () => (
 const PerformanceCard = ({ content, cv }: { content?: any[]; cv: (key: string, fallback: string) => string }) => {
   const [period, setPeriod] = useState("6 meses");
   const periods = ["6 meses", "12 meses", "2025", "2024", "Geral"];
-  const stats = [
-    { icon: "/images/icons/bullhorn.svg", text: <>Esta empresa recebeu <strong>{cv('stat_reclamacoes', '106194')} reclamações.</strong></> },
-    { icon: "/images/icons/check-circle.svg", text: <>Respondeu <strong>{cv('stat_respondidas_pct', '88.4%')} das reclamações</strong> recebidas.</> },
-    { icon: "/images/icons/comment-question.svg", text: <>Há <strong>{cv('stat_aguardando', '10690')} reclamações</strong> aguardando resposta.</> },
-    { icon: "/images/icons/star-box.svg", text: <>Há <strong>{cv('stat_avaliadas', '46196')} reclamações</strong> avaliadas, e a nota média dos consumidores é <strong>{cv('stat_nota_media', '7.36')}.</strong></> },
-    { icon: "/images/icons/handshake.svg", text: <>Dos que avaliaram, <strong>{cv('stat_voltariam_pct', '80%')} voltariam a fazer negócio.</strong></> },
-    { icon: "/images/icons/comment-check.svg", text: <>A empresa resolveu <strong>{cv('stat_resolvidas_pct', '88%')} das reclamações recebidas.</strong></> },
-    { icon: "/images/icons/timer.svg", text: <>O tempo médio de resposta é <strong>{cv('stat_tempo_resposta', '19 dias e 13 horas')}.</strong></> },
-  ];
+
+  const statsByPeriod: Record<string, { icon: string; text: React.ReactNode }[]> = {
+    "6 meses": [
+      { icon: "/images/icons/bullhorn.svg", text: <>Esta empresa recebeu <strong style={{ color: '#1F69C1' }}>{cv('stat_reclamacoes', '106194')} reclamações.</strong></> },
+      { icon: "/images/icons/comment-check.svg", text: <>Respondeu <strong style={{ color: '#1F69C1' }}>{cv('stat_respondidas_pct', '88.4%')} das reclamações</strong> recebidas.</> },
+      { icon: "/images/icons/comment-question.svg", text: <>Há <strong style={{ color: '#1F69C1' }}>{cv('stat_aguardando', '10690')} reclamações</strong> aguardando resposta.</> },
+      { icon: "/images/icons/star-box.svg", text: <>Há <strong style={{ color: '#1F69C1' }}>{cv('stat_avaliadas', '46196')} reclamações</strong> avaliadas, e a nota média dos consumidores é <strong style={{ color: '#1F69C1' }}>{cv('stat_nota_media', '7.36')}.</strong></> },
+      { icon: "/images/icons/handshake.svg", text: <>Dos que avaliaram, <strong style={{ color: '#1F69C1' }}>{cv('stat_voltariam_pct', '80%')} voltariam a fazer negócio.</strong></> },
+      { icon: "/images/icons/check-circle.svg", text: <>A empresa resolveu <strong style={{ color: '#1F69C1' }}>{cv('stat_resolvidas_pct', '88%')} das reclamações recebidas.</strong></> },
+      { icon: "/images/icons/timer.svg", text: <>O tempo médio de resposta é <strong style={{ color: '#1F69C1' }}>{cv('stat_tempo_resposta', '19 dias e 13 horas')}.</strong></> },
+    ],
+    "12 meses": [
+      { icon: "/images/icons/bullhorn.svg", text: <>Esta empresa recebeu <strong style={{ color: '#1F69C1' }}>184117 reclamações.</strong></> },
+      { icon: "/images/icons/comment-check.svg", text: <>Respondeu <strong style={{ color: '#1F69C1' }}>91.7% das reclamações</strong> recebidas.</> },
+      { icon: "/images/icons/comment-question.svg", text: <>Há <strong style={{ color: '#1F69C1' }}>12658 reclamações</strong> aguardando resposta.</> },
+      { icon: "/images/icons/star-box.svg", text: <>Há <strong style={{ color: '#1F69C1' }}>89336 reclamações</strong> avaliadas, e a nota média dos consumidores é <strong style={{ color: '#1F69C1' }}>7.52.</strong></> },
+      { icon: "/images/icons/handshake.svg", text: <>Dos que avaliaram, <strong style={{ color: '#1F69C1' }}>81.4% voltariam a fazer negócio.</strong></> },
+      { icon: "/images/icons/check-circle.svg", text: <>A empresa resolveu <strong style={{ color: '#1F69C1' }}>88.7% das reclamações recebidas.</strong></> },
+      { icon: "/images/icons/timer.svg", text: <>O tempo médio de resposta é <strong style={{ color: '#1F69C1' }}>17 dias.</strong></> },
+    ],
+  };
+
+  const stats = statsByPeriod[period] || statsByPeriod["6 meses"];
+  const periodDates: Record<string, string> = {
+    "6 meses": "01/08/2025 a 31/01/2026",
+    "12 meses": "01/02/2025 a 31/01/2026",
+    "2025": "01/01/2025 a 31/12/2025",
+    "2024": "01/01/2024 a 31/12/2024",
+    "Geral": "Todo o período",
+  };
+
   return (
     <div className="bg-background rounded-xl border border-border p-5">
       <h3 className="text-[17px] font-bold mb-4" style={{ color: '#1A2B3D' }}>Desempenho de {cv('company_name', 'Amazon')}</h3>
-      {/* Tabs como texto underline - igual ao print */}
       <div className="flex gap-4 border-b border-border mb-5">
         {periods.map(p => (
           <button key={p} onClick={() => setPeriod(p)}
@@ -177,7 +198,7 @@ const PerformanceCard = ({ content, cv }: { content?: any[]; cv: (key: string, f
           </div>
         ))}
       </div>
-      <p className="text-xs mt-5 pt-4 border-t border-border" style={{ color: '#8A9BAE' }}>Os dados correspondem ao período de 01/08/2025 a 31/01/2026</p>
+      <p className="text-xs mt-5 pt-4 border-t border-border" style={{ color: '#8A9BAE' }}>Os dados correspondem ao período de {periodDates[period]}</p>
       <a href="#" className="text-xs font-bold mt-2 inline-block" style={{ color: '#2B6CB0' }}>Entenda como calculamos a reputação</a>
     </div>
   );
