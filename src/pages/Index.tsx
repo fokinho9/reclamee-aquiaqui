@@ -88,8 +88,7 @@ const CompanyHero = () => (
 );
 
 /* ───────────── TAB NAV ───────────── */
-const TabNav = () => {
-  const [active, setActive] = useState("Home");
+const TabNav = ({ activeTab, onTabChange }: { activeTab: string; onTabChange: (tab: string) => void }) => {
   const allTabs = [
     { icon: Home, label: "Home" },
     { icon: Building2, label: "Sobre" },
@@ -103,8 +102,8 @@ const TabNav = () => {
     <div className="border-b border-border bg-background sticky top-0 z-10">
       <div className="max-w-[1286px] mx-auto px-4 md:px-6 flex gap-1 overflow-x-auto scrollbar-hide">
         {allTabs.map(({ icon: Icon, label }, idx) => (
-          <button key={label} onClick={() => setActive(label)}
-            className={`flex items-center gap-1.5 px-3 md:px-4 py-3 text-xs md:text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${active === label ? "border-primary text-primary" : "border-transparent text-muted-foreground hover:text-foreground"} ${idx > 2 ? "hidden md:flex" : ""}`}>
+          <button key={label} onClick={() => onTabChange(label)}
+            className={`flex items-center gap-1.5 px-3 md:px-4 py-3 text-xs md:text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${activeTab === label ? "border-primary text-primary" : "border-transparent text-muted-foreground hover:text-foreground"} ${idx > 2 ? "hidden md:flex" : ""}`}>
             <Icon className="w-4 h-4" /> {label}
           </button>
         ))}
@@ -722,11 +721,23 @@ const Footer = () => {
 /* ───────────── MAIN PAGE ───────────── */
 const Index = () => {
   const { data: content } = useSiteContent();
+  const [activeTab, setActiveTab] = useState("Home");
   const cv = (key: string, fallback: string) => {
     if (!content) return fallback;
     const item = content.find((i) => i.content_key === key);
     return item?.content_value ?? fallback;
   };
+
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab);
+    if (tab === "Home") {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  /* Helper: which sections to show based on active tab */
+  const showAll = activeTab === "Home";
+  const showSection = (name: string) => showAll || activeTab === name;
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#F2F4F6' }}>
@@ -781,105 +792,143 @@ const Index = () => {
           </button>
         </div>
       </div>
-      <TabNav />
+      <TabNav activeTab={activeTab} onTabChange={handleTabChange} />
 
       <main className="max-w-[1286px] mx-auto px-4 md:px-6 py-6">
         {/* Mobile */}
         <div className="lg:hidden">
-          <h2 className="text-[17px] font-bold mb-4" style={{ color: '#1A2B3D' }}>{cv('company_name', 'Amazon')} é confiável?</h2>
-          <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
-            <div className="flex-none w-[75%]">
-              <div className="rounded-xl p-4 shadow-sm min-w-[220px] md:min-w-0" style={{ background: '#EDF7E1' }}>
-                <p className="text-xs font-medium mb-3" style={{ color: '#5A6872' }}>Qual a reputação de {cv('company_name', 'Amazon')}?</p>
-                <div className="flex items-center gap-3 mb-2">
-                  <img src="/images/reputation-otimo.webp" alt="Ótimo" className="w-11 h-11" />
-                  <div>
-                    <p className="text-xs" style={{ color: '#5A6872' }}>Reputação</p>
-                    <p className="font-extrabold text-base uppercase" style={{ color: '#1A2B3D' }}>{cv('reputation_label', 'ÓTIMO')}</p>
+          {showSection("Sobre") && (
+            <>
+              <h2 className="text-[17px] font-bold mb-4" style={{ color: '#1A2B3D' }}>{cv('company_name', 'Amazon')} é confiável?</h2>
+              <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
+                <div className="flex-none w-[75%]">
+                  <div className="rounded-xl p-4 shadow-sm min-w-[220px] md:min-w-0" style={{ background: '#EDF7E1' }}>
+                    <p className="text-xs font-medium mb-3" style={{ color: '#5A6872' }}>Qual a reputação de {cv('company_name', 'Amazon')}?</p>
+                    <div className="flex items-center gap-3 mb-2">
+                      <img src="/images/reputation-otimo.webp" alt="Ótimo" className="w-11 h-11" />
+                      <div>
+                        <p className="text-xs" style={{ color: '#5A6872' }}>Reputação</p>
+                        <p className="font-extrabold text-base uppercase" style={{ color: '#1A2B3D' }}>{cv('reputation_label', 'ÓTIMO')}</p>
+                      </div>
+                    </div>
+                    <p className="text-[13px] leading-relaxed mb-3" style={{ color: '#5A6872' }} dangerouslySetInnerHTML={{ __html: cv('reputation_description', '') }} />
+                    <a href="#" className="text-[13px] font-bold" style={{ color: '#2B6CB0' }}>Saiba mais</a>
                   </div>
                 </div>
-                <p className="text-[13px] leading-relaxed mb-3" style={{ color: '#5A6872' }} dangerouslySetInnerHTML={{ __html: cv('reputation_description', '') }} />
-                <a href="#" className="text-[13px] font-bold" style={{ color: '#2B6CB0' }}>Saiba mais</a>
-              </div>
-            </div>
-            <div className="flex-none w-[75%]">
-              <div className="rounded-xl p-4 shadow-sm min-w-[220px] md:min-w-0" style={{ background: '#EDF7E1' }}>
-                <p className="text-xs font-medium mb-3" style={{ color: '#5A6872' }}>{cv('company_name', 'Amazon')} existe?</p>
-                <div className="flex items-center gap-3 mb-2">
-                  <img src="/images/seal-ra-verified.png" alt="Verificada" className="w-9 h-9" />
-                  <p className="font-bold text-[15px]" style={{ color: '#1A2B3D' }}>Empresa verificada</p>
+                <div className="flex-none w-[75%]">
+                  <div className="rounded-xl p-4 shadow-sm min-w-[220px] md:min-w-0" style={{ background: '#EDF7E1' }}>
+                    <p className="text-xs font-medium mb-3" style={{ color: '#5A6872' }}>{cv('company_name', 'Amazon')} existe?</p>
+                    <div className="flex items-center gap-3 mb-2">
+                      <img src="/images/seal-ra-verified.png" alt="Verificada" className="w-9 h-9" />
+                      <p className="font-bold text-[15px]" style={{ color: '#1A2B3D' }}>Empresa verificada</p>
+                    </div>
+                    <p className="text-[13px] leading-relaxed mb-3" style={{ color: '#5A6872' }}>{cv('trust_description', 'Essa empresa é verificada e possui o selo de confiança do Reclame AQUI.')}</p>
+                    <a href="#" className="text-[13px] font-bold" style={{ color: '#2B6CB0' }}>Saiba mais</a>
+                  </div>
                 </div>
-                <p className="text-[13px] leading-relaxed mb-3" style={{ color: '#5A6872' }}>{cv('trust_description', 'Essa empresa é verificada e possui o selo de confiança do Reclame AQUI.')}</p>
-                <a href="#" className="text-[13px] font-bold" style={{ color: '#2B6CB0' }}>Saiba mais</a>
+              </div>
+              <div className="mt-6"><PerformanceCard content={content} cv={cv} /></div>
+              <EvolutionCard companyName={cv('company_name', 'Amazon')} />
+            </>
+          )}
+          {showSection("Sobre") && (
+            <div className="mt-6">
+              <h3 className="text-[17px] font-bold mb-3" style={{ color: '#1A2B3D' }}>Veja mais informações sobre {cv('company_name', 'Amazon')}</h3>
+              <div className="rounded-xl overflow-hidden mb-4" style={{ border: '1px solid #E8ECF0' }}>
+                <iframe width="100%" height="200" src={cv('youtube_url', 'https://www.youtube.com/embed/MVaaQ8Qu7Iw')} title="Vídeo" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen className="w-full" />
               </div>
             </div>
-          </div>
-          <div className="mt-6"><PerformanceCard content={content} cv={cv} /></div>
-          <EvolutionCard companyName={cv('company_name', 'Amazon')} />
-          <div className="mt-6">
-            <h3 className="text-[17px] font-bold mb-3" style={{ color: '#1A2B3D' }}>Veja mais informações sobre {cv('company_name', 'Amazon')}</h3>
-            <div className="rounded-xl overflow-hidden mb-4" style={{ border: '1px solid #E8ECF0' }}>
-              <iframe width="100%" height="200" src={cv('youtube_url', 'https://www.youtube.com/embed/MVaaQ8Qu7Iw')} title="Vídeo" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen className="w-full" />
-            </div>
+          )}
+          {showSection("Posts") && (
             <div className="mb-4">
               <h3 className="text-[15px] font-bold mb-3" style={{ color: '#1A2B3D' }}>O que {cv('company_name', 'Amazon')} está postando</h3>
               <PostCard title="Proteja-se contra fraudes e golpes por mensagens" image="/images/post-3.jpg" />
               <a href="#" className="text-sm font-bold mt-3 inline-block" style={{ color: '#2B6CB0' }}>Ver todos os posts</a>
             </div>
-            <ComplaintsSection companyName={cv('company_name', 'Amazon')} />
-            <FAQSection />
-            <ProblemsSection companyName={cv('company_name', 'Amazon')} />
-          </div>
-          <VisitedAlso />
-          <div className="mt-6"><SidebarSection cv={cv} /></div>
+          )}
+          {showSection("Reclamações") && <ComplaintsSection companyName={cv('company_name', 'Amazon')} />}
+          {showSection("FAQ") && <FAQSection />}
+          {showSection("Principais problemas") && <ProblemsSection companyName={cv('company_name', 'Amazon')} />}
+          {showSection("Descontos") && (
+            <div className="mt-8">
+              <div className="bg-background rounded-xl p-6 text-center" style={{ border: '1px solid #E8ECF0' }}>
+                <Tag className="w-10 h-10 mx-auto mb-3" style={{ color: '#2B6CB0' }} />
+                <h3 className="text-lg font-bold mb-2" style={{ color: '#1A2B3D' }}>Descontos de {cv('company_name', 'Amazon')}</h3>
+                <p className="text-sm mb-4" style={{ color: '#5A6872' }}>Confira cupons e ofertas exclusivas disponíveis para você.</p>
+                <a href="#" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-md text-sm font-semibold text-white" style={{ backgroundColor: '#2B6CB0' }}>Ver descontos</a>
+              </div>
+            </div>
+          )}
+          {showAll && <VisitedAlso />}
+          {showSection("Sobre") && <div className="mt-6"><SidebarSection cv={cv} /></div>}
         </div>
 
         {/* Desktop */}
         <div className="hidden lg:grid grid-cols-[280px_1fr_280px] gap-6">
           <div>
-            <h2 className="text-xl font-bold mb-4" style={{ color: '#1A2B3D' }}>{cv('company_name', 'Amazon')} é confiável?</h2>
-            <div className="space-y-4">
-              <div className="rounded-xl p-4 shadow-sm" style={{ background: '#EDF7E1' }}>
-                <p className="text-xs font-medium mb-3" style={{ color: '#5A6872' }}>{cv('company_name', 'Amazon')} existe?</p>
-                <div className="flex items-center gap-3 mb-2">
-                  <img src="/images/seal-ra-verified.png" alt="Verificada" className="w-9 h-9" />
-                  <p className="font-bold text-[15px]" style={{ color: '#1A2B3D' }}>Empresa verificada</p>
-                </div>
-                <p className="text-[13px] leading-relaxed mb-3" style={{ color: '#5A6872' }}>{cv('trust_description', 'Essa empresa é verificada e possui o selo de confiança do Reclame AQUI.')}</p>
-                <a href="#" className="text-[13px] font-bold" style={{ color: '#2B6CB0' }}>Saiba mais</a>
-              </div>
-              <div className="rounded-xl p-4 shadow-sm" style={{ background: '#EDF7E1' }}>
-                <p className="text-xs font-medium mb-3" style={{ color: '#5A6872' }}>Qual a reputação de {cv('company_name', 'Amazon')}?</p>
-                <div className="flex items-center gap-3 mb-2">
-                  <img src="/images/reputation-otimo.webp" alt="Ótimo" className="w-11 h-11" />
-                  <div>
-                    <p className="text-xs" style={{ color: '#5A6872' }}>Reputação</p>
-                    <p className="font-extrabold text-base uppercase" style={{ color: '#1A2B3D' }}>{cv('reputation_label', 'ÓTIMO')}</p>
+            {showSection("Sobre") && (
+              <>
+                <h2 className="text-xl font-bold mb-4" style={{ color: '#1A2B3D' }}>{cv('company_name', 'Amazon')} é confiável?</h2>
+                <div className="space-y-4">
+                  <div className="rounded-xl p-4 shadow-sm" style={{ background: '#EDF7E1' }}>
+                    <p className="text-xs font-medium mb-3" style={{ color: '#5A6872' }}>{cv('company_name', 'Amazon')} existe?</p>
+                    <div className="flex items-center gap-3 mb-2">
+                      <img src="/images/seal-ra-verified.png" alt="Verificada" className="w-9 h-9" />
+                      <p className="font-bold text-[15px]" style={{ color: '#1A2B3D' }}>Empresa verificada</p>
+                    </div>
+                    <p className="text-[13px] leading-relaxed mb-3" style={{ color: '#5A6872' }}>{cv('trust_description', 'Essa empresa é verificada e possui o selo de confiança do Reclame AQUI.')}</p>
+                    <a href="#" className="text-[13px] font-bold" style={{ color: '#2B6CB0' }}>Saiba mais</a>
+                  </div>
+                  <div className="rounded-xl p-4 shadow-sm" style={{ background: '#EDF7E1' }}>
+                    <p className="text-xs font-medium mb-3" style={{ color: '#5A6872' }}>Qual a reputação de {cv('company_name', 'Amazon')}?</p>
+                    <div className="flex items-center gap-3 mb-2">
+                      <img src="/images/reputation-otimo.webp" alt="Ótimo" className="w-11 h-11" />
+                      <div>
+                        <p className="text-xs" style={{ color: '#5A6872' }}>Reputação</p>
+                        <p className="font-extrabold text-base uppercase" style={{ color: '#1A2B3D' }}>{cv('reputation_label', 'ÓTIMO')}</p>
+                      </div>
+                    </div>
+                    <p className="text-[13px] leading-relaxed mb-3" style={{ color: '#5A6872' }} dangerouslySetInnerHTML={{ __html: cv('reputation_description', '') }} />
+                    <a href="#" className="text-[13px] font-bold" style={{ color: '#2B6CB0' }}>Saiba mais</a>
                   </div>
                 </div>
-                <p className="text-[13px] leading-relaxed mb-3" style={{ color: '#5A6872' }} dangerouslySetInnerHTML={{ __html: cv('reputation_description', '') }} />
-                <a href="#" className="text-[13px] font-bold" style={{ color: '#2B6CB0' }}>Saiba mais</a>
-              </div>
-            </div>
-            <div className="mt-6"><PerformanceCard content={content} cv={cv} /></div>
-            <EvolutionCard companyName={cv('company_name', 'Amazon')} />
-            <VisitedAlso />
+                <div className="mt-6"><PerformanceCard content={content} cv={cv} /></div>
+                <EvolutionCard companyName={cv('company_name', 'Amazon')} />
+              </>
+            )}
+            {showAll && <VisitedAlso />}
           </div>
           <div>
-            <h3 className="text-lg font-bold mb-3" style={{ color: '#1A2B3D' }}>Veja mais informações sobre {cv('company_name', 'Amazon')}</h3>
-            <div className="rounded-xl overflow-hidden mb-4" style={{ border: '1px solid #E8ECF0' }}>
-              <iframe width="100%" height="280" src={cv('youtube_url', 'https://www.youtube.com/embed/MVaaQ8Qu7Iw')} title="Vídeo" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen className="w-full" />
-            </div>
-            <div className="mb-4">
-              <h3 className="text-base font-bold mb-3" style={{ color: '#1A2B3D' }}>O que {cv('company_name', 'Amazon')} está postando</h3>
-              <PostCard title="Proteja-se contra fraudes e golpes por mensagens" image="/images/post-3.jpg" />
-              <a href="#" className="text-sm font-bold mt-3 inline-block" style={{ color: '#2B6CB0' }}>Ver todos os posts</a>
-            </div>
-            <ComplaintsSection companyName={cv('company_name', 'Amazon')} />
-            <FAQSection />
-            <ProblemsSection companyName={cv('company_name', 'Amazon')} />
+            {showSection("Sobre") && (
+              <>
+                <h3 className="text-lg font-bold mb-3" style={{ color: '#1A2B3D' }}>Veja mais informações sobre {cv('company_name', 'Amazon')}</h3>
+                <div className="rounded-xl overflow-hidden mb-4" style={{ border: '1px solid #E8ECF0' }}>
+                  <iframe width="100%" height="280" src={cv('youtube_url', 'https://www.youtube.com/embed/MVaaQ8Qu7Iw')} title="Vídeo" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen className="w-full" />
+                </div>
+              </>
+            )}
+            {showSection("Posts") && (
+              <div className="mb-4">
+                <h3 className="text-base font-bold mb-3" style={{ color: '#1A2B3D' }}>O que {cv('company_name', 'Amazon')} está postando</h3>
+                <PostCard title="Proteja-se contra fraudes e golpes por mensagens" image="/images/post-3.jpg" />
+                <a href="#" className="text-sm font-bold mt-3 inline-block" style={{ color: '#2B6CB0' }}>Ver todos os posts</a>
+              </div>
+            )}
+            {showSection("Reclamações") && <ComplaintsSection companyName={cv('company_name', 'Amazon')} />}
+            {showSection("FAQ") && <FAQSection />}
+            {showSection("Principais problemas") && <ProblemsSection companyName={cv('company_name', 'Amazon')} />}
+            {showSection("Descontos") && (
+              <div className="mt-8">
+                <div className="bg-background rounded-xl p-6 text-center" style={{ border: '1px solid #E8ECF0' }}>
+                  <Tag className="w-10 h-10 mx-auto mb-3" style={{ color: '#2B6CB0' }} />
+                  <h3 className="text-lg font-bold mb-2" style={{ color: '#1A2B3D' }}>Descontos de {cv('company_name', 'Amazon')}</h3>
+                  <p className="text-sm mb-4" style={{ color: '#5A6872' }}>Confira cupons e ofertas exclusivas disponíveis para você.</p>
+                  <a href="#" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-md text-sm font-semibold text-white" style={{ backgroundColor: '#2B6CB0' }}>Ver descontos</a>
+                </div>
+              </div>
+            )}
           </div>
-          <div><SidebarSection cv={cv} /></div>
+          <div>{showSection("Sobre") && <SidebarSection cv={cv} />}</div>
         </div>
       </main>
 
