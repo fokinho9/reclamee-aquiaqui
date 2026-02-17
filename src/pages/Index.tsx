@@ -3,7 +3,7 @@ import { useState } from "react";
 
 const Header = () => (
   <header className="bg-background border-b border-border">
-    <div className="max-w-[1200px] mx-auto flex items-center justify-between px-4 py-2">
+    <div className="max-w-[1286px] mx-auto flex items-center justify-between px-6 py-2">
       <div className="flex items-center gap-2">
         <span className="text-2xl font-bold" style={{ color: '#1B8B4F', fontFamily: 'Open Sans' }}>
           Reclame<span style={{ color: '#333' }}>AQUI</span>
@@ -25,7 +25,7 @@ const Header = () => (
         <button className="px-4 py-2 text-sm font-semibold bg-primary text-primary-foreground rounded-full hover:opacity-90">Criar conta</button>
       </div>
     </div>
-    <nav className="max-w-[1200px] mx-auto px-4 flex items-center gap-8 py-2 text-sm font-semibold text-foreground">
+    <nav className="max-w-[1286px] mx-auto px-6 flex items-center gap-8 py-2 text-sm font-semibold text-foreground">
       <span className="flex items-center gap-1 cursor-pointer hover:text-primary">Para você <ChevronDown className="w-3 h-3" /></span>
       <span className="flex items-center gap-1 cursor-pointer hover:text-primary">Melhores empresas <ChevronDown className="w-3 h-3" /></span>
       <span className="cursor-pointer hover:text-primary">Detector de Site Confiável</span>
@@ -41,7 +41,7 @@ const CompanyHero = () => (
     <div className="w-full h-[280px] max-md:h-[105px]" style={{ backgroundColor: '#EF6509' }}>
       <img src="/images/amazon-banner.jpg" alt="Banner Amazon" className="w-full h-full object-cover max-w-[1920px] mx-auto" />
     </div>
-    <div className="max-w-[1200px] mx-auto px-4 relative">
+    <div className="max-w-[1286px] mx-auto px-10 relative">
       <div className="flex items-end gap-6 -mt-16">
         <a href="#" className="flex-none w-[188px] h-[188px] rounded-full bg-[#FAFAFA] shadow-md flex items-center justify-center -mt-8 border-4 border-background overflow-hidden">
           <img src="/images/amazon-logo.jpg" alt="Amazon Logo" className="w-[170px] h-[170px] rounded-full object-cover" />
@@ -85,7 +85,7 @@ const TabNav = () => {
   ];
   return (
     <div className="border-b border-border bg-background sticky top-0 z-10">
-      <div className="max-w-[1200px] mx-auto px-4 flex gap-1">
+      <div className="max-w-[1286px] mx-auto px-6 flex gap-1">
         {tabs.map(({ icon: Icon, label }) => (
           <button
             key={label}
@@ -338,8 +338,8 @@ const Index = () => {
       <CompanyHero />
       <TabNav />
 
-      <main className="max-w-[1200px] mx-auto px-4 py-6">
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_280px_320px] gap-6">
+      <main className="max-w-[1286px] mx-auto px-6 py-6">
+        <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr_280px] gap-6">
           {/* Left Column */}
           <div className="lg:col-span-1 order-2 lg:order-1">
             <h2 className="text-xl font-bold text-foreground mb-4">Amazon é confiável?</h2>
@@ -359,7 +359,7 @@ const Index = () => {
             <div className="rounded-lg overflow-hidden border border-border mb-4">
               <iframe
                 width="100%"
-                height="180"
+                height="280"
                 src="https://www.youtube.com/embed/MVaaQ8Qu7Iw"
                 title="Ofertas do Dia da Amazon"
                 frameBorder="0"
@@ -386,7 +386,7 @@ const Index = () => {
       </main>
 
       <footer className="bg-foreground text-background py-8 mt-12">
-        <div className="max-w-[1200px] mx-auto px-4 text-center text-sm opacity-70">
+        <div className="max-w-[1286px] mx-auto px-6 text-center text-sm opacity-70">
           © 2025 Reclame AQUI - Todos os direitos reservados
         </div>
       </footer>
