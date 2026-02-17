@@ -1,4 +1,4 @@
-import { Home, Building2, MessageSquare, Tag, HelpCircle, FileText, AlertTriangle, Eye, ExternalLink, ThumbsUp, Share2, MoreVertical, Globe, Info, Calendar } from "lucide-react";
+import { Home, Building2, MessageSquare, Tag, HelpCircle, FileText, AlertTriangle, Eye, ExternalLink, ThumbsUp, MoreVertical, Globe, Info, Calendar } from "lucide-react";
 import { useState, useEffect } from "react";
 
 /* ───────────── HEADER ───────────── */
@@ -515,7 +515,7 @@ const PostCard = ({ title, image }: { title: string; image: string }) => (
       <h4 className="text-sm font-bold mb-3" style={{ color: '#1A2B3D' }}>{title}</h4>
       <div className="flex items-center gap-5 border-t pt-3" style={{ borderColor: '#E8ECF0' }}>
         <button className="flex items-center gap-1.5 text-xs font-medium" style={{ color: '#5A6872' }}><ThumbsUp className="w-4 h-4" /> Curtir</button>
-        <button className="flex items-center gap-1.5 text-xs font-medium" style={{ color: '#5A6872' }}><Share2 className="w-4 h-4" /> Compartilhar</button>
+        <button className="flex items-center gap-1.5 text-xs font-medium" style={{ color: '#5A6872' }}><img src="/images/icons/share.svg" alt="" className="w-4 h-4" /> Compartilhar</button>
       </div>
     </div>
   </div>
