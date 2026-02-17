@@ -1,4 +1,4 @@
-import { Search, ChevronDown, Home, Building2, MessageSquare, Tag, HelpCircle, FileText, AlertTriangle, CheckCircle, Clock, Star, Handshake, MessageCircle, Eye, ExternalLink, ThumbsUp, Share2, Facebook, Instagram, Twitter } from "lucide-react";
+import { Search, ChevronDown, Home, Building2, MessageSquare, Tag, HelpCircle, FileText, AlertTriangle, Eye, ExternalLink, ThumbsUp, Share2 } from "lucide-react";
 import { useState } from "react";
 
 const Header = () => (
@@ -49,7 +49,7 @@ const CompanyHero = () => (
         <div className="flex-1 pb-2">
           <div className="flex items-center gap-2">
             <h1 className="text-2xl font-bold text-foreground">Amazon</h1>
-            <CheckCircle className="w-5 h-5 text-blue-500 fill-blue-500" />
+            <img src="/images/seal-ra-verified.svg" alt="RA Verificada" className="w-6 h-6" />
           </div>
           <div className="flex items-center gap-4 text-sm text-muted-foreground mt-1">
             <span className="flex items-center gap-1"><Building2 className="w-3.5 h-3.5" /> Varejo - Marketplaces</span>
@@ -61,12 +61,12 @@ const CompanyHero = () => (
         </button>
       </div>
       <div className="flex items-center gap-2 mt-3 mb-2">
-        <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold" style={{ backgroundColor: '#F1F9E6', color: '#0A213D' }}>
-          <span className="text-lg">😊</span> Ótimo
-        </span>
-        <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold" style={{ backgroundColor: '#E5EEFB', color: '#0A213D' }}>
-          <CheckCircle className="w-4 h-4 text-blue-500 fill-blue-500" /> Verificada
-        </span>
+        <a href="#" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold transition-colors hover:opacity-80" style={{ backgroundColor: '#F1F9E6', color: '#0A213D' }}>
+          <img src="/images/reputation-otimo.webp" alt="Ótimo" className="w-[18px] h-[18px]" /> Ótimo
+        </a>
+        <a href="#" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold transition-colors hover:opacity-80" style={{ backgroundColor: '#E5EEFB', color: '#0A213D' }}>
+          <img src="/images/seal-ra-verified.svg" alt="Verificada" className="w-[18px] h-[18px]" /> Verificada
+        </a>
       </div>
     </div>
   </div>
@@ -106,7 +106,7 @@ const TrustCard = () => (
   <div className="rounded-lg p-4 shadow" style={{ background: 'hsl(var(--ra-light-green))' }}>
     <p className="text-xs font-medium text-foreground/70 mb-3">Amazon existe?</p>
     <div className="flex items-center gap-3 mb-2">
-      <CheckCircle className="w-8 h-8 text-blue-500 fill-blue-500" />
+      <img src="/images/seal-ra-verified.svg" alt="Verificada" className="w-8 h-8" />
       <div>
         <p className="font-semibold text-foreground">Empresa verificada</p>
       </div>
@@ -120,7 +120,7 @@ const ReputationCard = () => (
   <div className="rounded-lg p-4 shadow" style={{ background: 'hsl(var(--ra-light-green))' }}>
     <p className="text-xs font-medium text-foreground/70 mb-3">Qual a reputação de Amazon?</p>
     <div className="flex items-center gap-3 mb-2">
-      <span className="text-3xl">😊</span>
+      <img src="/images/reputation-otimo.webp" alt="Ótimo" className="w-10 h-10" />
       <div>
         <p className="text-sm text-foreground/70">Reputação</p>
         <p className="font-bold text-foreground uppercase">ÓTIMO</p>
@@ -135,13 +135,13 @@ const PerformanceCard = () => {
   const [period, setPeriod] = useState("6 meses");
   const periods = ["6 meses", "12 meses", "2025", "2024", "Geral"];
   const stats = [
-    { icon: MessageSquare, text: <>Esta empresa recebeu <strong>106194 reclamações.</strong></>, color: "text-orange-500" },
-    { icon: CheckCircle, text: <>Respondeu <strong>88.4% das reclamações</strong> recebidas.</>, color: "text-green-600" },
-    { icon: HelpCircle, text: <>Há <strong>10690 reclamações</strong> aguardando resposta.</>, color: "text-yellow-500" },
-    { icon: Star, text: <>Há <strong>46196 reclamações</strong> avaliadas, e a nota média dos consumidores é <strong>7.36.</strong></>, color: "text-purple-500" },
-    { icon: Handshake, text: <>Dos que avaliaram, <strong>80% voltariam a fazer negócio.</strong></>, color: "text-blue-500" },
-    { icon: CheckCircle, text: <>A empresa resolveu <strong>88% das reclamações recebidas.</strong></>, color: "text-green-500" },
-    { icon: Clock, text: <>O tempo médio de resposta é <strong>19 dias e 13 horas.</strong></>, color: "text-gray-500" },
+    { icon: "/images/icons/bullhorn.svg", text: <>Esta empresa recebeu <strong>106194 reclamações.</strong></> },
+    { icon: "/images/icons/check-circle.svg", text: <>Respondeu <strong>88.4% das reclamações</strong> recebidas.</> },
+    { icon: "/images/icons/comment-question.svg", text: <>Há <strong>10690 reclamações</strong> aguardando resposta.</> },
+    { icon: "/images/icons/star-box.svg", text: <>Há <strong>46196 reclamações</strong> avaliadas, e a nota média dos consumidores é <strong>7.36.</strong></> },
+    { icon: "/images/icons/handshake.svg", text: <>Dos que avaliaram, <strong>80% voltariam a fazer negócio.</strong></> },
+    { icon: "/images/icons/comment-check.svg", text: <>A empresa resolveu <strong>88% das reclamações recebidas.</strong></> },
+    { icon: "/images/icons/timer.svg", text: <>O tempo médio de resposta é <strong>19 dias e 13 horas.</strong></> },
   ];
   return (
     <div className="bg-background rounded-lg border border-border shadow p-4">
@@ -153,10 +153,12 @@ const PerformanceCard = () => {
           </button>
         ))}
       </div>
-      <div className="space-y-3">
+      <div className="space-y-4 mt-4">
         {stats.map((s, i) => (
-          <div key={i} className="flex items-start gap-3">
-            <div className={`p-1.5 rounded-lg bg-muted ${s.color}`}><s.icon className="w-5 h-5" /></div>
+          <div key={i} className="flex items-start gap-4">
+            <div className="p-1.5 rounded-lg flex-none" style={{ backgroundColor: '#C2EAD6' }}>
+              <img src={s.icon} alt="" className="w-6 h-6" />
+            </div>
             <p className="text-sm text-foreground/80">{s.text}</p>
           </div>
         ))}
@@ -292,9 +294,9 @@ const Sidebar = () => (
       </a>
       <a href="#" className="text-sm font-semibold" style={{ color: 'hsl(var(--ra-blue))' }}>Ir para o atendimento</a>
       <div className="flex gap-3 mt-4">
-        <a href="#" className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white"><Facebook className="w-4 h-4" /></a>
-        <a href="#" className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white"><Instagram className="w-4 h-4" /></a>
-        <a href="#" className="w-8 h-8 rounded-full bg-foreground flex items-center justify-center text-background"><Twitter className="w-4 h-4" /></a>
+        <a href="#" className="w-8 h-8"><img src="/images/social-facebook.png" alt="Facebook" className="w-8 h-8 rounded-full" /></a>
+        <a href="#" className="w-8 h-8"><img src="/images/social-instagram.png" alt="Instagram" className="w-8 h-8 rounded-full" /></a>
+        <a href="#" className="w-8 h-8"><img src="/images/social-x.png" alt="X" className="w-8 h-8 rounded-full" /></a>
       </div>
     </div>
 
@@ -310,8 +312,8 @@ const Sidebar = () => (
       <span className="px-3 py-1 text-xs font-semibold border border-border rounded-full text-muted-foreground hover:bg-muted cursor-pointer">Kindle</span>
     </div>
 
-    <PostCard title="O que fazer se a entrega está atrasada?" image="/images/post-entrega.jpg" />
-    <PostCard title="Reembolsos" image="/images/post-reembolsos.jpg" />
+    <PostCard title="O que fazer se a entrega está atrasada?" image="/images/post-1.jpg" />
+    <PostCard title="Reembolsos" image="/images/post-2.jpg" />
   </aside>
 );
 
@@ -368,7 +370,7 @@ const Index = () => {
             </div>
             <div className="mb-4">
               <h3 className="text-base font-bold text-foreground mb-3">O que Amazon está postando</h3>
-              <PostCard title="Proteja-se contra fraudes e golpes por mensagens" image="/images/post-fraudes.jpg" />
+              <PostCard title="Proteja-se contra fraudes e golpes por mensagens" image="/images/post-3.jpg" />
               <a href="#" className="text-sm font-semibold mt-2 inline-block" style={{ color: 'hsl(var(--ra-blue))' }}>Ver todos os posts</a>
             </div>
             <ComplaintsSection />
