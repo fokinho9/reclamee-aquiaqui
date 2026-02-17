@@ -49,7 +49,7 @@ const CompanyHero = () => (
         <div className="flex-1 pb-2">
           <div className="flex items-center gap-2">
             <h1 className="text-2xl font-bold text-foreground">Amazon</h1>
-            <img src="/images/seal-ra-verified.svg" alt="RA Verificada" className="w-6 h-6" />
+            <img src="/images/seal-ra-verified.png" alt="RA Verificada" className="w-6 h-6" />
           </div>
           <div className="flex items-center gap-4 text-sm text-muted-foreground mt-1">
             <span className="flex items-center gap-1"><img src="/images/icons/store.svg" alt="" className="w-4 h-4" style={{ color: '#5A6872' }} /> Varejo - Marketplaces</span>
@@ -66,7 +66,7 @@ const CompanyHero = () => (
         </a>
         <div className="flex items-center gap-1.5 mt-2">
           <h1 className="text-lg font-bold text-foreground">Amazon</h1>
-          <img src="/images/seal-ra-verified.svg" alt="RA Verificada" className="w-5 h-5" />
+          <img src="/images/seal-ra-verified.png" alt="RA Verificada" className="w-5 h-5" />
         </div>
         <div className="flex items-center gap-3 text-xs text-muted-foreground mt-1">
           <span className="flex items-center gap-1"><img src="/images/icons/store.svg" alt="" className="w-3.5 h-3.5" /> Varejo - Marketplaces</span>
@@ -78,7 +78,7 @@ const CompanyHero = () => (
           <img src="/images/reputation-otimo.webp" alt="Ótimo" className="w-[18px] h-[18px]" /> Ótimo
         </a>
         <a href="#" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold" style={{ backgroundColor: '#E5EEFB', color: '#0A213D' }}>
-          <img src="/images/seal-ra-verified.svg" alt="Verificada" className="w-[18px] h-[18px]" /> Verificada
+          <img src="/images/seal-ra-verified.png" alt="Verificada" className="w-[18px] h-[18px]" /> Verificada
         </a>
       </div>
       <button className="md:hidden w-full py-3 rounded-md font-semibold text-sm flex items-center justify-center gap-2 text-white mt-2 mb-2" style={{ backgroundColor: '#D11F26' }}>
@@ -120,7 +120,7 @@ const TrustCard = () => (
   <div className="rounded-xl p-4 shadow-sm min-w-[220px] md:min-w-0" style={{ background: '#EDF7E1' }}>
     <p className="text-xs font-medium mb-3" style={{ color: '#5A6872' }}>Amazon existe?</p>
     <div className="flex items-center gap-3 mb-2">
-      <img src="/images/seal-ra-verified.svg" alt="Verificada" className="w-9 h-9" />
+      <img src="/images/seal-ra-verified.png" alt="Verificada" className="w-9 h-9" />
       <p className="font-bold text-[15px]" style={{ color: '#1A2B3D' }}>Empresa verificada</p>
     </div>
     <p className="text-[13px] leading-relaxed mb-3" style={{ color: '#5A6872' }}>Essa empresa é verificada e possui o selo de confiança do Reclame AQUI.</p>
