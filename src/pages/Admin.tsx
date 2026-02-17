@@ -17,6 +17,14 @@ const SECTION_LABELS: Record<string, string> = {
   geral: "⚙️ Geral",
 };
 
+const IMAGE_DIMENSIONS: Record<string, string> = {
+  company_banner: "1920 × 280 px",
+  company_banner_mobile: "768 × 105 px",
+  company_logo: "188 × 188 px (circular)",
+  reputation_otimo: "44 × 44 px",
+  seal_ra_verified: "24 × 24 px",
+};
+
 const TYPE_ICONS: Record<string, typeof Type> = {
   text: Type,
   image: Image,
@@ -75,6 +83,11 @@ const ContentItem = ({ item }: { item: SiteContent }) => {
 
       {item.content_type === "image" ? (
         <div className="space-y-3">
+          {IMAGE_DIMENSIONS[item.content_key] && (
+            <p className="text-xs font-medium px-2 py-1 rounded-md inline-block" style={{ backgroundColor: "#FFF3E0", color: "#E65100" }}>
+              📐 Tamanho recomendado: {IMAGE_DIMENSIONS[item.content_key]}
+            </p>
+          )}
           {value && (
             <img src={value} alt={item.label} className="h-20 rounded-lg object-cover border" style={{ borderColor: "#E8ECF0" }} />
           )}
