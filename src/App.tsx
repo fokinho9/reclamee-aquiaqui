@@ -8,6 +8,12 @@ import Login from "./pages/Login";
 import Admin from "./pages/Admin";
 import Reclamacoes from "./pages/Reclamacoes";
 import Reclamacao from "./pages/Reclamacao";
+import Sobre from "./pages/Sobre";
+import EmpresaReclamacoes from "./pages/EmpresaReclamacoes";
+import DescontosPage from "./pages/DescontosPage";
+import FaqPage from "./pages/FaqPage";
+import PostsPage from "./pages/PostsPage";
+import ProblemasPage from "./pages/ProblemasPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -20,6 +26,12 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
+          <Route path="/sobre" element={<Sobre />} />
+          <Route path="/empresa-reclamacoes" element={<EmpresaReclamacoes />} />
+          <Route path="/empresa-descontos" element={<DescontosPage />} />
+          <Route path="/empresa-faq" element={<FaqPage />} />
+          <Route path="/empresa-posts" element={<PostsPage />} />
+          <Route path="/principais-problemas" element={<ProblemasPage />} />
           <Route path="/reclamacoes" element={<Reclamacoes />} />
           <Route path="/reclamacao/:id" element={<Reclamacao />} />
           <Route path="/login" element={<Login />} />
