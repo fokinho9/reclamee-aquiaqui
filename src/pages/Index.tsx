@@ -1,4 +1,5 @@
 import { Home, Building2, MessageSquare, Tag, HelpCircle, FileText, AlertTriangle, Eye, ExternalLink, ThumbsUp, MoreVertical, Globe, Info, Calendar } from "lucide-react";
+import AboutSection from "@/components/AboutSection";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useSiteContent, useContentValue } from "@/hooks/use-site-content";
@@ -856,6 +857,7 @@ const Index = () => {
             </div>
           )}
           {showAll && <VisitedAlso />}
+          {showSection("Sobre") && <div className="mt-6"><AboutSection companyName={cv('company_name', 'Amazon')} /></div>}
           {showSection("Sobre") && <div className="mt-6"><SidebarSection cv={cv} /></div>}
         </div>
 
@@ -909,6 +911,7 @@ const Index = () => {
                 <a href="#" className="text-sm font-bold mt-3 inline-block" style={{ color: '#2B6CB0' }}>Ver todos os posts</a>
               </div>
             )}
+            {showSection("Sobre") && <AboutSection companyName={cv('company_name', 'Amazon')} />}
             {showSection("Reclamações") && <ComplaintsSection companyName={cv('company_name', 'Amazon')} />}
             {showSection("FAQ") && <FAQSection />}
             {showSection("Principais problemas") && <ProblemsSection companyName={cv('company_name', 'Amazon')} />}
