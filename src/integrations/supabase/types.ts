@@ -14,6 +14,66 @@ export type Database = {
   }
   public: {
     Tables: {
+      reviews: {
+        Row: {
+          author_city: string
+          author_name: string
+          category: string
+          created_at: string
+          description: string
+          full_text: string
+          id: string
+          is_ai_generated: boolean
+          product: string
+          rating: number | null
+          reactions_down: number
+          reactions_up: number
+          response_text: string | null
+          response_time: string | null
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          author_city?: string
+          author_name: string
+          category?: string
+          created_at?: string
+          description: string
+          full_text?: string
+          id?: string
+          is_ai_generated?: boolean
+          product?: string
+          rating?: number | null
+          reactions_down?: number
+          reactions_up?: number
+          response_text?: string | null
+          response_time?: string | null
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          author_city?: string
+          author_name?: string
+          category?: string
+          created_at?: string
+          description?: string
+          full_text?: string
+          id?: string
+          is_ai_generated?: boolean
+          product?: string
+          rating?: number | null
+          reactions_down?: number
+          reactions_up?: number
+          response_text?: string | null
+          response_time?: string | null
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       site_content: {
         Row: {
           content_key: string
