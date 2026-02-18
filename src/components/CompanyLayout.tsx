@@ -424,35 +424,79 @@ export const FAQSection = () => {
 
 /* ───────────── PROBLEMAS ───────────── */
 export const ProblemsSection = ({ companyName }: { companyName?: string }) => {
+  const scrollRef = React.useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = React.useState(false);
+  const [canScrollRight, setCanScrollRight] = React.useState(true);
+
   const problems = [
     { category: "Tipos de problemas", pct: "23.4%", label: "Produto não recebido" },
     { category: "Produtos e Serviços", pct: "15.1%", label: "Produtos" },
     { category: "Categorias", pct: "11.79%", label: "Não encontrei meu problema" },
+    { category: "Tipos de problemas", pct: "9.8%", label: "Estorno do valor pago" },
+    { category: "Produtos e Serviços", pct: "7.5%", label: "Eletrônicos" },
+    { category: "Categorias", pct: "6.2%", label: "Atendimento / SAC" },
   ];
+
+  const updateScroll = () => {
+    const el = scrollRef.current;
+    if (!el) return;
+    setCanScrollLeft(el.scrollLeft > 0);
+    setCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 4);
+  };
+
+  const scroll = (dir: 'left' | 'right') => {
+    const el = scrollRef.current;
+    if (!el) return;
+    el.scrollBy({ left: dir === 'left' ? -260 : 260, behavior: 'smooth' });
+  };
+
+  React.useEffect(() => {
+    updateScroll();
+  }, []);
+
   return (
     <div className="mt-8">
-      <h2 className="text-[17px] font-bold mb-4" style={{ color: '#1A2B3D' }}>Saiba quais são os principais problemas de {companyName || 'Amazon'}</h2>
-      <div className="bg-background rounded-xl overflow-hidden" style={{ border: '1px solid #E8ECF0' }}>
-        <div className="px-5 pt-4 pb-2">
-          <h3 className="text-sm font-bold" style={{ color: '#1A2B3D' }}>Principais problemas</h3>
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-[17px] font-bold" style={{ color: '#1A2B3D' }}>Saiba quais são os principais problemas de {companyName || 'Amazon'}</h2>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => scroll('left')}
+            disabled={!canScrollLeft}
+            className="w-8 h-8 rounded-full border flex items-center justify-center transition-colors disabled:opacity-30"
+            style={{ borderColor: '#4B5963', color: '#4B5963' }}
+          >
+            ‹
+          </button>
+          <button
+            onClick={() => scroll('right')}
+            disabled={!canScrollRight}
+            className="w-8 h-8 rounded-full border flex items-center justify-center transition-colors disabled:opacity-30"
+            style={{ borderColor: '#4B5963', color: '#4B5963' }}
+          >
+            ›
+          </button>
         </div>
-        <div className="divide-y" style={{ borderColor: '#E8ECF0' }}>
-          {problems.map((p, i) => (
-            <div key={i} className="px-5 py-3">
-              <div className="flex items-center justify-between mb-1.5">
-                <span className="text-xs" style={{ color: '#8A9BAE' }}>{p.category}</span>
-                <img src="/images/icons/chevron-down-official.svg" alt="" className="w-4 h-4" style={{ opacity: 0.5 }} />
-              </div>
-              <div className="flex items-baseline gap-3">
-                <span className="text-2xl font-bold" style={{ color: '#2B6CB0' }}>{p.pct}</span>
-                <span className="text-sm font-semibold" style={{ color: '#2B6CB0' }}>{p.label}</span>
-              </div>
+      </div>
+      <div
+        ref={scrollRef}
+        onScroll={updateScroll}
+        className="flex gap-3 overflow-x-auto scrollbar-hide pb-2"
+        style={{ scrollSnapType: 'x mandatory' }}
+      >
+        {problems.map((p, i) => (
+          <Link
+            key={i}
+            to="/principais-problemas"
+            className="flex-none w-[240px] bg-background rounded-xl p-4 hover:shadow-md transition-shadow"
+            style={{ border: '1px solid #E8ECF0', scrollSnapAlign: 'start' }}
+          >
+            <span className="text-xs" style={{ color: '#8A9BAE' }}>{p.category}</span>
+            <div className="flex items-baseline gap-2 mt-2">
+              <span className="text-2xl font-bold" style={{ color: '#2B6CB0' }}>{p.pct}</span>
+              <span className="text-sm font-semibold" style={{ color: '#2B6CB0' }}>{p.label}</span>
             </div>
-          ))}
-        </div>
-        <div className="py-3 text-center" style={{ borderTop: '1px solid #E8ECF0' }}>
-          <a href="#" className="text-sm font-semibold" style={{ color: '#5A6872' }}>Ver tudo</a>
-        </div>
+          </Link>
+        ))}
       </div>
       <p className="text-xs text-center mt-3" style={{ color: '#8A9BAE' }}>As reclamações apresentadas são de até 3 anos registradas na aba geral.</p>
     </div>
