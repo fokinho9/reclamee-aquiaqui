@@ -223,44 +223,28 @@ const ImportReviewsSection = () => {
   // Deep import - extract URLs from listing, then scrape each individually
   const startDeepImport = async () => {
     if (!deepImportUrl.trim()) {
-      toast({ title: "Erro", description: "Cole a URL da lista de reclamações.", variant: "destructive" });
+      toast({ title: "Erro", description: "Cole as URLs das reclamações.", variant: "destructive" });
       return;
     }
     setDeepImporting(true);
     setDeepStopRequested(false);
     setDeepImportLog([]);
     setLiveImports([]);
-    setDeepImportStatus("Extraindo URLs...");
 
-    let allUrls: string[] = [];
-    const MAX_PER_BATCH = 5;
-
-    // Extract URLs from the provided listing page (single page, no pagination)
-    setDeepImportLog(prev => [...prev, `📄 Buscando URLs da página...`]);
-    setDeepImportStatus(`Extraindo URLs...`);
-
-    try {
-      const { data, error } = await supabase.functions.invoke("import-individual-reviews", {
-        body: { mode: "extract_urls", url: deepImportUrl.trim() },
-      });
-      if (error) throw error;
-      if (!data?.success) throw new Error(data?.error || "Erro");
-
-      const urls = (data.urls || []).slice(0, MAX_PER_BATCH);
-      allUrls = urls;
-      setDeepImportLog(prev => [...prev, `✅ ${urls.length} URLs encontradas (limitado a ${MAX_PER_BATCH} por chamada)`]);
-    } catch (err: any) {
-      setDeepImportLog(prev => [...prev, `❌ Erro: ${err.message}`]);
-    }
+    // Parse URLs from textarea (one per line, filter empty/invalid)
+    const allUrls = deepImportUrl
+      .split('\n')
+      .map(u => u.trim())
+      .filter(u => u.startsWith('http'));
 
     if (allUrls.length === 0) {
-      setDeepImportLog(prev => [...prev, `⚠️ Nenhuma URL de reclamação encontrada.`]);
+      setDeepImportLog([`⚠️ Nenhuma URL válida encontrada. Cole uma URL por linha.`]);
       setDeepImporting(false);
       return;
     }
 
-    setDeepImportLog(prev => [...prev, `\n🔍 Iniciando importação de ${allUrls.length} reclamações individuais...`]);
-
+    setDeepImportLog([`📋 ${allUrls.length} URLs encontradas no campo.`]);
+    setDeepImportStatus(`Importando 0/${allUrls.length}...`);
     let imported = 0;
     let skipped = 0;
     let failed = 0;
@@ -407,26 +391,23 @@ const ImportReviewsSection = () => {
             </div>
           </div>
 
-          {/* Deep Import - Individual Complaint Scraping */}
+          {/* Deep Import - Manual URLs */}
           <div className="bg-white rounded-xl p-4 border" style={{ borderColor: "#E8ECF0" }}>
             <h4 className="text-sm font-bold mb-2" style={{ color: "#1A2B3D" }}>
-              🔍 Importação Detalhada (Página Individual)
+              🔍 Importação Detalhada (URLs Manuais)
             </h4>
             <p className="text-xs mb-3" style={{ color: "#5A6872" }}>
-              Cole a URL da lista de reclamações. O sistema vai extrair os links de cada reclamação, acessar cada uma individualmente e importar com dados completos (resposta da empresa, consideração final, nota, cidade, etc).
+              Cole as URLs individuais de cada reclamação (uma por linha). O sistema vai acessar cada uma e importar com dados completos (resposta da empresa, consideração final, nota, cidade, etc).
             </p>
 
-            <div className="flex gap-2 items-center flex-wrap mb-3">
-              <input
-                type="url"
-                value={deepImportUrl}
-                onChange={(e) => setDeepImportUrl(e.target.value)}
-                placeholder="https://www.reclameaqui.com.br/empresa/nome/lista-reclamacoes/"
-                className="flex-1 min-w-[300px] px-3 py-2 border rounded-lg text-sm"
-                style={{ borderColor: "#E8ECF0" }}
-                disabled={deepImporting}
-              />
-            </div>
+            <textarea
+              value={deepImportUrl}
+              onChange={(e) => setDeepImportUrl(e.target.value)}
+              placeholder={"https://www.reclameaqui.com.br/empresa/reclamacao-1_ABC123/\nhttps://www.reclameaqui.com.br/empresa/reclamacao-2_DEF456/\nhttps://www.reclameaqui.com.br/empresa/reclamacao-3_GHI789/"}
+              className="w-full min-h-[120px] px-3 py-2 border rounded-lg text-sm font-mono mb-3"
+              style={{ borderColor: "#E8ECF0" }}
+              disabled={deepImporting}
+            />
 
             <div className="flex gap-2 items-center flex-wrap">
               {!deepImporting ? (
