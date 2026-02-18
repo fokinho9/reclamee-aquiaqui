@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { Save, Upload, LogOut, Image, Type, Code, ChevronDown, ChevronRight, Check, Sparkles, Loader2 } from "lucide-react";
 import ImportReviewsSection from "@/components/admin/ImportReviewsSection";
+import ManageReviewsSection from "@/components/admin/ManageReviewsSection";
 import { useToast } from "@/hooks/use-toast";
 
 const SECTION_LABELS: Record<string, string> = {
@@ -386,6 +387,9 @@ const Admin = () => {
           companyName={cv('company_name', 'Amazon')}
           companyCategory={cv('company_category', 'Marketplace')}
         />
+
+        {/* Manage Reviews */}
+        <ManageReviewsSection />
 
         {/* Import from Reclame Aqui */}
         <ImportReviewsSection />
