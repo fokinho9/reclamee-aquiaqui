@@ -29,10 +29,10 @@ async function scrapeUrl(apiKey: string, url: string): Promise<string> {
   const response = await fetch('https://api.firecrawl.dev/v1/scrape', {
     method: 'POST',
     headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ url, formats: ['markdown'], onlyMainContent: true }),
+    body: JSON.stringify({ url, formats: ['markdown'], onlyMainContent: true, timeout: 60000, waitFor: 3000 }),
   });
   const data = await response.json();
-  if (!response.ok) throw new Error(data.error || `Erro ${response.status}`);
+  if (!response.ok) throw new Error(data?.error || data?.data?.error || `Erro ${response.status}`);
   return data?.data?.markdown || data?.markdown || '';
 }
 
