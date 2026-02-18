@@ -2,6 +2,7 @@ import { Home, Building2, MessageSquare, Tag, HelpCircle, FileText, AlertTriangl
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useSiteContent, useContentValue } from "@/hooks/use-site-content";
+import { useReviews } from "@/hooks/use-reviews";
 import React from "react";
 
 /* ───────────── HEADER ───────────── */
@@ -335,15 +336,31 @@ export const VisitedAlso = () => {
 
 /* ───────────── COMPLAINTS ───────────── */
 export const ComplaintsSection = ({ companyName }: { companyName?: string }) => {
-  const [tab, setTab] = useState("Respondidas");
-  const tabs = ["Últimas", "Não respondidas", "Respondidas", "Avaliadas"];
-  const complaints = [
-    { title: "Atraso na entrega de notebook comprado via pix na Amazon", desc: "Fiz a compra via pix de um notebook, na empresa amazon, no dia 23/12/2025, com prazo de entrega para o dia 05/01/2026. Além de não ter sido entregue o produto, não consta em nenhum campo uma garantia de entrega...", time: "Há 1 hora" },
-    { title: "Site em loop impede a geração do código de pré-envio para devolução.", desc: "O site está em loop, toda vez que abro a parte de devolução ele não encaminha para geração de código do pré-envio.", time: "Há 2 horas" },
-  ];
+  const [tab, setTab] = useState("ultimas");
+  const tabLabels: Record<string, string> = { ultimas: "Últimas", nao_respondidas: "Não respondidas", respondidas: "Respondidas", avaliadas: "Avaliadas" };
+  const tabs = Object.keys(tabLabels);
+  const { data: reviews, isLoading } = useReviews(tab);
+  const displayed = (reviews || []).slice(0, 5);
+
+  const formatTime = (dateStr: string) => {
+    const diff = Date.now() - new Date(dateStr).getTime();
+    const mins = Math.floor(diff / 60000);
+    if (mins < 60) return `Há ${mins} min`;
+    const hours = Math.floor(mins / 60);
+    if (hours < 24) return `Há ${hours}h`;
+    const days = Math.floor(hours / 24);
+    return `Há ${days}d`;
+  };
+
+  const statusStyle: Record<string, { bg: string; label: string; emoji: string }> = {
+    respondida: { bg: '#38A169', label: 'Respondida', emoji: '😊' },
+    nao_respondida: { bg: '#E53E3E', label: 'Não respondida', emoji: '😟' },
+    avaliada: { bg: '#2B6CB0', label: 'Avaliada', emoji: '⭐' },
+  };
+
   return (
     <div className="mt-8">
-      <h2 className="text-[17px] font-bold mb-4" style={{ color: '#1A2B3D' }}>O que estão falando sobre {companyName || 'Amazon'}</h2>
+      <h2 className="text-[17px] font-bold mb-4" style={{ color: '#1A2B3D' }}>O que estão falando sobre {companyName || 'Agro Brasil'}</h2>
       <div className="bg-background rounded-xl overflow-hidden" style={{ border: '1px solid #E8ECF0' }}>
         <div className="px-4 pt-4">
           <p className="text-sm font-bold mb-0" style={{ color: '#1A2B3D' }}>Reclamações</p>
@@ -352,29 +369,30 @@ export const ComplaintsSection = ({ companyName }: { companyName?: string }) => 
           {tabs.map(t => (
             <button key={t} onClick={() => setTab(t)}
               className={`px-3 py-3 text-[13px] font-medium border-b-2 transition-colors whitespace-nowrap ${tab === t ? "border-[#2B6CB0] text-[#2B6CB0] font-semibold" : "border-transparent text-[#8A9BAE]"}`}>
-              {t}
+              {tabLabels[t]}
             </button>
           ))}
         </div>
         <div className="divide-y" style={{ borderColor: '#E8ECF0' }}>
-          {complaints.map((c, i) => (
-            <div key={i} className="px-4 py-5">
-              <h4 className="text-sm font-bold leading-snug mb-2" style={{ color: '#2B6CB0' }}>{c.title}</h4>
-              <p className="text-[13px] leading-relaxed mb-4" style={{ color: '#5A6872' }}>{c.desc}</p>
-              <div className="flex items-center gap-2 mb-3">
-                <span className="text-lg cursor-pointer">👍</span>
-                <span className="text-lg cursor-pointer">👎</span>
-                <span className="text-lg cursor-pointer">😐</span>
-                <span className="text-xs ml-1" style={{ color: '#8A9BAE' }}>deixe sua reação</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold text-white" style={{ backgroundColor: '#38A169' }}>
-                  😊 Respondida
-                </span>
-                <span className="text-xs" style={{ color: '#8A9BAE' }}>{c.time}</span>
-              </div>
-            </div>
-          ))}
+          {isLoading ? (
+            <div className="px-4 py-8 text-center text-sm" style={{ color: '#8A9BAE' }}>Carregando...</div>
+          ) : displayed.length === 0 ? (
+            <div className="px-4 py-8 text-center text-sm" style={{ color: '#8A9BAE' }}>Nenhuma reclamação encontrada</div>
+          ) : displayed.map((c) => {
+            const st = statusStyle[c.status] || statusStyle.nao_respondida;
+            return (
+              <Link key={c.id} to={`/reclamacao/${c.id}`} className="block px-4 py-5 hover:bg-[#F7F9FB] transition-colors">
+                <h4 className="text-sm font-bold leading-snug mb-2" style={{ color: '#2B6CB0' }}>{c.title}</h4>
+                <p className="text-[13px] leading-relaxed mb-4 line-clamp-2" style={{ color: '#5A6872' }}>{c.description}</p>
+                <div className="flex items-center gap-2">
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold text-white" style={{ backgroundColor: st.bg }}>
+                    {st.emoji} {st.label}
+                  </span>
+                  <span className="text-xs" style={{ color: '#8A9BAE' }}>{formatTime(c.created_at)}</span>
+                </div>
+              </Link>
+            );
+          })}
         </div>
         <div className="py-4 text-center space-y-2" style={{ borderTop: '1px solid #E8ECF0' }}>
           <Link to="/reclamacoes" className="text-sm font-semibold block" style={{ color: '#2B6CB0' }}>Ler mais</Link>
