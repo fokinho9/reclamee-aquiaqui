@@ -132,7 +132,29 @@ Deno.serve(async (req) => {
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    const { url, saveToDb } = await req.json();
+    const body = await req.json();
+    const { url, saveToDb, deleteAll, deleteSearch } = body;
+
+    // Delete reviews
+    if (deleteAll || deleteSearch) {
+      let query = supabase.from('reviews').delete();
+      if (deleteSearch) {
+        query = query.ilike('title', `%${deleteSearch}%`);
+      } else {
+        query = query.neq('id', '00000000-0000-0000-0000-000000000000'); // delete all
+      }
+      const { error: delError, count } = await query;
+      if (delError) {
+        return new Response(
+          JSON.stringify({ success: false, error: delError.message }),
+          { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+      return new Response(
+        JSON.stringify({ success: true, deleted: true }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
 
     if (!url) {
       return new Response(
