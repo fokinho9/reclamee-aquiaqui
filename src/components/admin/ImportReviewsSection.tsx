@@ -233,43 +233,24 @@ const ImportReviewsSection = () => {
     setDeepImportStatus("Extraindo URLs...");
 
     let allUrls: string[] = [];
-    let page = 1;
-    let hasMore = true;
+    const MAX_PER_BATCH = 5;
 
-    // Paginate through listing pages to get all complaint URLs
-    while (hasMore) {
-      const el = document.getElementById('stop-deep-import-flag');
-      if (el?.dataset.stop === 'true') {
-        setDeepImportLog(prev => [...prev, `⏹️ Parado pelo usuário.`]);
-        break;
-      }
+    // Extract URLs from the provided listing page (single page, no pagination)
+    setDeepImportLog(prev => [...prev, `📄 Buscando URLs da página...`]);
+    setDeepImportStatus(`Extraindo URLs...`);
 
-      const separator = deepImportUrl.includes('?') ? '&' : '?';
-      const pageUrl = page > 1 ? `${deepImportUrl.trim()}${separator}pagina=${page}` : deepImportUrl.trim();
-      setDeepImportLog(prev => [...prev, `📄 Buscando URLs da página ${page}...`]);
-      setDeepImportStatus(`Extraindo URLs - Página ${page}...`);
+    try {
+      const { data, error } = await supabase.functions.invoke("import-individual-reviews", {
+        body: { mode: "extract_urls", url: deepImportUrl.trim() },
+      });
+      if (error) throw error;
+      if (!data?.success) throw new Error(data?.error || "Erro");
 
-      try {
-        const { data, error } = await supabase.functions.invoke("import-individual-reviews", {
-          body: { mode: "extract_urls", url: pageUrl },
-        });
-        if (error) throw error;
-        if (!data?.success) throw new Error(data?.error || "Erro");
-
-        const urls = data.urls || [];
-        if (urls.length === 0) {
-          setDeepImportLog(prev => [...prev, `📄 Página ${page}: nenhuma URL encontrada. Fim da paginação.`]);
-          hasMore = false;
-        } else {
-          allUrls = [...allUrls, ...urls];
-          setDeepImportLog(prev => [...prev, `✅ Página ${page}: ${urls.length} URLs encontradas (total: ${allUrls.length})`]);
-          page++;
-          await new Promise(r => setTimeout(r, 500));
-        }
-      } catch (err: any) {
-        setDeepImportLog(prev => [...prev, `❌ Página ${page}: ${err.message}`]);
-        hasMore = false;
-      }
+      const urls = (data.urls || []).slice(0, MAX_PER_BATCH);
+      allUrls = urls;
+      setDeepImportLog(prev => [...prev, `✅ ${urls.length} URLs encontradas (limitado a ${MAX_PER_BATCH} por chamada)`]);
+    } catch (err: any) {
+      setDeepImportLog(prev => [...prev, `❌ Erro: ${err.message}`]);
     }
 
     if (allUrls.length === 0) {
