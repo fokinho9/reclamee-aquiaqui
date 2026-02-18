@@ -4,11 +4,11 @@ import { useReviews, type Review } from "@/hooks/use-reviews";
 
 /* ───────────── MOCK DATA (fallback) ───────────── */
 const MOCK_COMPLAINTS = [
-  { id: "1", title: "Atraso na entrega de notebook comprado via pix na Amazon", desc: "Fiz a compra via pix de um notebook, na empresa amazon, no dia 23/12/2025, com prazo de entrega para o dia 05/01/2026...", author: "João S.", city: "São Paulo - SP", time: "Há 1 hora", status: "respondida" as const, category: "Produto não recebido", reactions: { up: 12, down: 2 } },
+  { id: "1", title: "Atraso na entrega de notebook comprado via pix na Agro Brasil", desc: "Fiz a compra via pix de um notebook, na empresa Agro Brasil, no dia 23/12/2025, com prazo de entrega para o dia 05/01/2026...", author: "João S.", city: "São Paulo - SP", time: "Há 1 hora", status: "respondida" as const, category: "Produto não recebido", reactions: { up: 12, down: 2 } },
   { id: "2", title: "Site em loop impede a geração do código de pré-envio para devolução.", desc: "O site está em loop, toda vez que abro a parte de devolução ele não encaminha para geração de código do pré-envio.", author: "Maria C.", city: "Rio de Janeiro - RJ", time: "Há 2 horas", status: "respondida" as const, category: "Problemas com o site", reactions: { up: 8, down: 1 } },
   { id: "3", title: "Cobrança indevida no cartão após cancelamento de pedido", desc: "Cancelei um pedido no dia 10/01 e até agora não recebi o estorno no meu cartão de crédito.", author: "Carlos R.", city: "Belo Horizonte - MG", time: "Há 3 horas", status: "nao_respondida" as const, category: "Cobrança indevida", reactions: { up: 25, down: 3 } },
   { id: "4", title: "Produto chegou danificado e empresa não aceita troca", desc: "Comprei um monitor e chegou com a tela trincada.", author: "Ana P.", city: "Curitiba - PR", time: "Há 5 horas", status: "avaliada" as const, category: "Produto com defeito", reactions: { up: 42, down: 5 }, rating: 8 },
-  { id: "5", title: "Reembolso prometido há 30 dias e nunca realizado", desc: "A Amazon prometeu reembolso de R$ 1.200 após devolução de produto.", author: "Pedro L.", city: "Brasília - DF", time: "Há 6 horas", status: "nao_respondida" as const, category: "Reembolso", reactions: { up: 56, down: 8 } },
+  { id: "5", title: "Reembolso prometido há 30 dias e nunca realizado", desc: "A Agro Brasil prometeu reembolso de R$ 1.200 após devolução de produto.", author: "Pedro L.", city: "Brasília - DF", time: "Há 6 horas", status: "nao_respondida" as const, category: "Reembolso", reactions: { up: 56, down: 8 } },
 ];
 
 const STATUS_MAP = {
@@ -154,11 +154,11 @@ const Reclamacoes = () => {
       <div className="bg-background border-b border-border">
         <div className="max-w-[900px] mx-auto px-4 md:px-6 py-4 flex items-center gap-4">
           <Link to="/">
-            <img src="/images/amazon-logo.jpg" alt="Amazon" className="w-12 h-12 rounded-full object-cover border-2 border-border" />
+            <img src="/images/amazon-logo.jpg" alt="Agro Brasil" className="w-12 h-12 rounded-full object-cover border-2 border-border" />
           </Link>
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-lg font-bold" style={{ color: '#1A2B3D' }}>Amazon</h1>
+              <h1 className="text-lg font-bold" style={{ color: '#1A2B3D' }}>Agro Brasil</h1>
               <img src="/images/seal-ra-verified.png" alt="Verificada" className="w-5 h-5" />
             </div>
             <p className="text-xs" style={{ color: '#8A9BAE' }}>Reclamações dos consumidores</p>

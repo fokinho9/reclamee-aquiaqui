@@ -13,7 +13,7 @@ const FAQ_ARTICLES = [
   {
     id: 2,
     title: "Quando vou receber meu reembolso?",
-    desc: "Quando você devolve um produto enviado pela Amazon, o reembolso é emitido de acordo com a forma de pagamento usada no momento da compra. O prazo pode variar conforme o método.",
+    desc: "Quando você devolve um produto enviado pela Agro Brasil, o reembolso é emitido de acordo com a forma de pagamento usada no momento da compra. O prazo pode variar conforme o método.",
     tags: ["Estorno do valor pago"],
     hasImage: true,
   },
@@ -26,22 +26,22 @@ const FAQ_ARTICLES = [
   },
   {
     id: 4,
-    title: "Cancelar sua assinatura Prime",
-    desc: "Você pode cancelar sua assinatura em Gerenciar sua assinatura Prime. Você pode estar qualificado para um reembolso se seus benefícios Prime ainda não foram usados.",
+    title: "Cancelar sua assinatura",
+    desc: "Você pode cancelar sua assinatura em Gerenciar sua assinatura. Você pode estar qualificado para um reembolso se seus benefícios ainda não foram usados.",
     tags: ["Cancelamento da conta"],
     hasImage: true,
   },
   {
     id: 5,
     title: "Como faço para devolver meu pedido?",
-    desc: "Para pedidos vendidos e enviados pela Amazon.com.br, acesse os Seus Pedidos. Acesse o pedido que deseja devolver e clique em \"Devolver produtos\".",
+    desc: "Para pedidos vendidos e enviados pela Agro Brasil, acesse os Seus Pedidos. Acesse o pedido que deseja devolver e clique em \"Devolver produtos\".",
     tags: ["Troca-Devolução de produto"],
     hasImage: true,
   },
   {
     id: 6,
-    title: "Dispositivos Amazon",
-    desc: "Se você precisar de ajuda com os dispositivos Amazon, contate o Serviço de Atendimento ao Cliente da Amazon.",
+    title: "Dispositivos Agro Brasil",
+    desc: "Se você precisar de ajuda com os dispositivos Agro Brasil, contate o Serviço de Atendimento ao Cliente da Agro Brasil.",
     tags: [],
     hasImage: false,
   },
@@ -102,7 +102,7 @@ const FaqPage = () => {
   return (
     <CompanyPage>
       {({ cv }) => {
-        const companyName = cv('company_name', 'Amazon');
+        const companyName = cv('company_name', 'Agro Brasil');
         return (
           <div style={{ backgroundColor: '#f9f9f9' }}>
             {/* Hero */}

@@ -332,7 +332,7 @@ const ImportReviewsSection = () => {
               🔄 Substituição de Palavras
             </h4>
             <p className="text-xs mb-3" style={{ color: "#5A6872" }}>
-              Defina palavras que serão substituídas automaticamente nas reclamações importadas (ex: "Amazon" → "Minha Loja").
+              Defina palavras que serão substituídas automaticamente nas reclamações importadas (ex: "7 M Boots" → "Agro Brasil").
             </p>
 
             {loadingReplacements ? (
