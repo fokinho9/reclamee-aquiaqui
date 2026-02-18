@@ -8,9 +8,9 @@ const corsHeaders = {
 
 function cleanText(text: string): string {
   return text
-    .replace(/\u200C/g, '') // remove zero-width non-joiner
-    .replace(/\s+s\b/g, '') // remove trailing " s" artifacts
-    .replace(/‌/g, '') // remove hidden chars
+    .replace(/\u200C/g, '')
+    .replace(/\s+s\b/g, '')
+    .replace(/‌/g, '')
     .replace(/\.\.\./g, '…')
     .replace(/\s{2,}/g, ' ')
     .trim();
@@ -70,14 +70,14 @@ function parseComplaintsFromMarkdown(markdown: string): ParsedComplaint[] {
     if (/avaliada/i.test(afterText)) status = 'avaliada';
 
     let timeAgo = '';
-    const timeMatch = afterText.match(/Há\s+\d+\s+(?:hora|horas|minuto|minutos|dia|dias)/i);
+    const timeMatch = afterText.match(/Há\s+\d+\s+(?:hora|horas|minuto|minutos|dia|dias|semana|semanas|mês|meses|ano|anos)/i);
     if (timeMatch) timeAgo = timeMatch[0];
 
     description = description.substring(0, 300).replace(/\s+/g, ' ').trim();
     description = description
       .replace(/(?:Não\s+)?respondida/gi, '')
       .replace(/avaliada/gi, '')
-      .replace(/Há\s+\d+\s+(?:hora|horas|minuto|minutos|dia|dias?)/gi, '')
+      .replace(/Há\s+\d+\s+(?:hora|horas|minuto|minutos|dia|dias?|semana|semanas|mês|meses|ano|anos)/gi, '')
       .replace(/\d+\s*reações?\s*/gi, '')
       .replace(/Clique\s+para\s+ver\s+todas\s+as\s+reações\s+nesta\s+reclamação\.?\s*/gi, '')
       .replace(/deixe\s+sua\s+reação\s*/gi, '')
@@ -89,6 +89,14 @@ function parseComplaintsFromMarkdown(markdown: string): ParsedComplaint[] {
       .replace(/\s*\[.*$/g, '')
       .replace(/\s+s\s*$/g, '')
       .replace(/\.\.\.\s*$/g, '…')
+      .replace(/\d+\s+de\s+\d+\s*###.*$/gi, '')
+      .replace(/###.*$/gi, '')
+      .replace(/Filtrar\s+reclamações.*$/gi, '')
+      .replace(/Limpar.*$/gi, '')
+      .replace(/Filtros\s+especiais.*$/gi, '')
+      .replace(/Blackfriday.*$/gi, '')
+      .replace(/Covid-19.*$/gi, '')
+      .replace(/\*\s*\*\s*\*/g, '')
       .replace(/\s+/g, ' ')
       .trim();
 
@@ -103,6 +111,21 @@ function parseComplaintsFromMarkdown(markdown: string): ParsedComplaint[] {
   }
 
   return complaints;
+}
+
+function parseTimeAgoToDate(timeAgo: string): string {
+  const now = new Date();
+  const match = timeAgo.match(/(\d+)\s+(minuto|hora|dia|semana|mês|meses|ano)/i);
+  if (!match) return now.toISOString();
+  const amount = parseInt(match[1]);
+  const unit = match[2].toLowerCase();
+  if (unit === 'minuto') now.setMinutes(now.getMinutes() - amount);
+  else if (unit === 'hora') now.setHours(now.getHours() - amount);
+  else if (unit === 'dia') now.setDate(now.getDate() - amount);
+  else if (unit === 'semana') now.setDate(now.getDate() - amount * 7);
+  else if (unit === 'mês' || unit === 'meses') now.setMonth(now.getMonth() - amount);
+  else if (unit === 'ano') now.setFullYear(now.getFullYear() - amount);
+  return now.toISOString();
 }
 
 Deno.serve(async (req) => {
@@ -123,13 +146,20 @@ Deno.serve(async (req) => {
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
+    // Parse request body for page parameter
+    let requestedPage: number | null = null;
+    try {
+      const body = await req.json();
+      if (body?.page) requestedPage = parseInt(body.page);
+    } catch { /* no body, use config */ }
+
     // Get config
     const { data: configs } = await supabase.from('import_config').select('*');
     const configMap: Record<string, string> = {};
     for (const c of configs || []) configMap[c.config_key] = c.config_value;
 
     const enabled = configMap['auto_import_enabled'] === 'true';
-    const url = configMap['auto_import_url'];
+    let url = configMap['auto_import_url'];
 
     if (!enabled || !url) {
       return new Response(
@@ -138,13 +168,18 @@ Deno.serve(async (req) => {
       );
     }
 
-    console.log('Auto-import: scraping', url);
+    // Add pagination to URL
+    const page = requestedPage || 1;
+    const separator = url.includes('?') ? '&' : '?';
+    const paginatedUrl = page > 1 ? `${url}${separator}pagina=${page}` : url;
+
+    console.log(`Auto-import: scraping page ${page} - ${paginatedUrl}`);
 
     // Scrape
     const response = await fetch('https://api.firecrawl.dev/v1/scrape', {
       method: 'POST',
       headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ url, formats: ['markdown'], onlyMainContent: true }),
+      body: JSON.stringify({ url: paginatedUrl, formats: ['markdown'], onlyMainContent: true }),
     });
 
     const data = await response.json();
@@ -158,11 +193,11 @@ Deno.serve(async (req) => {
 
     const markdown = data?.data?.markdown || data?.markdown || '';
     const parsedComplaints = parseComplaintsFromMarkdown(markdown);
-    console.log('Parsed complaints:', parsedComplaints.length);
+    console.log(`Page ${page}: Parsed ${parsedComplaints.length} complaints`);
 
     if (parsedComplaints.length === 0) {
       return new Response(
-        JSON.stringify({ success: true, message: 'No complaints found', imported: 0 }),
+        JSON.stringify({ success: true, message: 'No complaints found on this page', imported: 0, page, hasMore: false }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
@@ -171,7 +206,7 @@ Deno.serve(async (req) => {
     const { data: existingReviews } = await supabase
       .from('reviews')
       .select('title');
-    const existingTitles = new Set((existingReviews || []).map(r => r.title.toLowerCase().trim()));
+    const existingTitles = new Set((existingReviews || []).map((r: any) => r.title.toLowerCase().trim()));
 
     // Get word replacements
     const { data: replacements } = await supabase
@@ -191,13 +226,17 @@ Deno.serve(async (req) => {
     ];
     const lastInitials = "A B C D F G L M N O P R S T V".split(" ");
 
-    // Filter out duplicates and build new reviews
-    const newReviews = parsedComplaints
-      .filter(c => {
-        const cleanTitle = applyReplacements(cleanText(c.title), activeReplacements).toLowerCase().trim();
-        return !existingTitles.has(cleanTitle);
-      })
-      .map(c => ({
+    // Filter out duplicates and build new reviews - insert ONE BY ONE for real-time feedback
+    const newComplaints = parsedComplaints.filter(c => {
+      const cleanTitle = applyReplacements(cleanText(c.title), activeReplacements).toLowerCase().trim();
+      return !existingTitles.has(cleanTitle);
+    });
+
+    console.log(`Page ${page}: ${newComplaints.length} new (${parsedComplaints.length - newComplaints.length} duplicates skipped)`);
+
+    let importedCount = 0;
+    for (const c of newComplaints) {
+      const review = {
         title: applyReplacements(cleanText(c.title), activeReplacements),
         description: applyReplacements(cleanText(c.description || c.title), activeReplacements),
         full_text: applyReplacements(cleanText(c.description || c.title), activeReplacements),
@@ -212,37 +251,26 @@ Deno.serve(async (req) => {
         response_text: null,
         response_time: c.timeAgo || null,
         is_ai_generated: false,
-      }));
+        created_at: c.timeAgo ? parseTimeAgoToDate(c.timeAgo) : new Date().toISOString(),
+      };
 
-    console.log(`Auto-import: ${newReviews.length} new (${parsedComplaints.length - newReviews.length} duplicates skipped)`);
-
-    if (newReviews.length === 0) {
-      return new Response(
-        JSON.stringify({ success: true, message: 'All complaints already imported', imported: 0, duplicatesSkipped: parsedComplaints.length }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      const { error: insertError } = await supabase.from('reviews').insert(review);
+      if (insertError) {
+        console.error('Insert error for:', review.title, insertError.message);
+      } else {
+        importedCount++;
+      }
     }
 
-    const { data: inserted, error: insertError } = await supabase
-      .from('reviews')
-      .insert(newReviews)
-      .select();
-
-    if (insertError) {
-      console.error('Insert error:', insertError);
-      return new Response(
-        JSON.stringify({ success: false, error: insertError.message }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
-    console.log(`Auto-import: successfully imported ${inserted?.length || 0} reviews`);
+    console.log(`Page ${page}: successfully imported ${importedCount} reviews`);
 
     return new Response(
       JSON.stringify({
         success: true,
-        imported: inserted?.length || 0,
-        duplicatesSkipped: parsedComplaints.length - newReviews.length,
+        imported: importedCount,
+        duplicatesSkipped: parsedComplaints.length - newComplaints.length,
+        page,
+        hasMore: parsedComplaints.length >= 5,
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
