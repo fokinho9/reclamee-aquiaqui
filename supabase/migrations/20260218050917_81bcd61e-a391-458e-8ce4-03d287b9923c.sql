@@ -1,0 +1,1 @@
+INSERT INTO public.word_replacements (original_word, replacement_word) VALUES ('7 M Boots', 'Agro Brasil');
