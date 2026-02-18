@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { ChevronDown, ChevronRight, Loader2, Download, Trash2, Plus, Save } from "lucide-react";
+import { Link } from "react-router-dom";
+import { ChevronDown, ChevronRight, Loader2, Download, Trash2, Plus, Save, ExternalLink, CheckCircle } from "lucide-react";
 
 interface WordReplacement {
   id: string;
@@ -25,6 +26,7 @@ const ImportReviewsSection = () => {
   const [loading, setLoading] = useState(false);
   const [previews, setPreviews] = useState<ImportedReview[]>([]);
   const [saved, setSaved] = useState(false);
+  const [liveImports, setLiveImports] = useState<ImportedReview[]>([]);
 
   // Word replacements
   const [replacements, setReplacements] = useState<WordReplacement[]>([]);
@@ -37,6 +39,27 @@ const ImportReviewsSection = () => {
   useEffect(() => {
     loadReplacements();
   }, []);
+
+  // Subscribe to realtime inserts on reviews table
+  useEffect(() => {
+    if (!loading && liveImports.length === 0) return;
+
+    const channel = supabase
+      .channel("reviews-import")
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "reviews" },
+        (payload) => {
+          const newReview = payload.new as ImportedReview;
+          setLiveImports((prev) => [...prev, newReview]);
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [loading]);
 
   const loadReplacements = async () => {
     setLoadingReplacements(true);
@@ -80,6 +103,8 @@ const ImportReviewsSection = () => {
     setLoading(true);
     setSaved(false);
     setPreviews([]);
+    if (save) setLiveImports([]);
+
     try {
       const { data, error } = await supabase.functions.invoke("scrape-reclameaqui", {
         body: { url: url.trim(), saveToDb: save },
@@ -92,7 +117,7 @@ const ImportReviewsSection = () => {
         setSaved(true);
         toast({ title: "Importado!", description: `${data.reviews?.length || 0} reclamações salvas no banco.` });
       } else if (!save) {
-        toast({ title: "Preview pronto!", description: `${data.reviews?.length || 0} reclamações encontradas. Clique em \"Importar\" para salvar.` });
+        toast({ title: "Preview pronto!", description: `${data.reviews?.length || 0} reclamações encontradas. Clique em "Importar" para salvar.` });
       }
     } catch (err: any) {
       toast({ title: "Erro", description: err.message || "Falha ao importar.", variant: "destructive" });
@@ -105,6 +130,9 @@ const ImportReviewsSection = () => {
     nao_respondida: { bg: "#FFF3E0", color: "#E65100" },
     avaliada: { bg: "#E5EEFB", color: "#2B6CB0" },
   };
+
+  // Use live imports if we saved, otherwise use previews
+  const displayReviews = saved && liveImports.length > 0 ? liveImports : previews;
 
   return (
     <div className="mb-6">
@@ -129,7 +157,6 @@ const ImportReviewsSection = () => {
               Defina palavras que serão substituídas automaticamente nas reclamações importadas (ex: "Amazon" → "Minha Loja").
             </p>
 
-            {/* Existing replacements */}
             {loadingReplacements ? (
               <p className="text-xs" style={{ color: "#8A9BAE" }}>Carregando...</p>
             ) : (
@@ -158,7 +185,6 @@ const ImportReviewsSection = () => {
               </div>
             )}
 
-            {/* Add new replacement */}
             <div className="flex items-center gap-2 flex-wrap">
               <input
                 type="text"
@@ -225,19 +251,50 @@ const ImportReviewsSection = () => {
             </div>
           </div>
 
-          {/* Preview results */}
-          {previews.length > 0 && (
+          {/* Live import feed */}
+          {loading && (
+            <div className="bg-white rounded-xl p-4 border" style={{ borderColor: "#E8ECF0" }}>
+              <div className="flex items-center gap-2 mb-3">
+                <Loader2 className="w-4 h-4 animate-spin" style={{ color: "#2B6CB0" }} />
+                <span className="text-sm font-semibold" style={{ color: "#1A2B3D" }}>Importando reclamações...</span>
+              </div>
+              {liveImports.length > 0 && (
+                <div className="space-y-2">
+                  {liveImports.map((r, i) => (
+                    <LiveImportItem key={r.id || i} review={r} index={i} statusColors={statusColors} />
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Results */}
+          {!loading && displayReviews.length > 0 && (
             <div className="space-y-3">
               <h4 className="text-sm font-semibold" style={{ color: "#1A2B3D" }}>
-                {saved ? "✅" : "👁️"} {previews.length} reclamações {saved ? "importadas" : "encontradas"}:
+                {saved ? "✅" : "👁️"} {displayReviews.length} reclamações {saved ? "importadas" : "encontradas"}:
               </h4>
-              {previews.map((r, i) => {
+              {displayReviews.map((r, i) => {
                 const sc = statusColors[r.status] || statusColors.nao_respondida;
                 return (
-                  <div key={r.id || i} className="bg-white rounded-xl p-4 border" style={{ borderColor: "#E8ECF0" }}>
+                  <div key={r.id || i} className="bg-white rounded-xl p-4 border transition-all" style={{ borderColor: "#E8ECF0" }}>
                     <div className="flex items-center justify-between mb-2 flex-wrap gap-2">
-                      <span className="text-sm font-bold" style={{ color: "#1A2B3D" }}>{r.title}</span>
-                      <span className="text-xs px-2 py-0.5 rounded-full" style={{ backgroundColor: sc.bg, color: sc.color }}>
+                      <div className="flex items-center gap-2 flex-1 min-w-0">
+                        {saved && <CheckCircle className="w-4 h-4 flex-shrink-0" style={{ color: "#2E7D32" }} />}
+                        {r.id ? (
+                          <Link
+                            to={`/reclamacao/${r.id}`}
+                            className="text-sm font-bold hover:underline truncate"
+                            style={{ color: "#2B6CB0" }}
+                          >
+                            {r.title}
+                            <ExternalLink className="w-3 h-3 inline ml-1 mb-0.5" />
+                          </Link>
+                        ) : (
+                          <span className="text-sm font-bold truncate" style={{ color: "#1A2B3D" }}>{r.title}</span>
+                        )}
+                      </div>
+                      <span className="text-xs px-2 py-0.5 rounded-full flex-shrink-0" style={{ backgroundColor: sc.bg, color: sc.color }}>
                         {r.status}
                       </span>
                     </div>
@@ -250,6 +307,47 @@ const ImportReviewsSection = () => {
           )}
         </div>
       )}
+    </div>
+  );
+};
+
+// Animated live import item
+const LiveImportItem = ({
+  review,
+  index,
+  statusColors,
+}: {
+  review: ImportedReview;
+  index: number;
+  statusColors: Record<string, { bg: string; color: string }>;
+}) => {
+  const sc = statusColors[review.status] || statusColors.nao_respondida;
+
+  return (
+    <div
+      className="flex items-center gap-3 p-2 rounded-lg animate-fade-in"
+      style={{ backgroundColor: "#F7FAFC", animationDelay: `${index * 100}ms` }}
+    >
+      <CheckCircle className="w-4 h-4 flex-shrink-0" style={{ color: "#2E7D32" }} />
+      <div className="flex-1 min-w-0">
+        {review.id ? (
+          <Link
+            to={`/reclamacao/${review.id}`}
+            className="text-xs font-semibold hover:underline truncate block"
+            style={{ color: "#2B6CB0" }}
+          >
+            {review.title}
+            <ExternalLink className="w-3 h-3 inline ml-1 mb-0.5" />
+          </Link>
+        ) : (
+          <span className="text-xs font-semibold truncate block" style={{ color: "#1A2B3D" }}>
+            {review.title}
+          </span>
+        )}
+      </div>
+      <span className="text-[10px] px-1.5 py-0.5 rounded-full flex-shrink-0" style={{ backgroundColor: sc.bg, color: sc.color }}>
+        {review.status}
+      </span>
     </div>
   );
 };
