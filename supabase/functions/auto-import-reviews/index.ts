@@ -146,11 +146,13 @@ Deno.serve(async (req) => {
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    // Parse request body for page parameter
+    // Parse request body for page and url parameters
     let requestedPage: number | null = null;
+    let requestedUrl: string | null = null;
     try {
       const body = await req.json();
       if (body?.page) requestedPage = parseInt(body.page);
+      if (body?.url) requestedUrl = body.url;
     } catch { /* no body, use config */ }
 
     // Get config
@@ -158,8 +160,9 @@ Deno.serve(async (req) => {
     const configMap: Record<string, string> = {};
     for (const c of configs || []) configMap[c.config_key] = c.config_value;
 
-    const enabled = configMap['auto_import_enabled'] === 'true';
-    let url = configMap['auto_import_url'];
+    // Use provided URL or fall back to config
+    let url = requestedUrl || configMap['auto_import_url'];
+    const enabled = requestedUrl ? true : configMap['auto_import_enabled'] === 'true';
 
     if (!enabled || !url) {
       return new Response(

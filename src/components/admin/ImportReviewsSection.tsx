@@ -30,6 +30,7 @@ const ImportReviewsSection = () => {
 
   // Pagination import state
   const [paginationImporting, setPaginationImporting] = useState(false);
+  const [paginationUrl, setPaginationUrl] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalImported, setTotalImported] = useState(0);
   const [pageLog, setPageLog] = useState<string[]>([]);
@@ -134,6 +135,10 @@ const ImportReviewsSection = () => {
 
   // Pagination import - page by page
   const startPaginationImport = async () => {
+    if (!paginationUrl.trim()) {
+      toast({ title: "Erro", description: "Cole a URL do Reclame Aqui para importar.", variant: "destructive" });
+      return;
+    }
     setPaginationImporting(true);
     setStopRequested(false);
     setCurrentPage(1);
@@ -152,7 +157,7 @@ const ImportReviewsSection = () => {
 
       try {
         const { data, error } = await supabase.functions.invoke("auto-import-reviews", {
-          body: { page: p },
+          body: { page: p, url: paginationUrl.trim() },
         });
 
         if (error) throw error;
@@ -310,8 +315,20 @@ const ImportReviewsSection = () => {
               📄 Importação com Paginação
             </h4>
             <p className="text-xs mb-3" style={{ color: "#5A6872" }}>
-              Importa todas as páginas de reclamações automaticamente, uma por vez. Usa a URL configurada na importação automática.
+              Cole a URL da lista de reclamações do Reclame Aqui. Todas as páginas serão importadas automaticamente.
             </p>
+
+            <div className="flex gap-2 items-center flex-wrap mb-3">
+              <input
+                type="url"
+                value={paginationUrl}
+                onChange={(e) => setPaginationUrl(e.target.value)}
+                placeholder="https://www.reclameaqui.com.br/empresa/nome/lista-reclamacoes/"
+                className="flex-1 min-w-[300px] px-3 py-2 border rounded-lg text-sm"
+                style={{ borderColor: "#E8ECF0" }}
+                disabled={paginationImporting}
+              />
+            </div>
 
             <div className="flex gap-2 items-center flex-wrap">
               {!paginationImporting ? (
