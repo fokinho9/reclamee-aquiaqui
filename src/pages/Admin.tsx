@@ -299,10 +299,18 @@ const AIReviewsSection = ({ companyName, companyCategory }: { companyName: strin
   );
 };
 
+const ADMIN_TABS = [
+  { id: "content", label: "📄 Conteúdo", description: "Textos, imagens e configurações" },
+  { id: "reviews", label: "📝 Reclamações", description: "Gerenciar e editar reclamações" },
+  { id: "import", label: "📥 Importar", description: "Importar do Reclame Aqui" },
+  { id: "ai", label: "🤖 IA", description: "Gerar avaliações com IA" },
+];
+
 const Admin = () => {
   const { user, isAdmin, loading: authLoading } = useAuth();
   const { data: content, isLoading } = useSiteContent();
   const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState("reviews");
 
   useEffect(() => {
     if (!authLoading && (!user || !isAdmin)) {
@@ -325,13 +333,11 @@ const Admin = () => {
 
   if (!user || !isAdmin) return null;
 
-  // Helper to get content value
   const cv = (key: string, fallback = "") => {
     const item = (content || []).find(i => i.content_key === key);
     return item?.content_value || fallback;
   };
 
-  // Group by section
   const sections = (content || []).reduce<Record<string, SiteContent[]>>((acc, item) => {
     if (!acc[item.section]) acc[item.section] = [];
     acc[item.section].push(item);
@@ -345,7 +351,7 @@ const Admin = () => {
     <div className="min-h-screen" style={{ backgroundColor: "#F2F4F6" }}>
       {/* Header */}
       <header className="bg-white border-b" style={{ borderColor: "#E8ECF0" }}>
-        <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
+        <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <h1 className="text-xl font-bold" style={{ color: "#1B8B4F" }}>
               Reclame<span style={{ color: "#333" }}>AQUI</span>
@@ -369,30 +375,82 @@ const Admin = () => {
         </div>
       </header>
 
-      {/* Content */}
-      <main className="max-w-5xl mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h2 className="text-2xl font-bold" style={{ color: "#1A2B3D" }}>Gerenciar Conteúdo</h2>
-          <p className="text-sm mt-1" style={{ color: "#5A6872" }}>
-            Edite textos, imagens e configurações do site. As alterações são salvas em tempo real.
-          </p>
+      {/* Tab Navigation */}
+      <div className="bg-white border-b" style={{ borderColor: "#E8ECF0" }}>
+        <div className="max-w-6xl mx-auto px-4">
+          <nav className="flex gap-1 overflow-x-auto">
+            {ADMIN_TABS.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className="px-4 py-3 text-sm font-medium whitespace-nowrap border-b-2 transition-colors"
+                style={{
+                  borderColor: activeTab === tab.id ? "#2B6CB0" : "transparent",
+                  color: activeTab === tab.id ? "#2B6CB0" : "#5A6872",
+                  backgroundColor: activeTab === tab.id ? "#F0F6FF" : "transparent",
+                }}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </nav>
         </div>
+      </div>
 
-        {sortedSections.map((section) => (
-          <SectionGroup key={section} section={section} items={sections[section]} />
-        ))}
+      {/* Content */}
+      <main className="max-w-6xl mx-auto px-4 py-8">
+        {activeTab === "content" && (
+          <>
+            <div className="mb-8">
+              <h2 className="text-2xl font-bold" style={{ color: "#1A2B3D" }}>Gerenciar Conteúdo</h2>
+              <p className="text-sm mt-1" style={{ color: "#5A6872" }}>
+                Edite textos, imagens e configurações do site.
+              </p>
+            </div>
+            {sortedSections.map((section) => (
+              <SectionGroup key={section} section={section} items={sections[section]} />
+            ))}
+          </>
+        )}
 
-        {/* AI Reviews Section */}
-        <AIReviewsSection
-          companyName={cv('company_name', 'Amazon')}
-          companyCategory={cv('company_category', 'Marketplace')}
-        />
+        {activeTab === "reviews" && (
+          <>
+            <div className="mb-8">
+              <h2 className="text-2xl font-bold" style={{ color: "#1A2B3D" }}>Gerenciar Reclamações</h2>
+              <p className="text-sm mt-1" style={{ color: "#5A6872" }}>
+                Edite títulos, descrições, categorias e status de cada reclamação.
+              </p>
+            </div>
+            <ManageReviewsSection />
+          </>
+        )}
 
-        {/* Manage Reviews */}
-        <ManageReviewsSection />
+        {activeTab === "import" && (
+          <>
+            <div className="mb-8">
+              <h2 className="text-2xl font-bold" style={{ color: "#1A2B3D" }}>Importar Reclamações</h2>
+              <p className="text-sm mt-1" style={{ color: "#5A6872" }}>
+                Importe reclamações do Reclame Aqui com substituição automática de palavras.
+              </p>
+            </div>
+            <ImportReviewsSection />
+          </>
+        )}
 
-        {/* Import from Reclame Aqui */}
-        <ImportReviewsSection />
+        {activeTab === "ai" && (
+          <>
+            <div className="mb-8">
+              <h2 className="text-2xl font-bold" style={{ color: "#1A2B3D" }}>Avaliações com IA</h2>
+              <p className="text-sm mt-1" style={{ color: "#5A6872" }}>
+                Gere avaliações realistas automaticamente usando inteligência artificial.
+              </p>
+            </div>
+            <AIReviewsSection
+              companyName={cv('company_name', 'Amazon')}
+              companyCategory={cv('company_category', 'Marketplace')}
+            />
+          </>
+        )}
       </main>
     </div>
   );
