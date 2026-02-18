@@ -126,23 +126,26 @@ function formatTimeAgo(dateStr: string): string {
   return `Há ${diffD} dia${diffD > 1 ? 's' : ''}`;
 }
 
+const ITEMS_PER_PAGE = 10;
+
 const Reclamacoes = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const currentTab = (searchParams.get("tab") as TabKey) || "ultimas";
+  const currentPage = parseInt(searchParams.get("page") || "1", 10);
   const { data: dbReviews, isLoading } = useReviews(currentTab);
 
-  // Filter mock complaints by tab
-  const filterMock = (tab: TabKey) => {
-    switch (tab) {
-      case "nao_respondidas": return MOCK_COMPLAINTS.filter(c => c.status === "nao_respondida");
-      case "respondidas": return MOCK_COMPLAINTS.filter(c => c.status === "respondida");
-      case "avaliadas": return MOCK_COMPLAINTS.filter(c => c.status === "avaliada");
-      default: return MOCK_COMPLAINTS;
-    }
+  const allReviews = dbReviews || [];
+  const totalPages = Math.max(1, Math.ceil(allReviews.length / ITEMS_PER_PAGE));
+  const page = Math.min(currentPage, totalPages);
+  const paginatedReviews = allReviews.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
+
+  const setPage = (p: number) => {
+    setSearchParams({ tab: currentTab, page: String(p) });
   };
 
-  const mockFiltered = filterMock(currentTab);
-  const hasDbReviews = (dbReviews || []).length > 0;
+  const setTab = (tab: string) => {
+    setSearchParams({ tab, page: "1" });
+  };
 
   return (
     <div className="min-h-screen bg-[#F5F7FA]">
@@ -171,7 +174,7 @@ const Reclamacoes = () => {
           {TABS.map(t => (
             <button
               key={t.key}
-              onClick={() => setSearchParams({ tab: t.key })}
+              onClick={() => setTab(t.key)}
               className={`px-4 py-3 text-[13px] font-semibold border-b-2 transition-colors whitespace-nowrap ${
                 currentTab === t.key
                   ? "border-[#2B6CB0] text-[#2B6CB0]"
@@ -191,21 +194,66 @@ const Reclamacoes = () => {
               <div className="px-6 py-12 text-center">
                 <p className="text-sm" style={{ color: '#8A9BAE' }}>Carregando reclamações...</p>
               </div>
+            ) : paginatedReviews.length > 0 ? (
+              paginatedReviews.map(r => <ReviewCard key={r.id} review={r} />)
             ) : (
-              <>
-                {/* DB reviews first */}
-                {(dbReviews || []).map(r => <ReviewCard key={r.id} review={r} />)}
-                {/* Then mock complaints */}
-                {mockFiltered.map(c => <MockCard key={c.id} complaint={c} />)}
-                {!hasDbReviews && mockFiltered.length === 0 && (
-                  <div className="px-6 py-12 text-center">
-                    <p className="text-sm" style={{ color: '#8A9BAE' }}>Nenhuma reclamação encontrada nesta categoria.</p>
-                  </div>
-                )}
-              </>
+              <div className="px-6 py-12 text-center">
+                <p className="text-sm" style={{ color: '#8A9BAE' }}>Nenhuma reclamação encontrada nesta categoria.</p>
+              </div>
             )}
           </div>
         </div>
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-center gap-1 mt-6">
+            <button
+              onClick={() => setPage(page - 1)}
+              disabled={page <= 1}
+              className="px-3 py-2 text-sm rounded-lg disabled:opacity-30"
+              style={{ color: '#2B6CB0' }}
+            >
+              ← Anterior
+            </button>
+            {Array.from({ length: totalPages }, (_, i) => i + 1)
+              .filter(p => p === 1 || p === totalPages || Math.abs(p - page) <= 2)
+              .reduce<(number | string)[]>((acc, p, i, arr) => {
+                if (i > 0 && p - (arr[i - 1] as number) > 1) acc.push('...');
+                acc.push(p);
+                return acc;
+              }, [])
+              .map((p, i) =>
+                typeof p === 'string' ? (
+                  <span key={`ellipsis-${i}`} className="px-2 text-sm" style={{ color: '#8A9BAE' }}>…</span>
+                ) : (
+                  <button
+                    key={p}
+                    onClick={() => setPage(p)}
+                    className={`w-9 h-9 text-sm rounded-lg font-semibold ${
+                      p === page ? 'text-white' : ''
+                    }`}
+                    style={p === page ? { backgroundColor: '#2B6CB0', color: '#fff' } : { color: '#5A6872' }}
+                  >
+                    {p}
+                  </button>
+                )
+              )}
+            <button
+              onClick={() => setPage(page + 1)}
+              disabled={page >= totalPages}
+              className="px-3 py-2 text-sm rounded-lg disabled:opacity-30"
+              style={{ color: '#2B6CB0' }}
+            >
+              Próxima →
+            </button>
+          </div>
+        )}
+
+        {!isLoading && allReviews.length > 0 && (
+          <p className="text-center text-xs mt-3" style={{ color: '#8A9BAE' }}>
+            Mostrando {(page - 1) * ITEMS_PER_PAGE + 1}–{Math.min(page * ITEMS_PER_PAGE, allReviews.length)} de {allReviews.length} reclamações
+          </p>
+        )}
       </div>
     </div>
   );
