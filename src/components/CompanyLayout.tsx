@@ -532,7 +532,7 @@ export const SidebarSection = ({ cv }: { cv: (key: string, fallback: string) => 
         <p className="text-[13px]" style={{ color: '#1A2B3D' }}><strong>CNPJ:</strong> <span style={{ color: '#2B6CB0' }}>{cv('cnpj', '15.436.940/0001-03')}</span></p>
         <p className="text-xs mt-1" style={{ color: '#8A9BAE' }}>Informações cadastradas pela empresa</p>
         <div className="flex items-center gap-1.5 mt-3 text-xs" style={{ color: '#8A9BAE' }}>
-          <img src="/images/icons/calendar-star.svg" alt="" className="w-4 h-4" /> Cadastrada há 20 anos
+          <img src="/images/icons/calendar-star.svg" alt="" className="w-4 h-4" /> {cv('company_registration_time', 'Cadastrada há 20 anos')}
         </div>
       </div>
     </div>
@@ -554,7 +554,7 @@ export const SidebarSection = ({ cv }: { cv: (key: string, fallback: string) => 
     </div>
 
     <div className="rounded-xl p-4 bg-background" style={{ border: '1px solid #E8ECF0' }}>
-      <p className="text-xs mb-2" style={{ color: '#8A9BAE' }}>Qual a posição de {cv('company_name', 'Amazon')} ?</p>
+      <p className="text-xs mb-2" style={{ color: '#8A9BAE' }}>Qual a posição de {cv('company_name', 'Agro Brasil')} ?</p>
       <div className="flex items-center gap-3">
         <span className="text-3xl font-bold" style={{ color: '#1A2B3D' }}>{cv('company_position', '12º')}</span>
         <span className="text-sm font-bold" style={{ color: '#1A2B3D' }}>{cv('company_position_label', 'Melhor empresa')}</span>
@@ -566,15 +566,22 @@ export const SidebarSection = ({ cv }: { cv: (key: string, fallback: string) => 
     </div>
 
     <div>
-      <h4 className="text-sm font-bold mb-2" style={{ color: '#1A2B3D' }}>Marcas {cv('company_name', 'Amazon')}</h4>
-      <div className="flex gap-2">
-        <span className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-full" style={{ border: '1px solid #E8ECF0', color: '#1A2B3D', backgroundColor: '#F7F9FB' }}>
-          <span className="w-5 h-5 rounded-full bg-[#1A2B3D] text-white text-[10px] font-bold flex items-center justify-center">A</span> Alexa
-        </span>
-        <span className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-full" style={{ border: '1px solid #E8ECF0', color: '#1A2B3D', backgroundColor: '#F7F9FB' }}>
-          <span className="w-5 h-5 rounded-full bg-[#1A2B3D] text-white text-[10px] font-bold flex items-center justify-center">K</span> Kindle
-        </span>
-      </div>
+      <h4 className="text-sm font-bold mb-2" style={{ color: '#1A2B3D' }}>Marcas {cv('company_name', 'Agro Brasil')}</h4>
+      {cv('company_brands', '') ? (
+        <div className="flex gap-2 flex-wrap">
+          {cv('company_brands', '').split(',').map((brand: string) => brand.trim()).filter(Boolean).map((brand: string) => (
+            <span key={brand} className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-full" style={{ border: '1px solid #E8ECF0', color: '#1A2B3D', backgroundColor: '#F7F9FB' }}>
+              <span className="w-5 h-5 rounded-full bg-[#1A2B3D] text-white text-[10px] font-bold flex items-center justify-center">{brand.charAt(0).toUpperCase()}</span> {brand}
+            </span>
+          ))}
+        </div>
+      ) : (
+        <div className="flex gap-2">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-full" style={{ border: '1px solid #E8ECF0', color: '#1A2B3D', backgroundColor: '#F7F9FB' }}>
+            <span className="w-5 h-5 rounded-full bg-[#1A2B3D] text-white text-[10px] font-bold flex items-center justify-center">A</span> Agro Brasil
+          </span>
+        </div>
+      )}
     </div>
 
     <PostCard title="O que fazer se a entrega está atrasada?" image="/images/post-1.jpg" />

@@ -86,7 +86,7 @@ const Sobre = () => (
               </p>
               <div className="flex items-center gap-2 text-sm" style={{ color: '#4B5963' }}>
                 <img src="/images/icons/calendar-star.svg" alt="" className="w-5 h-5" />
-                <span>Há quase 20 anos no Reclameaqui.</span>
+                <span>{cv('company_registration_time', 'Cadastrada há 20 anos')}</span>
               </div>
               <div className="flex items-center gap-2">
                 <img src="/images/seal-ra-verified.png" alt="Verificada" className="w-5 h-5" />
@@ -108,15 +108,17 @@ const Sobre = () => (
             <VerificationSection />
 
             {/* Vídeo YouTube */}
-            <div className="rounded-lg overflow-hidden" style={{ border: '1px solid #E1E3E5' }}>
-              <iframe
-                width="100%" height="360"
-                src={cv('youtube_url', 'https://www.youtube.com/embed/MVaaQ8Qu7Iw')}
-                title="Vídeo" frameBorder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen className="w-full"
-              />
-            </div>
+            {cv('youtube_url', '') && (
+              <div className="rounded-lg overflow-hidden" style={{ border: '1px solid #E1E3E5' }}>
+                <iframe
+                  width="100%" height="360"
+                  src={cv('youtube_url', '')}
+                  title="Vídeo" frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen className="w-full"
+                />
+              </div>
+            )}
 
             {/* CTA Seus pedidos */}
             <a href="#" target="_blank" rel="noopener noreferrer"

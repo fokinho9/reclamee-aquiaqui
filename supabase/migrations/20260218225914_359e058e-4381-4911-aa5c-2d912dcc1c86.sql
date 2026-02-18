@@ -1,0 +1,1 @@
+INSERT INTO site_content (content_key, content_value, content_type, label, section, sort_order) VALUES ('company_registration_time', 'Cadastrada há 20 anos', 'text', 'Tempo de cadastro', 'sidebar', 15);
