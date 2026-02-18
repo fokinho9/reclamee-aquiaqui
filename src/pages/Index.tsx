@@ -1,4 +1,4 @@
-import { Home, Building2, MessageSquare, Tag, HelpCircle, FileText, AlertTriangle, Eye, ExternalLink, ThumbsUp, MoreVertical, Globe, Info, Calendar, MapPin, ChevronDown, ChevronUp, Copy, ChevronRight } from "lucide-react";
+import { Home, Building2, MessageSquare, Tag, HelpCircle, FileText, AlertTriangle, Eye, ExternalLink, ThumbsUp, MoreVertical, Globe, Info, Calendar } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useSiteContent, useContentValue } from "@/hooks/use-site-content";
@@ -242,190 +242,7 @@ const EvolutionCard = ({ companyName }: { companyName?: string }) => (
   </div>
 );
 
-/* ───────────── ABOUT SECTION (Sobre) ───────────── */
-const AboutSection = ({ cv }: { cv: (key: string, fallback: string) => string }) => {
-  const [verificationOpen, setVerificationOpen] = useState(false);
-
-  const verificationCriteria = [
-    { icon: "https://storage.googleapis.com/reclameaqui-assets/images/ra-verified/ar_on_you_gray.svg", label: "Identidade", desc: "Confirmamos a identidade de um dos membros do quadro societário administrativo da empresa." },
-    { icon: "https://storage.googleapis.com/reclameaqui-assets/images/ra-verified/bid_landscape_gray.svg", label: "Site cadastrado", desc: "A empresa tem um site cadastrado." },
-    { icon: "https://storage.googleapis.com/reclameaqui-assets/images/ra-verified/language_gray.svg", label: "Atividade no Reclame AQUI", desc: "Exigimos que a empresa tenha bons índices de taxa de resposta das reclamações e tenha um bom histórico de reputação conosco." },
-    { icon: "https://storage.googleapis.com/reclameaqui-assets/images/ra-verified/shield_gray.svg", label: "Checagens de segurança", desc: "A empresa apresenta evidências de confiabilidade." },
-  ];
-
-  return (
-    <div>
-      {/* Título principal */}
-      <h2 id="descricao-empresa" className="text-xl font-bold mb-4" style={{ color: '#1A2B3D' }}>Sobre {cv('company_name', 'Amazon')}</h2>
-
-      {/* Conheça a empresa */}
-      <article className="bg-background rounded-xl p-5 mb-4" style={{ border: '1px solid #E8ECF0' }}>
-        <div className="flex items-center gap-2 mb-3">
-          <img src="/images/icons/store.svg" alt="" className="w-5 h-5" />
-          <h3 className="text-[15px] font-bold" style={{ color: '#1A2B3D' }}>Conheça {cv('company_name', 'Amazon')}</h3>
-        </div>
-        <p className="text-[13px] leading-relaxed mb-4" style={{ color: '#5A6872' }}>{cv('about_text', 'A Amazon.com.br oferece milhares de ofertas e produtos em diversas categorias, que incluem itens vendidos e entregues pela Amazon ou por vendedores parceiros.')}</p>
-        
-        <div className="flex items-center gap-2 mb-3">
-          <img src="/images/icons/calendar-star.svg" alt="" className="w-4 h-4" />
-          <p className="text-[13px]" style={{ color: '#5A6872' }}>Há quase <strong>20 anos</strong> no Reclame <span style={{ color: '#1B8B4F', fontWeight: 700 }}>AQUI.</span></p>
-        </div>
-
-        <div className="flex items-center gap-2 mb-3">
-          <a href="#" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold" style={{ backgroundColor: '#E5EEFB', color: '#0A213D' }}>
-            <img src="/images/seal-ra-verified.png" alt="Verificada" className="w-4 h-4" /> Verificada
-          </a>
-        </div>
-
-        <div className="flex items-center gap-2 mb-2">
-          <span className="text-xs font-medium" style={{ color: '#8A9BAE' }}>CNPJ:</span>
-          <p className="text-[13px]" style={{ color: '#1A2B3D' }}>{cv('cnpj', '15.436.940/0001-03')}</p>
-          <Copy className="w-3.5 h-3.5 cursor-pointer" style={{ color: '#2B6CB0' }} />
-        </div>
-
-        <div className="mb-2">
-          <span className="text-xs font-medium" style={{ color: '#8A9BAE' }}>Razão social:</span>
-          <p className="text-[13px]" style={{ color: '#1A2B3D' }}>{cv('company_legal_name', 'Amazon')}</p>
-        </div>
-
-        <p className="text-[11px] italic" style={{ color: '#8A9BAE' }}>Informações cadastradas pela empresa.</p>
-      </article>
-
-      {/* Empresa Verificada - Expandable */}
-      <div className="bg-background rounded-xl overflow-hidden mb-4" style={{ border: '1px solid #E8ECF0' }}>
-        <button onClick={() => setVerificationOpen(!verificationOpen)} className="w-full px-5 py-4 flex items-center justify-between" style={{ backgroundColor: '#2B6CB0' }}>
-          <div className="flex items-center gap-2">
-            <img src="https://storage.googleapis.com/reclameaqui-assets/images/ra-verified/seal-ra-verified-white.svg" alt="Selo RA Verificada" className="w-5 h-5" />
-            <p className="text-sm font-bold text-white">Empresa verificada</p>
-          </div>
-          {verificationOpen ? <ChevronUp className="w-4 h-4 text-white" /> : <ChevronDown className="w-4 h-4 text-white" />}
-        </button>
-        
-        {!verificationOpen && (
-          <div className="px-5 py-3">
-            <p className="text-xs font-semibold mb-3" style={{ color: '#5A6872' }}>Critérios de verificação</p>
-            <div className="space-y-2">
-              {verificationCriteria.map((c, i) => (
-                <div key={i} className="flex items-center gap-2">
-                  <img src={c.icon} alt="" className="w-5 h-5" />
-                  <span className="text-[13px] font-medium flex-1" style={{ color: '#1A2B3D' }}>{c.label}</span>
-                  <img src="https://storage.googleapis.com/reclameaqui-assets/images/ra-verified/check_circle.svg" alt="Aprovado" className="w-4 h-4" />
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {verificationOpen && (
-          <div className="px-5 py-4">
-            <div className="space-y-4">
-              {verificationCriteria.map((c, i) => (
-                <div key={i}>
-                  <div className="flex items-center gap-2 mb-1">
-                    <img src={c.icon} alt="" className="w-5 h-5" />
-                    <span className="text-[13px] font-semibold flex-1" style={{ color: '#1A2B3D' }}>{c.label}</span>
-                    <div className="flex items-center gap-1">
-                      <img src="https://storage.googleapis.com/reclameaqui-assets/images/ra-verified/check_circle.svg" alt="Aprovado" className="w-4 h-4" />
-                      <span className="text-[11px] font-medium" style={{ color: '#38A169' }}>aprovado</span>
-                    </div>
-                  </div>
-                  <p className="text-[12px] leading-relaxed ml-7" style={{ color: '#5A6872' }}>{c.desc}</p>
-                </div>
-              ))}
-            </div>
-            <hr className="my-4" style={{ borderColor: '#E8ECF0' }} />
-            <a href="https://produtos.reclameaqui.com.br/ra-verificada" target="_blank" rel="noreferrer" className="flex items-center gap-1 text-[13px] font-bold" style={{ color: '#2B6CB0' }}>
-              Saber mais sobre a verificação <ChevronRight className="w-4 h-4" />
-            </a>
-          </div>
-        )}
-      </div>
-
-      {/* Vídeo YouTube + Seus pedidos */}
-      <div className="mb-4">
-        <div className="rounded-xl overflow-hidden" style={{ border: '1px solid #E8ECF0' }}>
-          <iframe width="100%" height="220" src={cv('youtube_url', 'https://www.youtube.com/embed/MVaaQ8Qu7Iw')} title="Vídeo" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen className="w-full" />
-        </div>
-        <a href={cv('orders_url', 'https://www.amazon.com.br/gp/css/order-history')} target="_blank" rel="noreferrer" className="mt-3 w-full flex items-center justify-between px-5 py-3.5 rounded-xl text-white font-semibold text-sm" style={{ backgroundColor: '#2B6CB0' }}>
-          Seus pedidos <ChevronRight className="w-5 h-5" />
-        </a>
-      </div>
-
-      {/* Encontre a empresa */}
-      <article className="bg-background rounded-xl p-5 mb-4" style={{ border: '1px solid #E8ECF0' }}>
-        <div className="flex items-center gap-2 mb-3">
-          <MapPin className="w-5 h-5" style={{ color: '#131D07' }} />
-          <h3 className="text-[15px] font-bold" style={{ color: '#1A2B3D' }}>Encontre {cv('company_name', 'Amazon')}</h3>
-        </div>
-        <div className="mb-3">
-          <span className="text-xs font-medium" style={{ color: '#8A9BAE' }}>Endereço</span>
-          <p className="text-[13px] leading-relaxed mt-1" style={{ color: '#1A2B3D' }}>{cv('company_address', 'AVENIDA PRESIDENTE JUSCELINO KUBITSCHEK, 2041 - ANDAR 18 20 21 22 E 23 LADO A TORRE E - VILA NOVA CONCEICAO - SAO PAULO - SP - 04543011')}</p>
-        </div>
-        <a href={`https://maps.google.com?q=${encodeURIComponent(cv('company_address', 'AVENIDA PRESIDENTE JUSCELINO KUBITSCHEK, 2041'))}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 text-[13px] font-bold" style={{ color: '#2B6CB0' }}>
-          Como chegar <img src="/images/icons/arrow-up-right.svg" alt="" className="w-3 h-3" />
-        </a>
-      </article>
-
-      {/* O que você precisa saber */}
-      <article className="bg-background rounded-xl p-5 mb-4" style={{ border: '1px solid #E8ECF0' }}>
-        <div className="flex items-center gap-2 mb-3">
-          <FileText className="w-5 h-5" style={{ color: '#131D07' }} />
-          <h3 className="text-[15px] font-bold" style={{ color: '#1A2B3D' }}>O que você precisa saber sobre {cv('company_name', 'Amazon')}</h3>
-        </div>
-        <p className="text-[13px] font-semibold mb-4" style={{ color: '#5A6872' }}>Nos últimos 6 meses, {cv('company_name', 'Amazon')}:</p>
-        
-        <div className="space-y-4">
-          <div className="flex items-start gap-3">
-            <img src="/images/icons/smiley-face.svg" alt="" className="w-6 h-6 flex-none mt-0.5" />
-            <p className="text-[13px] leading-relaxed" style={{ color: '#5A6872' }}><span style={{ color: '#1A2B3D' }}>Resolveu </span><strong style={{ color: '#2B6CB0' }}>{cv('stat_resolvidas_pct', '88%')}</strong><span style={{ color: '#1A2B3D' }}> dos problemas</span></p>
-          </div>
-          <div className="flex items-start gap-3">
-            <img src="/images/icons/comment-check.svg" alt="" className="w-6 h-6 flex-none mt-0.5" />
-            <p className="text-[13px] leading-relaxed" style={{ color: '#5A6872' }}><span style={{ color: '#1A2B3D' }}>Respondeu </span><strong style={{ color: '#2B6CB0' }}>{cv('stat_respondidas_pct', '88.4%')}</strong><span style={{ color: '#1A2B3D' }}> das reclamações</span></p>
-          </div>
-          <div className="flex items-start gap-3">
-            <img src="/images/icons/timer.svg" alt="" className="w-6 h-6 flex-none mt-0.5" />
-            <p className="text-[13px] leading-relaxed" style={{ color: '#5A6872' }}><span style={{ color: '#1A2B3D' }}>Tempo médio das respostas é de </span><strong style={{ color: '#2B6CB0' }}>{cv('stat_tempo_resposta', '19 dias e 13 horas')}</strong></p>
-          </div>
-          <div className="flex items-start gap-3">
-            <img src="/images/icons/bullhorn.svg" alt="" className="w-6 h-6 flex-none mt-0.5" />
-            <p className="text-[13px] leading-relaxed" style={{ color: '#5A6872' }}><span style={{ color: '#1A2B3D' }}>Recebeu </span><a href="/reclamacoes" className="font-bold" style={{ color: '#2B6CB0' }}>{cv('stat_reclamacoes', '106194')} Reclamações</a></p>
-          </div>
-          <div className="flex items-start gap-3">
-            <FileText className="w-6 h-6 flex-none mt-0.5" style={{ color: '#4B5963' }} />
-            <p className="text-[13px] leading-relaxed" style={{ color: '#5A6872' }}>A maioria das reclamações são sobre <a href="/reclamacoes" className="font-bold" style={{ color: '#2B6CB0' }}>Produto não recebido</a> e <a href="/reclamacoes" className="font-bold" style={{ color: '#2B6CB0' }}>Atraso na entrega</a>.</p>
-          </div>
-        </div>
-
-        <p className="text-[11px] mt-4 italic" style={{ color: '#8A9BAE' }}>Período de: 01/08/2025 - 31/01/2026</p>
-      </article>
-
-      {/* Todos os contatos */}
-      <div className="bg-background rounded-xl overflow-hidden mb-4" style={{ border: '1px solid #E8ECF0' }}>
-        <div className="px-5 py-4">
-          <h3 className="text-[17px] font-bold" style={{ color: '#1A2B3D' }}>Todos os contatos de {cv('company_name', 'Amazon')}</h3>
-        </div>
-        <div className="px-5 pb-4">
-          <h4 className="font-bold text-sm mb-3" style={{ color: '#1A2B3D' }}>Contatos da empresa</h4>
-          <p className="text-xs mb-2" style={{ color: '#8A9BAE' }}>Site</p>
-          <a href={cv('website_url', 'https://www.amazon.com.br')} target="_blank" rel="noreferrer" className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg text-sm font-medium mb-2" style={{ backgroundColor: '#E5EEFB', color: '#2B6CB0' }}>
-            <Globe className="w-5 h-5" /> {cv('website_url', 'amazon.com.br').replace('https://', '').replace('www.', '')}
-          </a>
-          <a href="#" className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg text-sm font-medium" style={{ backgroundColor: '#E5EEFB', color: '#2B6CB0' }}>
-            <Globe className="w-5 h-5" /> Ir para o atendimento
-          </a>
-          <div className="flex gap-5 mt-4 justify-center">
-            <a href="#"><img src="/images/social-facebook.png" alt="Facebook" className="w-7 h-7" /></a>
-            <a href="#"><img src="/images/social-instagram.png" alt="Instagram" className="w-7 h-7" /></a>
-            <a href="#"><img src="/images/social-x.png" alt="X" className="w-7 h-7" /></a>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-
+/* ───────────── VISITED ALSO (carrossel slick-style) ───────────── */
 const VisitedAlso = () => {
   const companies = [
     { name: "Mercado Livre", logo: "/images/mercado-livre-logo.png", score: "7.6", repImg: "/images/icons/rep-otimo.webp" },
@@ -978,40 +795,45 @@ const Index = () => {
       <main className="max-w-[1286px] mx-auto px-4 md:px-6 py-6">
         {/* Mobile */}
         <div className="lg:hidden">
-          {showSection("Sobre") && <AboutSection cv={cv} />}
           {showSection("Sobre") && (
             <>
-              <div className="mt-4">
-                <h2 className="text-[17px] font-bold mb-4" style={{ color: '#1A2B3D' }}>{cv('company_name', 'Amazon')} é confiável?</h2>
-                <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
-                  <div className="flex-none w-[75%]">
-                    <div className="rounded-xl p-4 shadow-sm min-w-[220px] md:min-w-0" style={{ background: '#EDF7E1' }}>
-                      <p className="text-xs font-medium mb-3" style={{ color: '#5A6872' }}>Qual a reputação de {cv('company_name', 'Amazon')}?</p>
-                      <div className="flex items-center gap-3 mb-2">
-                        <img src="/images/reputation-otimo.webp" alt="Ótimo" className="w-11 h-11" />
-                        <div>
-                          <p className="text-xs" style={{ color: '#5A6872' }}>Reputação</p>
-                          <p className="font-extrabold text-base uppercase" style={{ color: '#1A2B3D' }}>{cv('reputation_label', 'ÓTIMO')}</p>
-                        </div>
+              <h2 className="text-[17px] font-bold mb-4" style={{ color: '#1A2B3D' }}>{cv('company_name', 'Amazon')} é confiável?</h2>
+              <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
+                <div className="flex-none w-[75%]">
+                  <div className="rounded-xl p-4 shadow-sm min-w-[220px] md:min-w-0" style={{ background: '#EDF7E1' }}>
+                    <p className="text-xs font-medium mb-3" style={{ color: '#5A6872' }}>Qual a reputação de {cv('company_name', 'Amazon')}?</p>
+                    <div className="flex items-center gap-3 mb-2">
+                      <img src="/images/reputation-otimo.webp" alt="Ótimo" className="w-11 h-11" />
+                      <div>
+                        <p className="text-xs" style={{ color: '#5A6872' }}>Reputação</p>
+                        <p className="font-extrabold text-base uppercase" style={{ color: '#1A2B3D' }}>{cv('reputation_label', 'ÓTIMO')}</p>
                       </div>
-                      <p className="text-[13px] leading-relaxed mb-3" style={{ color: '#5A6872' }} dangerouslySetInnerHTML={{ __html: cv('reputation_description', '') }} />
                     </div>
+                    <p className="text-[13px] leading-relaxed mb-3" style={{ color: '#5A6872' }} dangerouslySetInnerHTML={{ __html: cv('reputation_description', '') }} />
                   </div>
-                  <div className="flex-none w-[75%]">
-                    <div className="rounded-xl p-4 shadow-sm min-w-[220px] md:min-w-0" style={{ background: '#EDF7E1' }}>
-                      <p className="text-xs font-medium mb-3" style={{ color: '#5A6872' }}>{cv('company_name', 'Amazon')} existe?</p>
-                      <div className="flex items-center gap-3 mb-2">
-                        <img src="/images/seal-ra-verified.png" alt="Verificada" className="w-9 h-9" />
-                        <p className="font-bold text-[15px]" style={{ color: '#1A2B3D' }}>Empresa verificada</p>
-                      </div>
-                      <p className="text-[13px] leading-relaxed mb-3" style={{ color: '#5A6872' }}>{cv('trust_description', 'Essa empresa é verificada e possui o selo de confiança do Reclame AQUI.')}</p>
+                </div>
+                <div className="flex-none w-[75%]">
+                  <div className="rounded-xl p-4 shadow-sm min-w-[220px] md:min-w-0" style={{ background: '#EDF7E1' }}>
+                    <p className="text-xs font-medium mb-3" style={{ color: '#5A6872' }}>{cv('company_name', 'Amazon')} existe?</p>
+                    <div className="flex items-center gap-3 mb-2">
+                      <img src="/images/seal-ra-verified.png" alt="Verificada" className="w-9 h-9" />
+                      <p className="font-bold text-[15px]" style={{ color: '#1A2B3D' }}>Empresa verificada</p>
                     </div>
+                    <p className="text-[13px] leading-relaxed mb-3" style={{ color: '#5A6872' }}>{cv('trust_description', 'Essa empresa é verificada e possui o selo de confiança do Reclame AQUI.')}</p>
                   </div>
                 </div>
               </div>
               <div className="mt-6"><PerformanceCard content={content} cv={cv} /></div>
               <EvolutionCard companyName={cv('company_name', 'Amazon')} />
             </>
+          )}
+          {showSection("Sobre") && (
+            <div className="mt-6">
+              <h3 className="text-[17px] font-bold mb-3" style={{ color: '#1A2B3D' }}>Veja mais informações sobre {cv('company_name', 'Amazon')}</h3>
+              <div className="rounded-xl overflow-hidden mb-4" style={{ border: '1px solid #E8ECF0' }}>
+                <iframe width="100%" height="200" src={cv('youtube_url', 'https://www.youtube.com/embed/MVaaQ8Qu7Iw')} title="Vídeo" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen className="w-full" />
+              </div>
+            </div>
           )}
           {showSection("Posts") && (
             <div className="mb-4">
@@ -1072,9 +894,9 @@ const Index = () => {
             {showAll && <VisitedAlso />}
           </div>
           <div>
-            {showSection("Sobre") && <AboutSection cv={cv} />}
             {showSection("Sobre") && (
               <>
+                <h3 className="text-lg font-bold mb-3" style={{ color: '#1A2B3D' }}>Veja mais informações sobre {cv('company_name', 'Amazon')}</h3>
                 <div className="rounded-xl overflow-hidden mb-4" style={{ border: '1px solid #E8ECF0' }}>
                   <iframe width="100%" height="280" src={cv('youtube_url', 'https://www.youtube.com/embed/MVaaQ8Qu7Iw')} title="Vídeo" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen className="w-full" />
                 </div>
