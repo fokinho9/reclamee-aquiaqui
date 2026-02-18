@@ -69,7 +69,7 @@ const Index = () => {
             <EvolutionCard companyName={cv('company_name', 'Amazon')} />
             <VisitedAlso />
           </div>
-          <div>
+          <div className="min-w-0">
             <h3 className="text-lg font-bold mb-3" style={{ color: '#1A2B3D' }}>Veja mais informações sobre {cv('company_name', 'Amazon')}</h3>
             <div className="rounded-xl overflow-hidden mb-4" style={{ border: '1px solid #E8ECF0' }}>
               <iframe width="100%" height="280" src={cv('youtube_url', 'https://www.youtube.com/embed/MVaaQ8Qu7Iw')} title="Vídeo" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen className="w-full" />
