@@ -131,6 +131,30 @@ export type Database = {
         }
         Relationships: []
       }
+      word_replacements: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean
+          original_word: string
+          replacement_word: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          original_word: string
+          replacement_word: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          original_word?: string
+          replacement_word?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
