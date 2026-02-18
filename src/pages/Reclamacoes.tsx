@@ -204,47 +204,53 @@ const Reclamacoes = () => {
           </div>
         </div>
 
-        {/* Pagination */}
+       {/* Pagination - Reclame Aqui style */}
         {totalPages > 1 && (
-          <div className="flex items-center justify-center gap-1 mt-6">
+          <div className="flex items-center justify-center gap-0 mt-6">
+            <button
+              onClick={() => setPage(1)}
+              disabled={page <= 1}
+              aria-label="Primeira página"
+              className="w-10 h-10 flex items-center justify-center rounded-l-lg border border-r-0 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-[#F0F4F8] transition-colors"
+              style={{ borderColor: '#D1D9E0', color: '#5A6872' }}
+            >
+              <span className="flex items-center">
+                <svg width="8" height="12" viewBox="0 0 8 12" fill="none"><path d="M7 1L2 6l5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                <svg width="8" height="12" viewBox="0 0 8 12" fill="none" className="-ml-1"><path d="M7 1L2 6l5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+              </span>
+            </button>
             <button
               onClick={() => setPage(page - 1)}
               disabled={page <= 1}
-              className="px-3 py-2 text-sm rounded-lg disabled:opacity-30"
-              style={{ color: '#2B6CB0' }}
+              aria-label="Página anterior"
+              className="w-10 h-10 flex items-center justify-center border border-r-0 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-[#F0F4F8] transition-colors"
+              style={{ borderColor: '#D1D9E0', color: '#5A6872' }}
             >
-              ← Anterior
+              <svg width="8" height="12" viewBox="0 0 8 12" fill="none"><path d="M7 1L2 6l5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
             </button>
-            {Array.from({ length: totalPages }, (_, i) => i + 1)
-              .filter(p => p === 1 || p === totalPages || Math.abs(p - page) <= 2)
-              .reduce<(number | string)[]>((acc, p, i, arr) => {
-                if (i > 0 && p - (arr[i - 1] as number) > 1) acc.push('...');
-                acc.push(p);
-                return acc;
-              }, [])
-              .map((p, i) =>
-                typeof p === 'string' ? (
-                  <span key={`ellipsis-${i}`} className="px-2 text-sm" style={{ color: '#8A9BAE' }}>…</span>
-                ) : (
-                  <button
-                    key={p}
-                    onClick={() => setPage(p)}
-                    className={`w-9 h-9 text-sm rounded-lg font-semibold ${
-                      p === page ? 'text-white' : ''
-                    }`}
-                    style={p === page ? { backgroundColor: '#2B6CB0', color: '#fff' } : { color: '#5A6872' }}
-                  >
-                    {p}
-                  </button>
-                )
-              )}
+            <span className="h-10 flex items-center px-4 border text-sm" style={{ borderColor: '#D1D9E0', color: '#5A6872' }}>
+              <strong className="font-bold" style={{ color: '#1A2B3D' }}>{page}</strong>&nbsp;de {totalPages}
+            </span>
             <button
               onClick={() => setPage(page + 1)}
               disabled={page >= totalPages}
-              className="px-3 py-2 text-sm rounded-lg disabled:opacity-30"
-              style={{ color: '#2B6CB0' }}
+              aria-label="Próxima página"
+              className="w-10 h-10 flex items-center justify-center border border-l-0 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-[#F0F4F8] transition-colors"
+              style={{ borderColor: '#D1D9E0', color: '#5A6872' }}
             >
-              Próxima →
+              <svg width="8" height="12" viewBox="0 0 8 12" fill="none"><path d="M1 1l5 5-5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+            </button>
+            <button
+              onClick={() => setPage(totalPages)}
+              disabled={page >= totalPages}
+              aria-label="Última página"
+              className="w-10 h-10 flex items-center justify-center rounded-r-lg border border-l-0 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-[#F0F4F8] transition-colors"
+              style={{ borderColor: '#D1D9E0', color: '#5A6872' }}
+            >
+              <span className="flex items-center">
+                <svg width="8" height="12" viewBox="0 0 8 12" fill="none"><path d="M1 1l5 5-5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                <svg width="8" height="12" viewBox="0 0 8 12" fill="none" className="-ml-1"><path d="M1 1l5 5-5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+              </span>
             </button>
           </div>
         )}
