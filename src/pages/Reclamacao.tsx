@@ -1,199 +1,392 @@
 import { useParams, Link } from "react-router-dom";
 import { useReview } from "@/hooks/use-reviews";
+import { useSiteContent, useContentValue } from "@/hooks/use-site-content";
+import { Header } from "@/components/CompanyLayout";
+import { MapPin, Calendar, ThumbsUp, Hand, Angry, Share2 } from "lucide-react";
 
-/* ───────────── MOCK DATA (fallback for old IDs) ───────────── */
-const MOCK_COMPLAINTS: Record<string, {
-  id: string; title: string; desc: string; fullText: string;
-  author: string; city: string; time: string; status: "respondida" | "nao_respondida" | "avaliada";
-  category: string; reactions: { up: number; down: number }; rating?: number;
-  response?: { text: string; time: string };
-}> = {
-  "1": { id: "1", title: "Atraso na entrega de notebook comprado via pix na Amazon", desc: "Fiz a compra via pix de um notebook...", fullText: "Fiz a compra via pix de um notebook, na empresa amazon, no dia 23/12/2025, com prazo de entrega para o dia 05/01/2026. Além de não ter sido entregue o produto, não consta em nenhum campo uma garantia de entrega. O rastreamento do pedido mostra que o produto está parado no centro de distribuição desde o dia 28/12.", author: "João S.", city: "São Paulo - SP", time: "Há 1 hora", status: "respondida", category: "Produto não recebido", reactions: { up: 12, down: 2 }, response: { text: "Olá, João! Sentimos muito pelo transtorno. Identificamos que houve um atraso logístico no centro de distribuição.", time: "Há 30 minutos" } },
-  "2": { id: "2", title: "Site em loop impede a geração do código de pré-envio para devolução.", desc: "O site está em loop...", fullText: "O site está em loop, toda vez que abro a parte de devolução ele não encaminha para geração de código do pré-envio. Já tentei por diferentes navegadores e dispositivos.", author: "Maria C.", city: "Rio de Janeiro - RJ", time: "Há 2 horas", status: "respondida", category: "Problemas com o site", reactions: { up: 8, down: 1 }, response: { text: "Olá, Maria! Pedimos desculpas pelo inconveniente. Estamos cientes do problema técnico.", time: "Há 1 hora" } },
-  "3": { id: "3", title: "Cobrança indevida no cartão após cancelamento de pedido", desc: "Cancelei um pedido...", fullText: "Cancelei um pedido no dia 10/01 e até agora não recebi o estorno no meu cartão de crédito. O valor de R$ 459,90 continua aparecendo na fatura.", author: "Carlos R.", city: "Belo Horizonte - MG", time: "Há 3 horas", status: "nao_respondida", category: "Cobrança indevida", reactions: { up: 25, down: 3 } },
-  "4": { id: "4", title: "Produto chegou danificado e empresa não aceita troca", desc: "Comprei um monitor...", fullText: "Comprei um monitor e chegou com a tela trincada. Ao solicitar troca, a empresa alega que o prazo de 7 dias já passou.", author: "Ana P.", city: "Curitiba - PR", time: "Há 5 horas", status: "avaliada", category: "Produto com defeito", reactions: { up: 42, down: 5 }, rating: 8, response: { text: "Olá, Ana! Lamentamos muito pelo ocorrido. Já autorizamos a troca do seu monitor.", time: "Há 4 horas" } },
-  "5": { id: "5", title: "Reembolso prometido há 30 dias e nunca realizado", desc: "A Amazon prometeu reembolso...", fullText: "A Amazon prometeu reembolso de R$ 1.200 após devolução de produto. Já se passaram 30 dias e nenhum valor foi creditado.", author: "Pedro L.", city: "Brasília - DF", time: "Há 6 horas", status: "nao_respondida", category: "Reembolso", reactions: { up: 56, down: 8 } },
+const STATUS_CONFIG: Record<string, { label: string; bg: string; color: string; img: string }> = {
+  respondida: { label: "Respondida", bg: "#BFDBFE", color: "#1E40AF", img: "/images/icons/rep-bom.png" },
+  nao_respondida: { label: "Não respondida", bg: "#FEE2E2", color: "#991B1B", img: "/images/icons/rep-ruim.png" },
+  avaliada: { label: "Resolvido", bg: "#BBF7D0", color: "#166534", img: "/images/icons/rep-otimo.webp" },
 };
 
-const STATUS_MAP = {
-  respondida: { label: "Respondida", emoji: "😊", bg: "#38A169" },
-  nao_respondida: { label: "Não respondida", emoji: "😕", bg: "#E53E3E" },
-  avaliada: { label: "Avaliada", emoji: "⭐", bg: "#2B6CB0" },
-};
-
-const Header = () => (
-  <header className="bg-background border-b border-border">
-    <div className="max-w-[1286px] mx-auto flex items-center justify-between px-4 md:px-6 py-2">
-      <Link to="/" className="flex items-center gap-2">
-        <img src="/images/logo-25-anos.svg" alt="ReclameAQUI 25 anos" className="h-7 md:h-9 w-auto" />
-      </Link>
-      <div className="flex items-center gap-2 md:gap-3">
-        <button className="px-3 md:px-4 py-1.5 md:py-2 text-xs md:text-sm font-semibold border border-primary rounded-full text-primary hover:bg-primary/5">Entrar</button>
-        <button className="px-3 md:px-4 py-1.5 md:py-2 text-xs md:text-sm font-semibold bg-primary text-primary-foreground rounded-full hover:opacity-90">Criar conta</button>
-      </div>
-    </div>
-  </header>
-);
-
-function formatTimeAgo(dateStr: string): string {
-  const now = new Date();
-  const date = new Date(dateStr);
-  const diffMs = now.getTime() - date.getTime();
-  const diffMin = Math.floor(diffMs / 60000);
-  if (diffMin < 60) return `Há ${diffMin} minutos`;
-  const diffH = Math.floor(diffMin / 60);
-  if (diffH < 24) return `Há ${diffH} hora${diffH > 1 ? 's' : ''}`;
-  const diffD = Math.floor(diffH / 24);
-  return `Há ${diffD} dia${diffD > 1 ? 's' : ''}`;
+function formatDate(dateStr: string): string {
+  try {
+    const d = new Date(dateStr);
+    const day = String(d.getDate()).padStart(2, "0");
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const year = d.getFullYear();
+    const hours = String(d.getHours()).padStart(2, "0");
+    const minutes = String(d.getMinutes()).padStart(2, "0");
+    return `${day}/${month}/${year} às ${hours}:${minutes}`;
+  } catch {
+    return dateStr;
+  }
 }
 
 const Reclamacao = () => {
   const { id } = useParams<{ id: string }>();
-
-  // Check if it's a UUID (DB review) or numeric (mock)
   const isUuid = id && id.length > 10;
   const { data: dbReview, isLoading } = useReview(isUuid ? id : undefined);
+  const { data: content } = useSiteContent();
+  const cv = (key: string, fallback: string) => useContentValue(content, key, fallback);
 
-  // Try mock data for short IDs
-  const mockComplaint = !isUuid && id ? MOCK_COMPLAINTS[id] : undefined;
+  const companyName = cv("company_name", "Amazon");
+  const companyLogo = cv("company_logo", "/images/amazon-logo.jpg");
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#F5F7FA]">
+      <div className="min-h-screen bg-muted/30">
         <Header />
-        <div className="max-w-[900px] mx-auto px-4 py-20 text-center">
-          <p className="text-sm" style={{ color: '#8A9BAE' }}>Carregando...</p>
+        <div className="max-w-[1286px] mx-auto px-4 py-20 text-center">
+          <p className="text-sm text-muted-foreground">Carregando...</p>
         </div>
       </div>
     );
   }
 
-  // Normalize data
-  const complaint = dbReview
-    ? {
-        title: dbReview.title,
-        fullText: dbReview.full_text || dbReview.description,
-        author: dbReview.author_name,
-        city: dbReview.author_city,
-        time: formatTimeAgo(dbReview.created_at),
-        status: dbReview.status as "respondida" | "nao_respondida" | "avaliada",
-        category: dbReview.category,
-        reactions: { up: dbReview.reactions_up, down: dbReview.reactions_down },
-        rating: dbReview.rating,
-        product: dbReview.product,
-        response: dbReview.response_text
-          ? { text: dbReview.response_text, time: dbReview.response_time || "" }
-          : undefined,
-      }
-    : mockComplaint
-    ? {
-        title: mockComplaint.title,
-        fullText: mockComplaint.fullText,
-        author: mockComplaint.author,
-        city: mockComplaint.city,
-        time: mockComplaint.time,
-        status: mockComplaint.status,
-        category: mockComplaint.category,
-        reactions: mockComplaint.reactions,
-        rating: mockComplaint.rating,
-        product: undefined as string | undefined,
-        response: mockComplaint.response,
-      }
-    : null;
-
-  if (!complaint) {
+  if (!dbReview) {
     return (
-      <div className="min-h-screen bg-[#F5F7FA]">
+      <div className="min-h-screen bg-muted/30">
         <Header />
-        <div className="max-w-[900px] mx-auto px-4 py-20 text-center">
-          <h1 className="text-xl font-bold mb-2" style={{ color: '#1A2B3D' }}>Reclamação não encontrada</h1>
-          <Link to="/reclamacoes" className="text-sm font-semibold" style={{ color: '#2B6CB0' }}>← Voltar às reclamações</Link>
+        <div className="max-w-[1286px] mx-auto px-4 py-20 text-center">
+          <h1 className="text-xl font-bold mb-2 text-foreground">Reclamação não encontrada</h1>
+          <Link to="/reclamacoes" className="text-sm font-semibold text-primary">← Voltar às reclamações</Link>
         </div>
       </div>
     );
   }
 
-  const status = STATUS_MAP[complaint.status];
+  const status = STATUS_CONFIG[dbReview.status] || STATUS_CONFIG.nao_respondida;
+  const formattedDate = formatDate(dbReview.created_at);
+
+  // Parse full_text for response and final consideration sections
+  let mainDescription = dbReview.full_text || dbReview.description;
+  let responseFromText: string | null = null;
+  let finalConsideration: string | null = null;
+
+  if (mainDescription.includes("--- Resposta da empresa ---")) {
+    const parts = mainDescription.split("--- Resposta da empresa ---");
+    mainDescription = parts[0].trim();
+    let rest = parts[1] || "";
+    if (rest.includes("--- Consideração final do consumidor ---")) {
+      const parts2 = rest.split("--- Consideração final do consumidor ---");
+      responseFromText = parts2[0].trim();
+      finalConsideration = parts2[1]?.trim() || null;
+    } else {
+      responseFromText = rest.trim();
+    }
+  }
+
+  const responseText = dbReview.response_text || responseFromText;
 
   return (
-    <div className="min-h-screen bg-[#F5F7FA]">
+    <div className="min-h-screen bg-muted/30">
       <Header />
 
-      <div className="bg-background border-b" style={{ borderColor: '#E8ECF0' }}>
-        <div className="max-w-[900px] mx-auto px-4 md:px-6 py-3 flex items-center gap-2 text-xs" style={{ color: '#8A9BAE' }}>
-          <Link to="/" className="hover:underline" style={{ color: '#2B6CB0' }}>Amazon</Link>
-          <span>›</span>
-          <Link to="/reclamacoes" className="hover:underline" style={{ color: '#2B6CB0' }}>Reclamações</Link>
-          <span>›</span>
-          <span className="truncate max-w-[200px]">{complaint.title}</span>
-        </div>
-      </div>
+      <div className="max-w-[1286px] mx-auto px-4 md:px-6 py-6">
+        <div className="flex justify-between max-lg:flex-col gap-6">
 
-      <div className="max-w-[900px] mx-auto px-4 md:px-6 py-6">
-        <div className="bg-background rounded-xl overflow-hidden" style={{ border: '1px solid #E8ECF0' }}>
-          <div className="px-5 md:px-8 pt-6 pb-4">
-            <div className="flex flex-wrap items-center gap-2 mb-3">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold text-white" style={{ backgroundColor: status.bg }}>
-                {status.emoji} {status.label}
-              </span>
-              <span className="text-xs px-2.5 py-1 rounded-full" style={{ backgroundColor: '#F0F4F8', color: '#5A6872' }}>{complaint.category}</span>
-              {complaint.product && (
-                <span className="text-xs px-2.5 py-1 rounded-full" style={{ backgroundColor: '#E5EEFB', color: '#2B6CB0' }}>📦 {complaint.product}</span>
-              )}
-              {complaint.status === "avaliada" && complaint.rating != null && (
-                <span className="text-xs font-bold px-2.5 py-1 rounded-full" style={{ backgroundColor: '#E5EEFB', color: '#2B6CB0' }}>
-                  Nota do consumidor: {complaint.rating}/10
-                </span>
-              )}
-              <span className="text-xs ml-auto" style={{ color: '#8A9BAE' }}>{complaint.time}</span>
-            </div>
-            <h1 className="text-lg md:text-xl font-bold mb-2" style={{ color: '#1A2B3D' }}>{complaint.title}</h1>
-            <div className="flex items-center gap-2 text-xs" style={{ color: '#8A9BAE' }}>
-              <span className="font-medium" style={{ color: '#5A6872' }}>{complaint.author}</span>
-              <span>·</span>
-              <span>{complaint.city}</span>
-            </div>
-          </div>
+          {/* ───── LEFT: Main content (70%) ───── */}
+          <section className="w-[70%] max-lg:w-full">
+            <article>
+              {/* Title + Status */}
+              <div className="flex justify-between items-start">
+                <div className="flex-1">
+                  {/* "Veja também" nav */}
+                  <nav className="mt-2 mb-4 max-lg:hidden">
+                    <ul className="flex gap-5 items-center">
+                      <li className="text-sm text-muted-foreground">Veja também</li>
+                      <li><Link to="/empresa-reclamacoes" className="text-sm text-primary hover:underline">todas as reclamações</Link></li>
+                      <li><Link to="/empresa-reclamacoes?status=nao_respondidas" className="text-sm text-primary hover:underline">não respondidas</Link></li>
+                      <li><Link to="/empresa-reclamacoes?status=respondidas" className="text-sm text-primary hover:underline">respondidas</Link></li>
+                      <li><Link to="/empresa-reclamacoes?status=avaliadas" className="text-sm text-primary hover:underline">finalizadas</Link></li>
+                    </ul>
+                  </nav>
 
-          <div className="px-5 md:px-8 pb-5">
-            <p className="text-sm leading-relaxed" style={{ color: '#3D4F5F' }}>{complaint.fullText}</p>
-          </div>
+                  <h1
+                    className="text-foreground text-4xl max-md:text-2xl font-bold md:w-full my-5 pr-10 max-lg:pr-0 max-lg:my-6 break-words"
+                    style={{ wordBreak: "break-word" }}
+                  >
+                    {dbReview.title}
+                  </h1>
+                </div>
 
-          <div className="px-5 md:px-8 pb-5">
-            <div className="flex items-center gap-4 py-3 border-t border-b" style={{ borderColor: '#E8ECF0' }}>
-              <span className="text-xs font-medium" style={{ color: '#8A9BAE' }}>Esta reclamação foi útil?</span>
-              <button className="flex items-center gap-1.5 text-sm hover:opacity-80">
-                👍 <span className="text-xs" style={{ color: '#5A6872' }}>{complaint.reactions.up}</span>
-              </button>
-              <button className="flex items-center gap-1.5 text-sm hover:opacity-80">
-                👎 <span className="text-xs" style={{ color: '#5A6872' }}>{complaint.reactions.down}</span>
-              </button>
-            </div>
-          </div>
-
-          {complaint.response && (
-            <div className="mx-5 md:mx-8 mb-6 rounded-xl p-5" style={{ backgroundColor: '#F7F9FB', border: '1px solid #E8ECF0' }}>
-              <div className="flex items-center gap-3 mb-3">
-                <img src="/images/amazon-logo.jpg" alt="Amazon" className="w-10 h-10 rounded-full object-cover border border-border" />
-                <div>
-                  <p className="text-sm font-bold" style={{ color: '#1A2B3D' }}>Resposta da Amazon</p>
-                  <p className="text-xs" style={{ color: '#8A9BAE' }}>{complaint.response.time}</p>
+                {/* Status badge - desktop */}
+                <div className="max-lg:hidden flex-shrink-0">
+                  <div className="flex flex-col items-center justify-center">
+                    <img
+                      src={status.img}
+                      alt={status.label}
+                      className="p-3 rounded-full w-16 mb-[-12px]"
+                      style={{ backgroundColor: status.bg }}
+                    />
+                    <p
+                      className="p-4 rounded-2xl text-base text-center font-bold"
+                      style={{ backgroundColor: status.bg, color: status.color }}
+                    >
+                      {status.label}
+                    </p>
+                  </div>
                 </div>
               </div>
-              <p className="text-sm leading-relaxed" style={{ color: '#3D4F5F' }}>{complaint.response.text}</p>
-            </div>
-          )}
 
-          {!complaint.response && (
-            <div className="mx-5 md:mx-8 mb-6 rounded-xl p-5 text-center" style={{ backgroundColor: '#FFF5F5', border: '1px solid #FED7D7' }}>
-              <p className="text-sm font-semibold" style={{ color: '#E53E3E' }}>😕 Aguardando resposta da empresa</p>
-              <p className="text-xs mt-1" style={{ color: '#8A9BAE' }}>A empresa ainda não respondeu esta reclamação.</p>
-            </div>
-          )}
+              {/* Company name + meta */}
+              <section className="mb-4">
+                <div>
+                  <Link to="/" className="text-primary font-bold text-base">{companyName}</Link>
+                </div>
+
+                <div className="flex gap-4 mt-2 max-lg:flex-wrap text-sm text-foreground">
+                  <p className="flex items-center gap-1">
+                    <MapPin className="w-4 h-4" />
+                    {dbReview.author_city || "São Paulo - SP"}
+                  </p>
+                  <p className="flex items-center gap-1">
+                    <Calendar className="w-4 h-4" />
+                    {formattedDate}
+                  </p>
+                  <p>
+                    <b>ID: </b>{dbReview.id.substring(0, 8)}
+                  </p>
+                </div>
+
+                {/* Status badge - mobile */}
+                <div className="lg:hidden">
+                  <section className="flex items-center gap-2 my-5">
+                    <p className="text-sm font-bold text-foreground">Status da reclamação:</p>
+                    <div
+                      className="inline-flex items-center rounded-lg p-2 gap-2"
+                      style={{ backgroundColor: status.bg, color: status.color }}
+                    >
+                      <img src={status.img} alt={status.label} className="w-6" />
+                      <p className="text-base text-center font-bold">{status.label}</p>
+                    </div>
+                  </section>
+                </div>
+              </section>
+
+              {/* Category tag */}
+              {dbReview.category && (
+                <nav className="mb-8 max-lg:hidden">
+                  <ul className="flex gap-3">
+                    <li>
+                      <span className="bg-primary/10 py-1 px-3 rounded-full text-primary text-base">
+                        {dbReview.category}
+                      </span>
+                    </li>
+                  </ul>
+                </nav>
+              )}
+
+              {/* Description */}
+              <p className="text-foreground mt-4 mb-10 text-base break-words leading-relaxed">
+                {mainDescription}
+              </p>
+
+              {/* Reactions */}
+              <div className="flex flex-col gap-5 mb-5">
+                <div className="relative mb-6">
+                  <div className="flex gap-6 items-center">
+                    <div className="flex flex-col items-center gap-1">
+                      <button className="flex items-center justify-center w-9 h-9 rounded-full border border-border transition-all hover:bg-muted">
+                        <ThumbsUp className="w-5 h-5 text-foreground" />
+                      </button>
+                      <span className="text-xs text-muted-foreground">{dbReview.reactions_up}</span>
+                    </div>
+                    <div className="flex flex-col items-center gap-1">
+                      <button className="flex items-center justify-center w-9 h-9 rounded-full border border-border transition-all hover:bg-muted">
+                        <Hand className="w-5 h-5 text-foreground" />
+                      </button>
+                      <span className="text-xs text-muted-foreground">Eu também</span>
+                    </div>
+                    <div className="flex flex-col items-center gap-1">
+                      <button className="flex items-center justify-center w-9 h-9 rounded-full border border-border transition-all hover:bg-muted">
+                        <Angry className="w-5 h-5 text-foreground" />
+                      </button>
+                      <span className="text-xs text-muted-foreground">Revoltante</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Share */}
+              <section className="flex gap-4 items-center justify-end mb-11">
+                <p className="text-foreground text-sm">Compartilhe</p>
+                <button className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ backgroundColor: "#0965FE" }}>
+                  <span className="text-white text-xs font-bold">f</span>
+                </button>
+                <button className="w-8 h-8 rounded-lg flex items-center justify-center bg-black">
+                  <span className="text-white text-xs font-bold">𝕏</span>
+                </button>
+              </section>
+
+              {/* Company response */}
+              {responseText && (
+                <section
+                  className="text-base leading-6 my-8 border border-solid rounded-lg p-8 max-lg:p-4"
+                  style={{ backgroundColor: "#f8f9ff", borderColor: "#c9c9c9" }}
+                >
+                  <div className="flex items-center justify-between max-lg:flex-col max-lg:items-start">
+                    <h2 className="font-bold text-foreground text-2xl max-lg:text-base">Resposta da empresa</h2>
+                    {dbReview.response_time && (
+                      <p className="text-foreground text-sm">{dbReview.response_time}</p>
+                    )}
+                  </div>
+                  <p className="my-4 text-foreground break-words whitespace-pre-line">{responseText}</p>
+                </section>
+              )}
+
+              {/* Awaiting response */}
+              {!responseText && (
+                <section
+                  className="text-base leading-6 my-8 border border-solid rounded-lg p-8 max-lg:p-4 text-center"
+                  style={{ backgroundColor: "#FFF5F5", borderColor: "#FED7D7" }}
+                >
+                  <p className="text-sm font-semibold" style={{ color: "#E53E3E" }}>😕 Aguardando resposta da empresa</p>
+                  <p className="text-xs mt-1 text-muted-foreground">A empresa ainda não respondeu esta reclamação.</p>
+                </section>
+              )}
+
+              {/* Final consideration */}
+              {finalConsideration && (
+                <section className="rounded-lg border border-solid my-8" style={{ borderColor: "#c9c9c9" }}>
+                  <div
+                    className="text-base leading-6 mb-8 p-8 max-lg:p-4 rounded-t-lg text-white"
+                    style={{ backgroundColor: "#22C55E" }}
+                  >
+                    <div className="flex items-center justify-between max-lg:flex-col max-lg:items-start">
+                      <h2 className="font-bold text-2xl max-lg:text-base">Consideração final do consumidor</h2>
+                    </div>
+                    <p className="my-4 break-words whitespace-pre-line">{finalConsideration}</p>
+                  </div>
+
+                  <div className="flex items-start justify-between pb-8 px-8 max-lg:px-4 max-lg:flex-col max-lg:items-start gap-6">
+                    <div className="text-center">
+                      <p className="text-foreground mb-1 text-sm">O problema foi resolvido?</p>
+                      <div className="flex flex-col items-center">
+                        <img
+                          src={status.img}
+                          alt={status.label}
+                          className="p-3 rounded-full w-16 mb-[-12px]"
+                          style={{ backgroundColor: status.bg }}
+                        />
+                        <p
+                          className="p-4 rounded-2xl text-base text-center font-bold"
+                          style={{ backgroundColor: status.bg, color: status.color }}
+                        >
+                          {status.label}
+                        </p>
+                      </div>
+                    </div>
+
+                    {dbReview.rating != null && (
+                      <div className="text-center">
+                        <p className="text-foreground mb-5 text-sm">Nota do atendimento</p>
+                        <p
+                          className="flex items-center justify-center font-bold text-3xl text-white w-20 h-20 rounded-full mx-auto"
+                          style={{ backgroundColor: "#1D4ED8" }}
+                        >
+                          {dbReview.rating}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </section>
+              )}
+
+              {/* Rating without final consideration */}
+              {!finalConsideration && dbReview.status === "avaliada" && dbReview.rating != null && (
+                <section
+                  className="my-8 rounded-lg border p-8 max-lg:p-4"
+                  style={{ borderColor: "#c9c9c9" }}
+                >
+                  <div className="flex items-center gap-8 justify-center">
+                    <div className="text-center">
+                      <p className="text-foreground mb-2 text-sm">Status</p>
+                      <div className="flex flex-col items-center">
+                        <img src={status.img} alt={status.label} className="p-2 rounded-full w-14 mb-[-10px]" style={{ backgroundColor: status.bg }} />
+                        <p className="p-3 rounded-2xl text-sm text-center font-bold" style={{ backgroundColor: status.bg, color: status.color }}>{status.label}</p>
+                      </div>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-foreground mb-2 text-sm">Nota do atendimento</p>
+                      <p className="flex items-center justify-center font-bold text-3xl text-white w-20 h-20 rounded-full mx-auto" style={{ backgroundColor: "#1D4ED8" }}>
+                        {dbReview.rating}
+                      </p>
+                    </div>
+                  </div>
+                </section>
+              )}
+            </article>
+          </section>
+
+          {/* ───── RIGHT: Sidebar (25%) ───── */}
+          <aside className="w-[25%] max-lg:w-full flex flex-col items-center gap-5">
+            {/* Company card */}
+            <section className="w-full border rounded-lg bg-background self-start" style={{ borderColor: "#c9c9c9" }}>
+              <div className="flex items-center justify-center w-full mt-5">
+                <div className="w-20 h-20 rounded-full border-2 border-border overflow-hidden bg-muted">
+                  <img src={companyLogo} alt={companyName} className="w-full h-full object-cover" />
+                </div>
+              </div>
+              <div className="flex gap-3 justify-center items-center px-6">
+                <h2 className="text-center my-5 text-lg text-foreground font-normal">{companyName}</h2>
+                <img className="w-5" src="/images/seal-ra-verified.png" alt="Empresa verificada" />
+              </div>
+
+              <section className="flex items-center justify-center gap-1 rounded-full py-2 px-4 w-fit mx-auto" style={{ backgroundColor: "#DBEAFE" }}>
+                <img className="w-5" src="/images/seal-ra-verified.png" alt="Empresa verificada" />
+                <p className="text-sm text-foreground font-semibold">Verificada</p>
+              </section>
+
+              <div className="mt-5 text-center">
+                <Link to="/sobre" className="text-primary text-sm inline-flex items-center gap-1">
+                  Entenda sobre a verificação
+                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 6v2h8.59L5 17.59 6.41 19 16 9.41V18h2V6z" /></svg>
+                </Link>
+              </div>
+
+              <div className="border-b border-border w-5/6 mx-auto my-5" />
+
+              <h3 className="text-center my-3 text-base font-semibold text-foreground">Reputação da empresa:</h3>
+              <section className="mb-5 flex items-center justify-center gap-4">
+                <img src="/images/reputation-otimo.webp" alt="Reputação" className="w-16 h-16" />
+                <div>
+                  <p className="font-bold text-foreground">{cv("reputation_label", "ÓTIMO")}</p>
+                  <p className="font-bold">
+                    <span className="text-lg">{cv("reputation_score", "7.4")}</span>
+                    <span className="text-base"> / 10</span>
+                  </p>
+                </div>
+              </section>
+
+              <Link to="/" className="text-primary text-sm font-normal inline-flex items-center gap-1 justify-center w-full mb-5">
+                Ver página da empresa
+                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 6v2h8.59L5 17.59 6.41 19 16 9.41V18h2V6z" /></svg>
+              </Link>
+            </section>
+
+            {/* CTA card */}
+            <section className="w-full border rounded-lg bg-background self-start" style={{ borderColor: "#c9c9c9" }}>
+              <div className="p-4 flex flex-col items-center justify-center gap-3">
+                <p className="text-center text-foreground my-2">
+                  Está com problema com <b>{companyName}</b>?
+                </p>
+                <Link
+                  to="/empresa-reclamacoes"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl text-sm bg-destructive text-destructive-foreground hover:bg-destructive/90 h-12 px-4 w-full font-bold py-7"
+                >
+                  📢 Reclamar
+                </Link>
+              </div>
+            </section>
+          </aside>
         </div>
 
+        {/* Back link */}
         <div className="mt-6 text-center">
-          <Link to="/reclamacoes" className="text-sm font-semibold" style={{ color: '#2B6CB0' }}>← Voltar às reclamações</Link>
+          <Link to="/reclamacoes" className="text-sm font-semibold text-primary">← Voltar às reclamações</Link>
         </div>
       </div>
     </div>
