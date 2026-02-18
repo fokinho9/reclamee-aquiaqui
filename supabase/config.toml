@@ -8,3 +8,6 @@ verify_jwt = false
 
 [functions.auto-import-reviews]
 verify_jwt = false
+
+[functions.import-individual-reviews]
+verify_jwt = false

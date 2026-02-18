@@ -36,6 +36,13 @@ const ImportReviewsSection = () => {
   const [pageLog, setPageLog] = useState<string[]>([]);
   const [stopRequested, setStopRequested] = useState(false);
 
+  // Deep import state
+  const [deepImporting, setDeepImporting] = useState(false);
+  const [deepImportUrl, setDeepImportUrl] = useState("");
+  const [deepImportLog, setDeepImportLog] = useState<string[]>([]);
+  const [deepImportStatus, setDeepImportStatus] = useState("");
+  const [deepStopRequested, setDeepStopRequested] = useState(false);
+
   // Word replacements
   const [replacements, setReplacements] = useState<WordReplacement[]>([]);
   const [newOriginal, setNewOriginal] = useState("");
@@ -213,6 +220,115 @@ const ImportReviewsSection = () => {
     setPaginationImporting(false);
   };
 
+  // Deep import - extract URLs from listing, then scrape each individually
+  const startDeepImport = async () => {
+    if (!deepImportUrl.trim()) {
+      toast({ title: "Erro", description: "Cole a URL da lista de reclamações.", variant: "destructive" });
+      return;
+    }
+    setDeepImporting(true);
+    setDeepStopRequested(false);
+    setDeepImportLog([]);
+    setLiveImports([]);
+    setDeepImportStatus("Extraindo URLs...");
+
+    let allUrls: string[] = [];
+    let page = 1;
+    let hasMore = true;
+
+    // Paginate through listing pages to get all complaint URLs
+    while (hasMore) {
+      const el = document.getElementById('stop-deep-import-flag');
+      if (el?.dataset.stop === 'true') {
+        setDeepImportLog(prev => [...prev, `⏹️ Parado pelo usuário.`]);
+        break;
+      }
+
+      const separator = deepImportUrl.includes('?') ? '&' : '?';
+      const pageUrl = page > 1 ? `${deepImportUrl.trim()}${separator}pagina=${page}` : deepImportUrl.trim();
+      setDeepImportLog(prev => [...prev, `📄 Buscando URLs da página ${page}...`]);
+      setDeepImportStatus(`Extraindo URLs - Página ${page}...`);
+
+      try {
+        const { data, error } = await supabase.functions.invoke("import-individual-reviews", {
+          body: { mode: "extract_urls", url: pageUrl },
+        });
+        if (error) throw error;
+        if (!data?.success) throw new Error(data?.error || "Erro");
+
+        const urls = data.urls || [];
+        if (urls.length === 0) {
+          setDeepImportLog(prev => [...prev, `📄 Página ${page}: nenhuma URL encontrada. Fim da paginação.`]);
+          hasMore = false;
+        } else {
+          allUrls = [...allUrls, ...urls];
+          setDeepImportLog(prev => [...prev, `✅ Página ${page}: ${urls.length} URLs encontradas (total: ${allUrls.length})`]);
+          page++;
+          await new Promise(r => setTimeout(r, 500));
+        }
+      } catch (err: any) {
+        setDeepImportLog(prev => [...prev, `❌ Página ${page}: ${err.message}`]);
+        hasMore = false;
+      }
+    }
+
+    if (allUrls.length === 0) {
+      setDeepImportLog(prev => [...prev, `⚠️ Nenhuma URL de reclamação encontrada.`]);
+      setDeepImporting(false);
+      return;
+    }
+
+    setDeepImportLog(prev => [...prev, `\n🔍 Iniciando importação de ${allUrls.length} reclamações individuais...`]);
+
+    let imported = 0;
+    let skipped = 0;
+    let failed = 0;
+
+    for (let i = 0; i < allUrls.length; i++) {
+      const el = document.getElementById('stop-deep-import-flag');
+      if (el?.dataset.stop === 'true') {
+        setDeepImportLog(prev => [...prev, `⏹️ Parado pelo usuário após ${imported} importações.`]);
+        break;
+      }
+
+      setDeepImportStatus(`Importando ${i + 1}/${allUrls.length} (${imported} salvas)...`);
+
+      try {
+        const { data, error } = await supabase.functions.invoke("import-individual-reviews", {
+          body: { mode: "import_single", complaintUrl: allUrls[i] },
+        });
+        if (error) throw error;
+
+        if (data?.imported) {
+          imported++;
+          setDeepImportLog(prev => [...prev, `✅ ${i + 1}/${allUrls.length}: ${data.review?.title || 'Importada'}`]);
+        } else {
+          skipped++;
+          setDeepImportLog(prev => [...prev, `⏭️ ${i + 1}/${allUrls.length}: ${data?.reason || 'Ignorada'} - ${data?.title || allUrls[i]}`]);
+        }
+      } catch (err: any) {
+        failed++;
+        setDeepImportLog(prev => [...prev, `❌ ${i + 1}/${allUrls.length}: ${err.message}`]);
+      }
+
+      // Small delay between requests
+      await new Promise(r => setTimeout(r, 1500));
+    }
+
+    setDeepImportLog(prev => [...prev, `\n🏁 Concluído! ${imported} importadas, ${skipped} duplicadas, ${failed} erros.`]);
+    toast({
+      title: "Importação detalhada finalizada",
+      description: `${imported} reclamações importadas com dados completos.`,
+    });
+    setDeepImporting(false);
+  };
+
+  const handleStopDeepImport = () => {
+    setDeepStopRequested(true);
+    const el = document.getElementById('stop-deep-import-flag');
+    if (el) el.dataset.stop = 'true';
+  };
+
   const handleStopImport = () => {
     setStopRequested(true);
     const el = document.getElementById('stop-import-flag');
@@ -229,8 +345,9 @@ const ImportReviewsSection = () => {
 
   return (
     <div className="mb-6">
-      {/* Hidden flag element for stopping import */}
+      {/* Hidden flag elements for stopping imports */}
       <div id="stop-import-flag" data-stop="false" className="hidden" />
+      <div id="stop-deep-import-flag" data-stop="false" className="hidden" />
 
       <button
         onClick={() => setOpen(!open)}
@@ -309,13 +426,76 @@ const ImportReviewsSection = () => {
             </div>
           </div>
 
+          {/* Deep Import - Individual Complaint Scraping */}
+          <div className="bg-white rounded-xl p-4 border" style={{ borderColor: "#E8ECF0" }}>
+            <h4 className="text-sm font-bold mb-2" style={{ color: "#1A2B3D" }}>
+              🔍 Importação Detalhada (Página Individual)
+            </h4>
+            <p className="text-xs mb-3" style={{ color: "#5A6872" }}>
+              Cole a URL da lista de reclamações. O sistema vai extrair os links de cada reclamação, acessar cada uma individualmente e importar com dados completos (resposta da empresa, consideração final, nota, cidade, etc).
+            </p>
+
+            <div className="flex gap-2 items-center flex-wrap mb-3">
+              <input
+                type="url"
+                value={deepImportUrl}
+                onChange={(e) => setDeepImportUrl(e.target.value)}
+                placeholder="https://www.reclameaqui.com.br/empresa/nome/lista-reclamacoes/"
+                className="flex-1 min-w-[300px] px-3 py-2 border rounded-lg text-sm"
+                style={{ borderColor: "#E8ECF0" }}
+                disabled={deepImporting}
+              />
+            </div>
+
+            <div className="flex gap-2 items-center flex-wrap">
+              {!deepImporting ? (
+                <button
+                  onClick={startDeepImport}
+                  disabled={loading || paginationImporting}
+                  className="px-4 py-2 rounded-lg text-sm font-semibold text-white flex items-center gap-2 disabled:opacity-50"
+                  style={{ backgroundColor: "#7C3AED" }}
+                >
+                  <Play className="w-4 h-4" />
+                  Importar com Dados Completos
+                </button>
+              ) : (
+                <button
+                  onClick={handleStopDeepImport}
+                  className="px-4 py-2 rounded-lg text-sm font-semibold text-white flex items-center gap-2"
+                  style={{ backgroundColor: "#DC2626" }}
+                >
+                  <Square className="w-4 h-4" />
+                  Parar
+                </button>
+              )}
+
+              {deepImporting && (
+                <span className="text-sm flex items-center gap-2" style={{ color: "#7C3AED" }}>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  {deepImportStatus}
+                </span>
+              )}
+            </div>
+
+            {/* Deep import log */}
+            {deepImportLog.length > 0 && (
+              <div className="mt-3 max-h-80 overflow-y-auto space-y-1 bg-gray-50 rounded-lg p-3">
+                {deepImportLog.map((log, i) => (
+                  <p key={i} className="text-xs font-mono" style={{ color: "#5A6872" }}>
+                    {log}
+                  </p>
+                ))}
+              </div>
+            )}
+          </div>
+
           {/* Pagination Import */}
           <div className="bg-white rounded-xl p-4 border" style={{ borderColor: "#E8ECF0" }}>
             <h4 className="text-sm font-bold mb-2" style={{ color: "#1A2B3D" }}>
-              📄 Importação com Paginação
+              📄 Importação com Paginação (Modo Rápido)
             </h4>
             <p className="text-xs mb-3" style={{ color: "#5A6872" }}>
-              Cole a URL da lista de reclamações do Reclame Aqui. Todas as páginas serão importadas automaticamente.
+              Cole a URL da lista de reclamações do Reclame Aqui. Todas as páginas serão importadas automaticamente (extrai dados básicos do markdown da listagem).
             </p>
 
             <div className="flex gap-2 items-center flex-wrap mb-3">
@@ -334,7 +514,7 @@ const ImportReviewsSection = () => {
               {!paginationImporting ? (
                 <button
                   onClick={startPaginationImport}
-                  disabled={loading}
+                  disabled={loading || deepImporting}
                   className="px-4 py-2 rounded-lg text-sm font-semibold text-white flex items-center gap-2 disabled:opacity-50"
                   style={{ backgroundColor: "#2B6CB0" }}
                 >
