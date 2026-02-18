@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
-import { ChevronDown, ChevronRight, Loader2, Download, Trash2, Plus, Save, ExternalLink, CheckCircle } from "lucide-react";
+import { ChevronDown, ChevronRight, Loader2, Download, Trash2, Plus, Save, ExternalLink, CheckCircle, Play, Square } from "lucide-react";
 
 interface WordReplacement {
   id: string;
@@ -28,6 +28,13 @@ const ImportReviewsSection = () => {
   const [saved, setSaved] = useState(false);
   const [liveImports, setLiveImports] = useState<ImportedReview[]>([]);
 
+  // Pagination import state
+  const [paginationImporting, setPaginationImporting] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalImported, setTotalImported] = useState(0);
+  const [pageLog, setPageLog] = useState<string[]>([]);
+  const [stopRequested, setStopRequested] = useState(false);
+
   // Word replacements
   const [replacements, setReplacements] = useState<WordReplacement[]>([]);
   const [newOriginal, setNewOriginal] = useState("");
@@ -42,7 +49,7 @@ const ImportReviewsSection = () => {
 
   // Subscribe to realtime inserts on reviews table
   useEffect(() => {
-    if (!loading && liveImports.length === 0) return;
+    if (!loading && !paginationImporting && liveImports.length === 0) return;
 
     const channel = supabase
       .channel("reviews-import")
@@ -59,7 +66,7 @@ const ImportReviewsSection = () => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [loading]);
+  }, [loading, paginationImporting]);
 
   const loadReplacements = async () => {
     setLoadingReplacements(true);
@@ -125,17 +132,101 @@ const ImportReviewsSection = () => {
     setLoading(false);
   };
 
+  // Pagination import - page by page
+  const startPaginationImport = async () => {
+    setPaginationImporting(true);
+    setStopRequested(false);
+    setCurrentPage(1);
+    setTotalImported(0);
+    setPageLog([]);
+    setLiveImports([]);
+
+    let page = 1;
+    let hasMore = true;
+    let total = 0;
+    let stopRef = false;
+
+    const importPage = async (p: number): Promise<{ imported: number; hasMore: boolean; stopped: boolean }> => {
+      setCurrentPage(p);
+      setPageLog(prev => [...prev, `⏳ Importando página ${p}...`]);
+
+      try {
+        const { data, error } = await supabase.functions.invoke("auto-import-reviews", {
+          body: { page: p },
+        });
+
+        if (error) throw error;
+        if (!data?.success) throw new Error(data?.error || "Erro");
+
+        const imported = data.imported || 0;
+        const dupes = data.duplicatesSkipped || 0;
+        const more = data.hasMore ?? false;
+
+        setPageLog(prev => [
+          ...prev.slice(0, -1),
+          `✅ Página ${p}: ${imported} importadas, ${dupes} duplicadas ignoradas`,
+        ]);
+
+        return { imported, hasMore: more, stopped: false };
+      } catch (err: any) {
+        setPageLog(prev => [
+          ...prev.slice(0, -1),
+          `❌ Página ${p}: ${err.message}`,
+        ]);
+        return { imported: 0, hasMore: false, stopped: false };
+      }
+    };
+
+    while (hasMore && !stopRef) {
+      // Check stop via DOM trick since state won't update in loop
+      const result = await importPage(page);
+      total += result.imported;
+      setTotalImported(total);
+      hasMore = result.hasMore;
+      page++;
+
+      // Small delay between pages
+      await new Promise(r => setTimeout(r, 1000));
+
+      // Check if stop was requested via a ref-like approach
+      const el = document.getElementById('stop-import-flag');
+      if (el?.dataset.stop === 'true') {
+        setPageLog(prev => [...prev, `⏹️ Importação parada pelo usuário na página ${page - 1}.`]);
+        stopRef = true;
+      }
+    }
+
+    if (!stopRef) {
+      setPageLog(prev => [...prev, `🏁 Importação completa! Total: ${total} reclamações importadas.`]);
+    }
+
+    toast({
+      title: "Importação finalizada",
+      description: `${total} reclamações importadas de ${page - 1} páginas.`,
+    });
+
+    setPaginationImporting(false);
+  };
+
+  const handleStopImport = () => {
+    setStopRequested(true);
+    const el = document.getElementById('stop-import-flag');
+    if (el) el.dataset.stop = 'true';
+  };
+
   const statusColors: Record<string, { bg: string; color: string }> = {
     respondida: { bg: "#E8F5E9", color: "#2E7D32" },
     nao_respondida: { bg: "#FFF3E0", color: "#E65100" },
     avaliada: { bg: "#E5EEFB", color: "#2B6CB0" },
   };
 
-  // Use live imports if we saved, otherwise use previews
   const displayReviews = saved && liveImports.length > 0 ? liveImports : previews;
 
   return (
     <div className="mb-6">
+      {/* Hidden flag element for stopping import */}
+      <div id="stop-import-flag" data-stop="false" className="hidden" />
+
       <button
         onClick={() => setOpen(!open)}
         className="flex items-center gap-2 text-lg font-bold mb-3 w-full text-left"
@@ -213,13 +304,78 @@ const ImportReviewsSection = () => {
             </div>
           </div>
 
-          {/* URL Input + Actions */}
+          {/* Pagination Import */}
           <div className="bg-white rounded-xl p-4 border" style={{ borderColor: "#E8ECF0" }}>
             <h4 className="text-sm font-bold mb-2" style={{ color: "#1A2B3D" }}>
-              🔗 URL do Reclame Aqui
+              📄 Importação com Paginação
             </h4>
             <p className="text-xs mb-3" style={{ color: "#5A6872" }}>
-              Cole a URL de uma página de reclamações do Reclame Aqui. As substituições de palavras serão aplicadas automaticamente.
+              Importa todas as páginas de reclamações automaticamente, uma por vez. Usa a URL configurada na importação automática.
+            </p>
+
+            <div className="flex gap-2 items-center flex-wrap">
+              {!paginationImporting ? (
+                <button
+                  onClick={startPaginationImport}
+                  disabled={loading}
+                  className="px-4 py-2 rounded-lg text-sm font-semibold text-white flex items-center gap-2 disabled:opacity-50"
+                  style={{ backgroundColor: "#2B6CB0" }}
+                >
+                  <Play className="w-4 h-4" />
+                  Iniciar Importação Paginada
+                </button>
+              ) : (
+                <button
+                  onClick={handleStopImport}
+                  className="px-4 py-2 rounded-lg text-sm font-semibold text-white flex items-center gap-2"
+                  style={{ backgroundColor: "#DC2626" }}
+                >
+                  <Square className="w-4 h-4" />
+                  Parar Importação
+                </button>
+              )}
+
+              {paginationImporting && (
+                <span className="text-sm flex items-center gap-2" style={{ color: "#2B6CB0" }}>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Página {currentPage} • {totalImported} importadas
+                </span>
+              )}
+            </div>
+
+            {/* Page log */}
+            {pageLog.length > 0 && (
+              <div className="mt-3 max-h-60 overflow-y-auto space-y-1 bg-gray-50 rounded-lg p-3">
+                {pageLog.map((log, i) => (
+                  <p key={i} className="text-xs font-mono" style={{ color: "#5A6872" }}>
+                    {log}
+                  </p>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Live import feed during pagination */}
+          {paginationImporting && liveImports.length > 0 && (
+            <div className="bg-white rounded-xl p-4 border" style={{ borderColor: "#E8ECF0" }}>
+              <h4 className="text-sm font-semibold mb-2" style={{ color: "#1A2B3D" }}>
+                🔴 Importações em tempo real ({liveImports.length})
+              </h4>
+              <div className="space-y-2 max-h-60 overflow-y-auto">
+                {[...liveImports].reverse().slice(0, 20).map((r, i) => (
+                  <LiveImportItem key={r.id || i} review={r} index={i} statusColors={statusColors} />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* URL Input + Actions (manual single page) */}
+          <div className="bg-white rounded-xl p-4 border" style={{ borderColor: "#E8ECF0" }}>
+            <h4 className="text-sm font-bold mb-2" style={{ color: "#1A2B3D" }}>
+              🔗 Importação Manual (URL única)
+            </h4>
+            <p className="text-xs mb-3" style={{ color: "#5A6872" }}>
+              Cole a URL de uma página específica de reclamações do Reclame Aqui.
             </p>
             <div className="flex gap-2 flex-wrap">
               <input
@@ -232,7 +388,7 @@ const ImportReviewsSection = () => {
               />
               <button
                 onClick={() => handleScrape(false)}
-                disabled={loading}
+                disabled={loading || paginationImporting}
                 className="px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 disabled:opacity-50"
                 style={{ backgroundColor: "#E5EEFB", color: "#2B6CB0" }}
               >
@@ -241,7 +397,7 @@ const ImportReviewsSection = () => {
               </button>
               <button
                 onClick={() => handleScrape(true)}
-                disabled={loading}
+                disabled={loading || paginationImporting}
                 className="px-4 py-2 rounded-lg text-sm font-semibold text-white flex items-center gap-2 disabled:opacity-50"
                 style={{ backgroundColor: "#1B8B4F" }}
               >
@@ -251,7 +407,7 @@ const ImportReviewsSection = () => {
             </div>
           </div>
 
-          {/* Live import feed */}
+          {/* Live import feed (manual) */}
           {loading && (
             <div className="bg-white rounded-xl p-4 border" style={{ borderColor: "#E8ECF0" }}>
               <div className="flex items-center gap-2 mb-3">
@@ -268,8 +424,8 @@ const ImportReviewsSection = () => {
             </div>
           )}
 
-          {/* Results */}
-          {!loading && displayReviews.length > 0 && (
+          {/* Results (manual) */}
+          {!loading && !paginationImporting && displayReviews.length > 0 && (
             <div className="space-y-3">
               <h4 className="text-sm font-semibold" style={{ color: "#1A2B3D" }}>
                 {saved ? "✅" : "👁️"} {displayReviews.length} reclamações {saved ? "importadas" : "encontradas"}:
