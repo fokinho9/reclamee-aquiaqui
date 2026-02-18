@@ -5,3 +5,6 @@ verify_jwt = false
 
 [functions.generate-reviews]
 verify_jwt = false
+
+[functions.auto-import-reviews]
+verify_jwt = false
