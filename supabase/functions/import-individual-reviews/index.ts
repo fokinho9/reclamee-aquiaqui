@@ -25,33 +25,47 @@ function applyReplacements(text: string, replacements: { original_word: string; 
   return result;
 }
 
-async function scrapeUrl(apiKey: string, url: string): Promise<string> {
+async function scrapeUrl(apiKey: string, url: string, formats: string[] = ['markdown']): Promise<any> {
   const response = await fetch('https://api.firecrawl.dev/v1/scrape', {
     method: 'POST',
     headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ url, formats: ['markdown'], onlyMainContent: true, timeout: 60000, waitFor: 3000 }),
+    body: JSON.stringify({ url, formats, onlyMainContent: true, timeout: 60000, waitFor: 5000 }),
   });
   const data = await response.json();
   if (!response.ok) throw new Error(data?.error || data?.data?.error || `Erro ${response.status}`);
-  return data?.data?.markdown || data?.markdown || '';
+  return data?.data || data || {};
 }
 
-// Extract individual complaint URLs from a listing page markdown
-function extractComplaintUrls(markdown: string, baseUrl: string): string[] {
+// Extract individual complaint URLs from links array or markdown
+function extractComplaintUrls(links: string[], markdown: string): string[] {
   const urls: string[] = [];
-  // Match links to individual complaints on reclameaqui
-  const linkRegex = /\(https:\/\/www\.reclameaqui\.com\.br\/([^/]+)\/([^/)]+_[A-Za-z0-9]+)\/?[^)]*\)/g;
-  let match;
   const seen = new Set<string>();
-
-  while ((match = linkRegex.exec(markdown)) !== null) {
-    const fullUrl = `https://www.reclameaqui.com.br/${match[1]}/${match[2]}/`;
-    if (!seen.has(fullUrl)) {
-      seen.add(fullUrl);
-      urls.push(fullUrl);
+  
+  // Pattern for individual complaint URLs on reclameaqui
+  const complaintPattern = /^https:\/\/www\.reclameaqui\.com\.br\/([^/]+)\/([^/]+_[A-Za-z0-9]+)\/?$/;
+  
+  // First try from links array
+  for (const link of links) {
+    const clean = link.split('?')[0].replace(/\/$/, '') + '/';
+    if (complaintPattern.test(clean) && !seen.has(clean)) {
+      seen.add(clean);
+      urls.push(clean);
     }
   }
-
+  
+  // Fallback: try from markdown
+  if (urls.length === 0) {
+    const linkRegex = /https:\/\/www\.reclameaqui\.com\.br\/([^/\s)]+)\/([^/\s)]+_[A-Za-z0-9]+)\/?/g;
+    let match;
+    while ((match = linkRegex.exec(markdown)) !== null) {
+      const fullUrl = `https://www.reclameaqui.com.br/${match[1]}/${match[2]}/`;
+      if (!seen.has(fullUrl)) {
+        seen.add(fullUrl);
+        urls.push(fullUrl);
+      }
+    }
+  }
+  
   return urls;
 }
 
@@ -240,8 +254,11 @@ Deno.serve(async (req) => {
       }
 
       console.log(`Extracting complaint URLs from: ${url}`);
-      const markdown = await scrapeUrl(apiKey, url);
-      const urls = extractComplaintUrls(markdown, url);
+      const result = await scrapeUrl(apiKey, url, ['markdown', 'links']);
+      const links = result?.links || [];
+      const markdown = result?.markdown || '';
+      console.log(`Scrape returned ${links.length} links, markdown length: ${markdown.length}`);
+      const urls = extractComplaintUrls(links, markdown);
       console.log(`Found ${urls.length} complaint URLs`);
 
       return new Response(
@@ -260,7 +277,8 @@ Deno.serve(async (req) => {
       }
 
       console.log(`Scraping individual complaint: ${complaintUrl}`);
-      const markdown = await scrapeUrl(apiKey, complaintUrl);
+      const result = await scrapeUrl(apiKey, complaintUrl, ['markdown']);
+      const markdown = result?.markdown || '';
       const parsed = parseComplaintPage(markdown);
 
       if (!parsed.title || parsed.title.length < 10) {
