@@ -3,7 +3,7 @@ import { CompanyPage } from "@/components/CompanyLayout";
 
 const COUPONS = [
   { id: 1, title: "Frete Grátis", desc: "Em compras acima de R$ 129 para membros Prime", code: "FRETEPRIME", type: "Frete" },
-  { id: 2, title: "10% OFF", desc: "Na primeira compra pelo app Amazon", code: "APP10", type: "Desconto" },
+  { id: 2, title: "10% OFF", desc: "Na primeira compra pelo app Agro Brasil", code: "APP10", type: "Desconto" },
   { id: 3, title: "R$ 30 OFF", desc: "Em eletrônicos selecionados acima de R$ 300", code: "ELETRO30", type: "Desconto" },
   { id: 4, title: "15% OFF", desc: "Em livros e eBooks Kindle", code: "LIVROS15", type: "Desconto" },
 ];
@@ -17,7 +17,7 @@ const STEPS = [
 const DescontosPage = () => (
   <CompanyPage>
     {({ cv }) => {
-      const companyName = cv('company_name', 'Amazon');
+      const companyName = cv('company_name', 'Agro Brasil');
       return (
         <div style={{ backgroundColor: '#f9f9f9' }}>
           {/* Hero */}
@@ -41,7 +41,7 @@ const DescontosPage = () => (
                     <strong>{COUPONS.length} cupons</strong> disponíveis
                   </p>
                   <a
-                    href={cv('website_url', 'https://www.amazon.com.br')}
+                    href={cv('website_url', '#')}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center gap-2 px-6 py-3 rounded font-semibold text-lg text-white no-underline"

@@ -89,7 +89,7 @@ export const CompanyHero = ({ cv }: { cv: (key: string, fallback: string) => str
         </a>
         <div className="flex-1 pb-2">
           <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold text-foreground">{cv('company_name', 'Amazon')}</h1>
+            <h1 className="text-2xl font-bold text-foreground">{cv('company_name', 'Agro Brasil')}</h1>
             <img src="/images/seal-ra-verified.png" alt="RA Verificada" className="w-6 h-6" />
           </div>
           <div className="flex items-center gap-4 text-sm text-muted-foreground mt-1">
@@ -106,7 +106,7 @@ export const CompanyHero = ({ cv }: { cv: (key: string, fallback: string) => str
           <img src={cv('company_logo', '/images/amazon-logo.jpg')} alt="Logo" className="w-[72px] h-[72px] rounded-full object-cover" />
         </a>
         <div className="flex items-center gap-1.5 mt-2">
-          <h1 className="text-lg font-bold text-foreground">{cv('company_name', 'Amazon')}</h1>
+          <h1 className="text-lg font-bold text-foreground">{cv('company_name', 'Agro Brasil')}</h1>
           <img src="/images/seal-ra-verified.png" alt="RA Verificada" className="w-5 h-5" />
         </div>
         <div className="flex items-center gap-3 text-xs text-muted-foreground mt-1">
@@ -132,7 +132,7 @@ export const CompanyHero = ({ cv }: { cv: (key: string, fallback: string) => str
 /* ───────────── TRUST & REPUTATION ───────────── */
 export const TrustCard = ({ cv }: { cv: (key: string, fallback: string) => string }) => (
   <div className="rounded-xl p-4 shadow-sm min-w-[220px] md:min-w-0" style={{ background: '#EDF7E1' }}>
-    <p className="text-xs font-medium mb-3" style={{ color: '#5A6872' }}>{cv('company_name', 'Amazon')} existe?</p>
+    <p className="text-xs font-medium mb-3" style={{ color: '#5A6872' }}>{cv('company_name', 'Agro Brasil')} existe?</p>
     <div className="flex items-center gap-3 mb-2">
       <img src="/images/seal-ra-verified.png" alt="Verificada" className="w-9 h-9" />
       <p className="font-bold text-[15px]" style={{ color: '#1A2B3D' }}>Empresa verificada</p>
@@ -143,7 +143,7 @@ export const TrustCard = ({ cv }: { cv: (key: string, fallback: string) => strin
 
 export const ReputationCard = ({ cv }: { cv: (key: string, fallback: string) => string }) => (
   <div className="rounded-xl p-4 shadow-sm min-w-[220px] md:min-w-0" style={{ background: '#EDF7E1' }}>
-    <p className="text-xs font-medium mb-3" style={{ color: '#5A6872' }}>Qual a reputação de {cv('company_name', 'Amazon')}?</p>
+    <p className="text-xs font-medium mb-3" style={{ color: '#5A6872' }}>Qual a reputação de {cv('company_name', 'Agro Brasil')}?</p>
     <div className="flex items-center gap-3 mb-2">
       <img src="/images/reputation-otimo.webp" alt="Ótimo" className="w-11 h-11" />
       <div>
@@ -219,7 +219,7 @@ export const PerformanceCard = ({ content, cv }: { content?: any[]; cv: (key: st
 
   return (
     <div className="bg-background rounded-xl border border-border p-5">
-      <h3 className="text-[17px] font-bold mb-4" style={{ color: '#1A2B3D' }}>Desempenho de {cv('company_name', 'Amazon')}</h3>
+      <h3 className="text-[17px] font-bold mb-4" style={{ color: '#1A2B3D' }}>Desempenho de {cv('company_name', 'Agro Brasil')}</h3>
       <div className="flex gap-4 border-b border-border mb-5">
         {periods.map(p => (
           <button key={p} onClick={() => setPeriod(p)}
@@ -253,7 +253,7 @@ export const EvolutionCard = ({ companyName }: { companyName?: string }) => (
     </div>
     <div className="flex items-center gap-3 mt-3">
       <img src="/images/icons/chart-trending.svg" alt="" className="w-5 h-5 flex-none" />
-      <p className="text-[13px]" style={{ color: '#5A6872' }}>Confira a evolução de {companyName || 'Amazon'} nos últimos 12 meses</p>
+      <p className="text-[13px]" style={{ color: '#5A6872' }}>Confira a evolução de {companyName || 'Agro Brasil'} nos últimos 12 meses</p>
     </div>
   </div>
 );
@@ -407,10 +407,10 @@ export const ComplaintsSection = ({ companyName }: { companyName?: string }) => 
 export const FAQSection = () => {
   const faqs = [
     { title: "Entrega Atrasada", desc: "A maioria dos pacotes chega a tempo. Às vezes, os pedidos são entregues após a data estimada de entrega. Possíveis razões para o atraso na entrega inc..." },
-    { title: "Quando vou receber meu reembolso?", desc: "Quando você devolve um produto enviado pela Amazon, o reembolso é emitido de acordo com a forma de pagamento usada no momento da compra. O..." },
+    { title: "Quando vou receber meu reembolso?", desc: "Quando você devolve um produto enviado pela Agro Brasil, o reembolso é emitido de acordo com a forma de pagamento usada no momento da compra. O..." },
     { title: "Cobranças desconhecidas", desc: "Confira a seguir alguns motivos comuns para cobranças desconhecidas: Um pedido foi feito por um membro da família, amigo ou colega de trabalho com..." },
-    { title: "Cancelar sua assinatura Prime", desc: "Você pode cancelar sua assinatura em Gerenciar sua assinatura Prime. Importante lembrar que: \\- Você pode estar qualificado para um reembolso se seus..." },
-    { title: "Como faço para devolver meu pedido?", desc: "Para pedidos vendidos e enviados pela Amazon.com.br, acesse os Seus Pedidos. 1. Acesse o pedido que deseja devolver. 2. Clique em \"Devolver..." },
+    { title: "Cancelar sua assinatura", desc: "Você pode cancelar sua assinatura em Gerenciar sua assinatura. Importante lembrar que: \\- Você pode estar qualificado para um reembolso se seus..." },
+    { title: "Como faço para devolver meu pedido?", desc: "Para pedidos vendidos e enviados pela Agro Brasil, acesse os Seus Pedidos. 1. Acesse o pedido que deseja devolver. 2. Clique em \"Devolver..." },
   ];
   return (
     <div className="mt-8">
@@ -475,7 +475,7 @@ export const ProblemsSection = ({ companyName }: { companyName?: string }) => {
   return (
     <div className="mt-8">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-[17px] font-bold" style={{ color: '#1A2B3D' }}>Saiba quais são os principais problemas de {companyName || 'Amazon'}</h2>
+        <h2 className="text-[17px] font-bold" style={{ color: '#1A2B3D' }}>Saiba quais são os principais problemas de {companyName || 'Agro Brasil'}</h2>
         <div className="flex items-center gap-2">
           <button
             onClick={() => scroll('left')}
@@ -525,10 +525,10 @@ export const ProblemsSection = ({ companyName }: { companyName?: string }) => {
 export const SidebarSection = ({ cv }: { cv: (key: string, fallback: string) => string }) => (
   <aside className="space-y-5">
     <div>
-      <h3 className="text-[17px] font-bold mb-3 lg:hidden" style={{ color: '#1A2B3D' }}>Veja mais informações sobre {cv('company_name', 'Amazon')}</h3>
+      <h3 className="text-[17px] font-bold mb-3 lg:hidden" style={{ color: '#1A2B3D' }}>Veja mais informações sobre {cv('company_name', 'Agro Brasil')}</h3>
       <div className="rounded-xl p-4 bg-background" style={{ border: '1px solid #E8ECF0' }}>
         <h4 className="font-bold text-sm mb-2" style={{ color: '#1A2B3D' }}>Sobre</h4>
-        <p className="text-[13px] leading-relaxed mb-3" style={{ color: '#5A6872' }}>{cv('about_text', 'A Amazon.com.br oferece milhares de ofertas e produtos em diversas categorias.')}</p>
+        <p className="text-[13px] leading-relaxed mb-3" style={{ color: '#5A6872' }}>{cv('about_text', 'A Agro Brasil oferece milhares de ofertas e produtos em diversas categorias.')}</p>
         <p className="text-[13px]" style={{ color: '#1A2B3D' }}><strong>CNPJ:</strong> <span style={{ color: '#2B6CB0' }}>{cv('cnpj', '15.436.940/0001-03')}</span></p>
         <p className="text-xs mt-1" style={{ color: '#8A9BAE' }}>Informações cadastradas pela empresa</p>
         <div className="flex items-center gap-1.5 mt-3 text-xs" style={{ color: '#8A9BAE' }}>
@@ -540,8 +540,8 @@ export const SidebarSection = ({ cv }: { cv: (key: string, fallback: string) => 
     <div className="rounded-xl p-4 bg-background" style={{ border: '1px solid #E8ECF0' }}>
       <h4 className="font-bold text-sm mb-3" style={{ color: '#1A2B3D' }}>Contatos da empresa</h4>
       <p className="text-xs mb-2" style={{ color: '#8A9BAE' }}>Site</p>
-      <a href={cv('website_url', 'https://www.amazon.com.br')} className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg text-sm font-medium mb-2" style={{ backgroundColor: '#E5EEFB', color: '#2B6CB0' }}>
-        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="#2B6CB0"><path d="M16.36,14C16.44,13.34 16.5,12.68 16.5,12C16.5,11.32 16.44,10.66 16.36,10H19.74C19.9,10.64 20,11.31 20,12C20,12.69 19.9,13.36 19.74,14M14.59,19.56C15.19,18.45 15.65,17.25 15.97,16H18.92C17.96,17.65 16.43,18.93 14.59,19.56M14.34,14H9.66C9.56,13.34 9.5,12.68 9.5,12C9.5,11.32 9.56,10.65 9.66,10H14.34C14.43,10.65 14.5,11.32 14.5,12C14.5,12.68 14.43,13.34 14.34,14M12,19.96C11.17,18.76 10.5,17.43 10.09,16H13.91C13.5,17.43 12.83,18.76 12,19.96M8,8H5.08C6.03,6.34 7.57,5.06 9.4,4.44C8.8,5.55 8.35,6.75 8,8M5.08,16H8C8.35,17.25 8.8,18.45 9.4,19.56C7.57,18.93 6.03,17.65 5.08,16M4.26,14C4.1,13.36 4,12.69 4,12C4,11.31 4.1,10.64 4.26,10H7.64C7.56,10.66 7.5,11.32 7.5,12C7.5,12.68 7.56,13.34 7.64,14M12,4.03C12.83,5.23 13.5,6.57 13.91,8H10.09C10.5,6.57 11.17,5.23 12,4.03M18.92,8H15.97C15.65,6.75 15.19,5.55 14.59,4.44C16.43,5.07 17.96,6.34 18.92,8M12,2C6.47,2 2,6.5 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z" /></svg> {cv('website_url', 'amazon.com.br').replace('https://', '').replace('www.', '')}
+      <a href={cv('website_url', '#')} className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg text-sm font-medium mb-2" style={{ backgroundColor: '#E5EEFB', color: '#2B6CB0' }}>
+        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="#2B6CB0"><path d="M16.36,14C16.44,13.34 16.5,12.68 16.5,12C16.5,11.32 16.44,10.66 16.36,10H19.74C19.9,10.64 20,11.31 20,12C20,12.69 19.9,13.36 19.74,14M14.59,19.56C15.19,18.45 15.65,17.25 15.97,16H18.92C17.96,17.65 16.43,18.93 14.59,19.56M14.34,14H9.66C9.56,13.34 9.5,12.68 9.5,12C9.5,11.32 9.56,10.65 9.66,10H14.34C14.43,10.65 14.5,11.32 14.5,12C14.5,12.68 14.43,13.34 14.34,14M12,19.96C11.17,18.76 10.5,17.43 10.09,16H13.91C13.5,17.43 12.83,18.76 12,19.96M8,8H5.08C6.03,6.34 7.57,5.06 9.4,4.44C8.8,5.55 8.35,6.75 8,8M5.08,16H8C8.35,17.25 8.8,18.45 9.4,19.56C7.57,18.93 6.03,17.65 5.08,16M4.26,14C4.1,13.36 4,12.69 4,12C4,11.31 4.1,10.64 4.26,10H7.64C7.56,10.66 7.5,11.32 7.5,12C7.5,12.68 7.56,13.34 7.64,14M12,4.03C12.83,5.23 13.5,6.57 13.91,8H10.09C10.5,6.57 11.17,5.23 12,4.03M18.92,8H15.97C15.65,6.75 15.19,5.55 14.59,4.44C16.43,5.07 17.96,6.34 18.92,8M12,2C6.47,2 2,6.5 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z" /></svg> {cv('website_url', '#').replace('https://', '').replace('www.', '')}
       </a>
       <a href="#" className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg text-sm font-medium" style={{ backgroundColor: '#E5EEFB', color: '#2B6CB0' }}>
         <svg className="w-5 h-5" viewBox="0 0 24 24" fill="#2B6CB0"><path d="M16.36,14C16.44,13.34 16.5,12.68 16.5,12C16.5,11.32 16.44,10.66 16.36,10H19.74C19.9,10.64 20,11.31 20,12C20,12.69 19.9,13.36 19.74,14M14.59,19.56C15.19,18.45 15.65,17.25 15.97,16H18.92C17.96,17.65 16.43,18.93 14.59,19.56M14.34,14H9.66C9.56,13.34 9.5,12.68 9.5,12C9.5,11.32 9.56,10.65 9.66,10H14.34C14.43,10.65 14.5,11.32 14.5,12C14.5,12.68 14.43,13.34 14.34,14M12,19.96C11.17,18.76 10.5,17.43 10.09,16H13.91C13.5,17.43 12.83,18.76 12,19.96M8,8H5.08C6.03,6.34 7.57,5.06 9.4,4.44C8.8,5.55 8.35,6.75 8,8M5.08,16H8C8.35,17.25 8.8,18.45 9.4,19.56C7.57,18.93 6.03,17.65 5.08,16M4.26,14C4.1,13.36 4,12.69 4,12C4,11.31 4.1,10.64 4.26,10H7.64C7.56,10.66 7.5,11.32 7.5,12C7.5,12.68 7.56,13.34 7.64,14M12,4.03C12.83,5.23 13.5,6.57 13.91,8H10.09C10.5,6.57 11.17,5.23 12,4.03M18.92,8H15.97C15.65,6.75 15.19,5.55 14.59,4.44C16.43,5.07 17.96,6.34 18.92,8M12,2C6.47,2 2,6.5 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z" /></svg> Ir para o atendimento

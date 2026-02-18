@@ -16,16 +16,16 @@ const SIDEBAR_CARDS = [
   {
     type: "green" as const,
     category: "Artigo",
-    title: "OFERTAS DA AMAZON",
-    desc: "Confira as melhores ofertas na Amazon!",
+    title: "OFERTAS DA AGRO BRASIL",
+    desc: "Confira as melhores ofertas na Agro Brasil!",
     date: "",
   },
 ];
 
 const POSTS = [
   {
-    title: "Como entrar em contato com o Serviço de Atendimento ao Cliente da Amazon?",
-    desc: "Para conferir as formas de entrar em contato com o Serviço de Atendimento ao Cliente da Amazon, acesse a página Fale Conosco.",
+    title: "Como entrar em contato com o Serviço de Atendimento ao Cliente da Agro Brasil?",
+    desc: "Para conferir as formas de entrar em contato com o Serviço de Atendimento ao Cliente da Agro Brasil, acesse a página Fale Conosco.",
     date: "17 de fevereiro de 2025",
     image: "/images/post-fraudes.jpg",
   },
@@ -36,14 +36,14 @@ const POSTS = [
     image: "/images/post-fraudes.jpg",
   },
   {
-    title: "Como funciona a entrega da Amazon?",
-    desc: "A Amazon conta com centros de distribuição em todo o Brasil para garantir entregas rápidas e seguras.",
+    title: "Como funciona a entrega da Agro Brasil?",
+    desc: "A Agro Brasil conta com centros de distribuição em todo o Brasil para garantir entregas rápidas e seguras.",
     date: "10 de janeiro de 2025",
     image: "/images/post-entrega.jpg",
   },
   {
-    title: "Política de reembolsos Amazon",
-    desc: "Saiba como funcionam os reembolsos na Amazon, prazos e condições para devolução de produtos.",
+    title: "Política de reembolsos Agro Brasil",
+    desc: "Saiba como funcionam os reembolsos na Agro Brasil, prazos e condições para devolução de produtos.",
     date: "5 de fevereiro de 2025",
     image: "/images/post-reembolsos.jpg",
   },
@@ -57,7 +57,7 @@ const PostsPage = () => {
     return item?.content_value ?? fallback;
   };
 
-  const companyName = cv("company_name", "Amazon");
+  const companyName = cv("company_name", "Agro Brasil");
 
   const postsContent = (
     <div style={{ backgroundColor: "#f9f9f9", minHeight: "100%" }}>

@@ -446,7 +446,7 @@ const Admin = () => {
               </p>
             </div>
             <AIReviewsSection
-              companyName={cv('company_name', 'Amazon')}
+              companyName={cv('company_name', 'Agro Brasil')}
               companyCategory={cv('company_category', 'Marketplace')}
             />
           </>

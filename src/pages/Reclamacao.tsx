@@ -31,7 +31,7 @@ const Reclamacao = () => {
   const { data: content } = useSiteContent();
   const cv = (key: string, fallback: string) => useContentValue(content, key, fallback);
 
-  const companyName = cv("company_name", "Amazon");
+  const companyName = cv("company_name", "Agro Brasil");
   const companyLogo = cv("company_logo", "/images/amazon-logo.jpg");
 
   if (isLoading) {

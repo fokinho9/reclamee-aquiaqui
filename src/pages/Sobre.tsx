@@ -67,22 +67,22 @@ const Sobre = () => (
       <>
         {/* Breadcrumb */}
         <div className="mb-4 text-sm" style={{ color: '#4B5963' }}>
-          Você está em: <a href="/" className="font-semibold hover:underline" style={{ color: '#4B5963' }}>{cv('company_name', 'Amazon')}</a> {'>'} <span>Sobre</span>
+          Você está em: <a href="/" className="font-semibold hover:underline" style={{ color: '#4B5963' }}>{cv('company_name', 'Agro Brasil')}</a> {'>'} <span>Sobre</span>
         </div>
 
         <div className="lg:grid lg:grid-cols-[1fr_380px] gap-6">
           {/* Coluna principal */}
           <div className="space-y-6">
-            <h1 className="text-2xl md:text-[32px] font-semibold" style={{ color: '#303633' }}>Sobre {cv('company_name', 'Amazon')}</h1>
+            <h1 className="text-2xl md:text-[32px] font-semibold" style={{ color: '#303633' }}>Sobre {cv('company_name', 'Agro Brasil')}</h1>
 
             {/* Card Conheça a empresa */}
             <div className="bg-background rounded-lg p-4 space-y-4" style={{ border: '1px solid #E1E3E5', boxShadow: '0px 1px 2px rgba(0,0,0,0.16)' }}>
               <div className="flex items-center gap-3">
                 <span className="text-lg">🏢</span>
-                <h2 className="text-base font-semibold" style={{ color: '#303633' }}>Conheça {cv('company_name', 'Amazon')}</h2>
+                <h2 className="text-base font-semibold" style={{ color: '#303633' }}>Conheça {cv('company_name', 'Agro Brasil')}</h2>
               </div>
               <p className="text-sm leading-relaxed" style={{ color: '#4B5963' }}>
-                {cv('about_text', 'A Amazon.com.br oferece milhares de ofertas e produtos em diversas categorias, que incluem itens vendidos e entregues pela Amazon ou por vendedores parceiros.')}
+                {cv('about_text', 'A Agro Brasil oferece milhares de ofertas e produtos em diversas categorias, que incluem itens vendidos e entregues pela Agro Brasil ou por vendedores parceiros.')}
               </p>
               <div className="flex items-center gap-2 text-sm" style={{ color: '#4B5963' }}>
                 <img src="/images/icons/calendar-star.svg" alt="" className="w-5 h-5" />
@@ -99,7 +99,7 @@ const Sobre = () => (
               </div>
               <div className="flex items-center gap-2 text-sm">
                 <span className="font-semibold" style={{ color: '#303633' }}>Razão social:</span>
-                <span style={{ color: '#4B5963' }}>Amazon</span>
+                <span style={{ color: '#4B5963' }}>Agro Brasil</span>
               </div>
               <p className="text-xs" style={{ color: '#A9B0B5' }}>Informações cadastradas pela empresa.</p>
             </div>
@@ -119,7 +119,7 @@ const Sobre = () => (
             </div>
 
             {/* CTA Seus pedidos */}
-            <a href="https://www.amazon.com.br/gp/css/order-history" target="_blank" rel="noopener noreferrer"
+            <a href="#" target="_blank" rel="noopener noreferrer"
               className="flex items-center justify-end gap-2 px-4 py-3 rounded-lg text-white font-semibold text-base no-underline hover:opacity-90"
               style={{ backgroundColor: '#1F69C1' }}>
               Seus pedidos <ExternalLink className="w-4 h-4" />
@@ -140,7 +140,7 @@ const Sobre = () => (
 
             {/* Estatísticas resumidas */}
             <div className="bg-background rounded-lg p-4 space-y-4" style={{ border: '1px solid #E1E3E5', boxShadow: '0px 1px 2px rgba(0,0,0,0.16)' }}>
-              <p className="text-sm font-semibold" style={{ color: '#4B5963' }}>Nos últimos 6 meses, {cv('company_name', 'Amazon')}:</p>
+              <p className="text-sm font-semibold" style={{ color: '#4B5963' }}>Nos últimos 6 meses, {cv('company_name', 'Agro Brasil')}:</p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {[
                   { icon: "👤", text: <>Resolveu <strong>{cv('stat_resolvidas_pct', '88%')}</strong> dos problemas</> },
@@ -161,13 +161,13 @@ const Sobre = () => (
 
           {/* Sidebar - Contatos */}
           <div className="mt-6 lg:mt-0 space-y-4">
-            <h3 className="text-base font-semibold" style={{ color: '#303633' }}>Todos os contatos de {cv('company_name', 'Amazon')}</h3>
+            <h3 className="text-base font-semibold" style={{ color: '#303633' }}>Todos os contatos de {cv('company_name', 'Agro Brasil')}</h3>
             <div className="bg-background rounded-lg p-4 space-y-4" style={{ border: '1px solid #E1E3E5', boxShadow: '0px 1px 2px rgba(0,0,0,0.16)' }}>
               <h4 className="font-semibold text-sm" style={{ color: '#303633' }}>Contatos da empresa</h4>
               <p className="text-xs" style={{ color: '#A9B0B5' }}>Site</p>
-              <a href={cv('website_url', 'https://www.amazon.com.br')} target="_blank" rel="noopener noreferrer"
+              <a href={cv('website_url', '#')} target="_blank" rel="noopener noreferrer"
                 className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg text-sm font-medium" style={{ backgroundColor: '#F9F9F9', color: '#4B5963' }}>
-                🌐 {cv('website_url', 'amazon.com.br').replace('https://', '').replace('www.', '')}
+                🌐 {cv('website_url', '#').replace('https://', '').replace('www.', '')}
               </a>
               <a href="#" className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg text-sm font-medium" style={{ backgroundColor: '#F9F9F9', color: '#4B5963' }}>
                 🌐 Ir para o atendimento
