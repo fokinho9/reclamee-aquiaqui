@@ -20,6 +20,22 @@ interface ParsedComplaint {
   description: string;
   status: string;
   timeAgo: string;
+  createdAt: string; // ISO date
+}
+
+function parseTimeAgoToDate(timeAgo: string): string {
+  const now = new Date();
+  const match = timeAgo.match(/(\d+)\s+(minuto|minutos|hora|horas|dia|dias|mês|meses|mes|ano|anos|semana|semanas)/i);
+  if (!match) return now.toISOString();
+  const amount = parseInt(match[1]);
+  const unit = match[2].toLowerCase();
+  if (unit.startsWith('minuto')) now.setMinutes(now.getMinutes() - amount);
+  else if (unit.startsWith('hora')) now.setHours(now.getHours() - amount);
+  else if (unit.startsWith('dia')) now.setDate(now.getDate() - amount);
+  else if (unit.startsWith('semana')) now.setDate(now.getDate() - amount * 7);
+  else if (unit.startsWith('m')) now.setMonth(now.getMonth() - amount);
+  else if (unit.startsWith('ano')) now.setFullYear(now.getFullYear() - amount);
+  return now.toISOString();
 }
 
 function parseComplaintsFromMarkdown(markdown: string): ParsedComplaint[] {
@@ -75,7 +91,7 @@ function parseComplaintsFromMarkdown(markdown: string): ParsedComplaint[] {
 
     // Extract time
     let timeAgo = '';
-    const timeMatch = afterText.match(/Há\s+\d+\s+(?:hora|horas|minuto|minutos|dia|dias)/i);
+    const timeMatch = afterText.match(/Há\s+\d+\s+(?:hora|horas|minuto|minutos|dia|dias|mês|meses|mes|ano|anos|semana|semanas)/i);
     if (timeMatch) {
       timeAgo = timeMatch[0];
     }
@@ -107,6 +123,7 @@ function parseComplaintsFromMarkdown(markdown: string): ParsedComplaint[] {
         description: description.substring(0, 300) || title,
         status,
         timeAgo,
+        createdAt: parseTimeAgoToDate(timeAgo),
       });
     }
   }
@@ -234,6 +251,7 @@ Deno.serve(async (req) => {
       response_text: null,
       response_time: c.timeAgo || null,
       is_ai_generated: false,
+      created_at: c.createdAt,
     }));
 
     // Save to DB if requested
