@@ -336,7 +336,7 @@ export const VisitedAlso = () => {
 
 /* ───────────── COMPLAINTS ───────────── */
 export const ComplaintsSection = ({ companyName }: { companyName?: string }) => {
-  const [tab, setTab] = useState("ultimas");
+  const [tab, setTab] = useState("avaliadas");
   const tabLabels: Record<string, string> = { ultimas: "Últimas", nao_respondidas: "Não respondidas", respondidas: "Respondidas", avaliadas: "Avaliadas" };
   const tabs = Object.keys(tabLabels);
   const { data: reviews, isLoading } = useReviews(tab);
