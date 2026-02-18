@@ -74,7 +74,23 @@ function parseComplaintsFromMarkdown(markdown: string): ParsedComplaint[] {
     if (timeMatch) timeAgo = timeMatch[0];
 
     description = description.substring(0, 300).replace(/\s+/g, ' ').trim();
-    description = description.replace(/(?:Não\s+)?respondida/gi, '').replace(/avaliada/gi, '').replace(/Há\s+\d+\s+(?:hora|horas|minuto|minutos|dia|dias)/gi, '').trim();
+    description = description
+      .replace(/(?:Não\s+)?respondida/gi, '')
+      .replace(/avaliada/gi, '')
+      .replace(/Há\s+\d+\s+(?:hora|horas|minuto|minutos|dia|dias?)/gi, '')
+      .replace(/\d+\s*reações?\s*/gi, '')
+      .replace(/Clique\s+para\s+ver\s+todas\s+as\s+reações\s+nesta\s+reclamação\.?\s*/gi, '')
+      .replace(/deixe\s+sua\s+reação\s*/gi, '')
+      .replace(/Não\s+resolvido\s*/gi, '')
+      .replace(/Resolvido\s*/gi, '')
+      .replace(/Clique\s*/gi, '')
+      .replace(/\u200C/g, '')
+      .replace(/‌/g, '')
+      .replace(/\s*\[.*$/g, '')
+      .replace(/\s+s\s*$/g, '')
+      .replace(/\.\.\.\s*$/g, '…')
+      .replace(/\s+/g, ' ')
+      .trim();
 
     if (title.length > 15) {
       complaints.push({
