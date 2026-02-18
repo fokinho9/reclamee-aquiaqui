@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { Save, Upload, LogOut, Image, Type, Code, ChevronDown, ChevronRight, Check, Sparkles, Loader2 } from "lucide-react";
+import ImportReviewsSection from "@/components/admin/ImportReviewsSection";
 import { useToast } from "@/hooks/use-toast";
 
 const SECTION_LABELS: Record<string, string> = {
@@ -385,6 +386,9 @@ const Admin = () => {
           companyName={cv('company_name', 'Amazon')}
           companyCategory={cv('company_category', 'Marketplace')}
         />
+
+        {/* Import from Reclame Aqui */}
+        <ImportReviewsSection />
       </main>
     </div>
   );
