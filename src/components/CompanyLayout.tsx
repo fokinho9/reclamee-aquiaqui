@@ -613,34 +613,34 @@ export const PostCard = ({ title, image }: { title: string; image: string }) => 
 /* ───────────── FOOTER ───────────── */
 export const Footer = () => {
   const consumerLinks = [
-    { label: "Faça uma reclamação", href: "#" },
-    { label: "Minhas Reclamações", href: "#" },
-    { label: "Compare empresas", href: "#" },
-    { label: "Melhores empresas", href: "#" },
-    { label: "Buscar descontos", href: "#" },
-    { label: "Rankings", href: "#" },
-    { label: "Cadastre uma empresa", href: "#" },
+    { label: "Faça uma reclamação", href: "/reclamacoes" },
+    { label: "Minhas Reclamações", href: "/reclamacoes" },
+    { label: "Compare empresas", href: "/" },
+    { label: "Melhores empresas", href: "/" },
+    { label: "Buscar descontos", href: "/empresa-descontos" },
+    { label: "Rankings", href: "/" },
+    { label: "Cadastre uma empresa", href: "/" },
   ];
   const companyLinks = [
-    { label: "Por que estar AQUI?", href: "#" },
-    { label: "Cadastrar empresa", href: "#" },
-    { label: "Responder reclamações", href: "#" },
-    { label: "Meus Produtos Reclame AQUI", href: "#" },
+    { label: "Por que estar AQUI?", href: "/institucional" },
+    { label: "Cadastrar empresa", href: "/" },
+    { label: "Responder reclamações", href: "/empresa-reclamacoes" },
+    { label: "Meus Produtos Reclame AQUI", href: "/" },
   ];
   const aboutLinks = [
-    { label: "Institucional", href: "#" },
-    { label: "Fale conosco", href: "#" },
-    { label: "RA Educa", href: "#" },
-    { label: "Conheça a extensão", href: "#" },
-    { label: "Prêmio", href: "#" },
-    { label: "Blog RA", href: "#" },
+    { label: "Institucional", href: "/institucional" },
+    { label: "Fale conosco", href: "/fale-conosco" },
+    { label: "RA Educa", href: "/" },
+    { label: "Conheça a extensão", href: "/" },
+    { label: "Prêmio", href: "/" },
+    { label: "Blog RA", href: "/" },
   ];
   const helpLinks = [
-    { label: "Quero trocar minha senha", href: "#" },
-    { label: "Não encontrei uma empresa", href: "#" },
-    { label: "Reclamei e ainda não responderam", href: "#" },
-    { label: "Quero cadastrar uma empresa", href: "#" },
-    { label: "Fale com o Reclame AQUI", href: "#" },
+    { label: "Quero trocar minha senha", href: "/central-de-ajuda" },
+    { label: "Não encontrei uma empresa", href: "/central-de-ajuda" },
+    { label: "Reclamei e ainda não responderam", href: "/central-de-ajuda" },
+    { label: "Quero cadastrar uma empresa", href: "/central-de-ajuda" },
+    { label: "Fale com o Reclame AQUI", href: "/fale-conosco" },
   ];
 
   const FooterColumn = ({ title, links, cta }: { title: string; links: { label: string; href: string }[]; cta?: { label: string; href: string; red?: boolean } }) => (
@@ -716,8 +716,8 @@ export const Footer = () => {
             </a>
           </div>
           <div className="w-full flex flex-row justify-center items-center">
-            <a href="#" className="text-sm mr-4" style={{ color: '#8A9BAE' }} title="Termos de uso">Termos de uso</a>
-            <a href="#" className="text-sm ml-4" style={{ color: '#8A9BAE' }} title="Política de privacidade">Política de privacidade</a>
+            <a href="/termos-de-uso" className="text-sm mr-4" style={{ color: '#8A9BAE' }} title="Termos de uso">Termos de uso</a>
+            <a href="/politica-de-privacidade" className="text-sm ml-4" style={{ color: '#8A9BAE' }} title="Política de privacidade">Política de privacidade</a>
           </div>
         </div>
       </section>
