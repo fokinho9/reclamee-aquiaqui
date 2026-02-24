@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { ChevronDown, ChevronUp, ExternalLink, MapPin, Copy } from "lucide-react";
 import { CompanyPage } from "@/components/CompanyLayout";
+import Seo from "@/components/seo/Seo";
 
 const VerificationSection = () => {
   const [expanded, setExpanded] = useState(false);
@@ -65,6 +66,12 @@ const Sobre = () => (
   <CompanyPage>
     {({ content, cv }) => (
       <>
+        <Seo
+          title={`Sobre ${cv('company_name', 'Agro Brasil')} - Reclame Aqui`}
+          description={`Saiba mais sobre a empresa ${cv('company_name', 'Agro Brasil')}. CNPJ, endereço, contatos e informações da empresa no Reclame AQUI.`}
+          keywords={["sobre", "agro brasil", "cnpj", "contato", "endereço"]}
+          canonicalPath="/sobre"
+        />
         {/* Breadcrumb */}
         <div className="mb-4 text-sm" style={{ color: '#4B5963' }}>
           Você está em: <a href="/" className="font-semibold hover:underline" style={{ color: '#4B5963' }}>{cv('company_name', 'Agro Brasil')}</a> {'>'} <span>Sobre</span>

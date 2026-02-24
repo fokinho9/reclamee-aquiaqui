@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Search, BookOpen } from "lucide-react";
 import { CompanyPage } from "@/components/CompanyLayout";
+import Seo from "@/components/seo/Seo";
 
 const FAQ_ARTICLES = [
   {
@@ -105,6 +106,12 @@ const FaqPage = () => {
         const companyName = cv('company_name', 'Agro Brasil');
         return (
           <div style={{ backgroundColor: '#f9f9f9' }}>
+            <Seo
+              title={`FAQ ${companyName} - Perguntas frequentes | Reclame Aqui`}
+              description={`Perguntas frequentes sobre ${companyName}. Encontre respostas para dúvidas sobre entrega, reembolso, trocas e mais.`}
+              keywords={["faq", "perguntas frequentes", companyName.toLowerCase(), "ajuda", "dúvidas"]}
+              canonicalPath="/empresa-faq"
+            />
             {/* Hero */}
             <div className="py-10 md:py-14 px-4 flex flex-col items-center" style={{ backgroundColor: '#eaedf0' }}>
               <h2 className="text-lg md:text-[32px] font-bold text-center mb-2" style={{ color: '#1a1a1a' }}>

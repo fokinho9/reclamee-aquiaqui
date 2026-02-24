@@ -1,5 +1,6 @@
 import { Tag } from "lucide-react";
 import { useSiteContent } from "@/hooks/use-site-content";
+import Seo from "@/components/seo/Seo";
 import {
   Header, CompanyHero, TabNav, Footer,
   TrustCard, ReputationCard, PerformanceCard, EvolutionCard,
@@ -17,6 +18,12 @@ const Index = () => {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#F2F4F6' }}>
+      <Seo
+        title={`${cv('company_name', 'Agro Brasil')} - Reclame Aqui`}
+        description={`Veja a reputação da empresa ${cv('company_name', 'Agro Brasil')} no Reclame AQUI. Confira reclamações, avaliações e nota dos consumidores.`}
+        keywords={["reclame aqui", "agro brasil", "reclamações", "reputação", "loja agro", "produtos agropecuários", "selaria", "manta para cavalo", "vestuário country"]}
+        canonicalPath="/"
+      />
       <Header />
       <CompanyHero cv={cv} />
       <TabNav />
