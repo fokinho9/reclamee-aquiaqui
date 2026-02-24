@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { useReviews, type Review } from "@/hooks/use-reviews";
+import Seo from "@/components/seo/Seo";
 
 /* ───────────── MOCK DATA (fallback) ───────────── */
 const MOCK_COMPLAINTS = [
@@ -149,6 +150,12 @@ const Reclamacoes = () => {
 
   return (
     <div className="min-h-screen bg-[#F5F7FA]">
+      <Seo
+        title="Reclamações Agro Brasil - Reclame Aqui"
+        description="Veja todas as reclamações sobre Agro Brasil no Reclame AQUI. Confira as últimas, respondidas, não respondidas e avaliadas pelos consumidores."
+        keywords={["reclamações", "agro brasil", "consumidor", "reclame aqui"]}
+        canonicalPath="/reclamacoes"
+      />
       <Header />
 
       <div className="bg-background border-b border-border">

@@ -3,6 +3,7 @@ import { useReview } from "@/hooks/use-reviews";
 import { useSiteContent, useContentValue } from "@/hooks/use-site-content";
 import { Header } from "@/components/CompanyLayout";
 import { MapPin, Calendar, ThumbsUp, Hand, Angry, Share2 } from "lucide-react";
+import Seo from "@/components/seo/Seo";
 
 const STATUS_CONFIG: Record<string, { label: string; bg: string; color: string; img: string }> = {
   respondida: { label: "Respondida", bg: "#BFDBFE", color: "#1E40AF", img: "/images/icons/rep-bom.png" },
@@ -82,6 +83,11 @@ const Reclamacao = () => {
 
   return (
     <div className="min-h-screen bg-muted/30">
+      <Seo
+        title={`${dbReview.title} - ${companyName} | Reclame Aqui`}
+        description={dbReview.description.substring(0, 155)}
+        canonicalPath={`/reclamacao/${id}`}
+      />
       <Header />
 
       <div className="max-w-[1286px] mx-auto px-4 md:px-6 py-6">

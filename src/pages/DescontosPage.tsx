@@ -1,5 +1,6 @@
 import { Tag, ExternalLink } from "lucide-react";
 import { CompanyPage } from "@/components/CompanyLayout";
+import Seo from "@/components/seo/Seo";
 
 const COUPONS = [
   { id: 1, title: "Frete Grátis", desc: "Em compras acima de R$ 129 para membros Prime", code: "FRETEPRIME", type: "Frete" },
@@ -20,6 +21,12 @@ const DescontosPage = () => (
       const companyName = cv('company_name', 'Agro Brasil');
       return (
         <div style={{ backgroundColor: '#f9f9f9' }}>
+          <Seo
+            title={`Cupons de desconto ${companyName} - Reclame Aqui`}
+            description={`Cupons e ofertas exclusivas de ${companyName}. Economize com códigos de desconto verificados pelo Reclame AQUI.`}
+            keywords={["cupom", "desconto", companyName.toLowerCase(), "oferta", "promoção"]}
+            canonicalPath="/empresa-descontos"
+          />
           {/* Hero */}
           <div className="py-12 md:py-16 px-4" style={{ backgroundColor: '#ebf4f0' }}>
             <div className="max-w-[1280px] mx-auto flex flex-col md:flex-row items-center gap-8 md:gap-16">

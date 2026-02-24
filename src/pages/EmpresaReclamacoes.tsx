@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Search, ChevronDown, ChevronUp, SlidersHorizontal } from "lucide-react";
 import { CompanyPage } from "@/components/CompanyLayout";
 import { useReviews, Review } from "@/hooks/use-reviews";
+import Seo from "@/components/seo/Seo";
 
 const PER_PAGE = 10;
 
@@ -172,6 +173,12 @@ const EmpresaReclamacoes = () => {
         const companyName = cv('company_name', 'Agro Brasil');
         return (
           <div className="min-h-[60vh]" style={{ backgroundColor: '#f9f9f9' }}>
+            <Seo
+              title={`Reclamações sobre ${companyName} - Reclame Aqui`}
+              description={`Lista completa de reclamações sobre ${companyName}. Filtre por status e busque problemas específicos.`}
+              keywords={["reclamações", companyName.toLowerCase(), "reclame aqui", "problemas"]}
+              canonicalPath="/empresa-reclamacoes"
+            />
             <div className="max-w-[1200px] mx-auto px-4 py-4 grid gap-4" style={{ gridTemplateColumns: '1fr' }}>
               <h2 className="text-lg md:text-xl font-semibold" style={{ color: '#000' }}>
                 Reclamações sobre {companyName}

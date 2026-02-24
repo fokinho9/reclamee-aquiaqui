@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/use-auth";
-import { useEffect } from "react";
+import Seo from "@/components/seo/Seo";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -34,6 +34,7 @@ const Login = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: "#F2F4F6" }}>
+      <Seo title="Login - Painel Administrativo" description="Acesse o painel administrativo do Reclame AQUI." noindex />
       <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8">
         <div className="text-center mb-8">
           <h1 className="text-2xl font-bold" style={{ color: "#1B8B4F" }}>

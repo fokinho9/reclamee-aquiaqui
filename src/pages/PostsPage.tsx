@@ -1,5 +1,6 @@
 import { ArrowRight } from "lucide-react";
 import { useSiteContent } from "@/hooks/use-site-content";
+import Seo from "@/components/seo/Seo";
 import {
   Header, CompanyHero, TabNav, Footer,
   SidebarSection,
@@ -166,6 +167,12 @@ const PostsPage = () => {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#F2F4F6' }}>
+      <Seo
+        title={`Posts de ${companyName} - Reclame Aqui`}
+        description={`Confira os posts e artigos publicados por ${companyName} no Reclame AQUI.`}
+        keywords={["posts", "artigos", companyName.toLowerCase(), "novidades"]}
+        canonicalPath="/empresa-posts"
+      />
       <Header />
       <CompanyHero cv={cv} />
       <TabNav />
