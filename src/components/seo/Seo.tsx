@@ -10,6 +10,7 @@ interface SeoProps {
   image?: string;
   canonicalPath?: string;
   noindex?: boolean;
+  jsonLd?: Record<string, unknown>;
 }
 
 const getSiteUrl = () =>
@@ -22,6 +23,7 @@ const Seo = ({
   image,
   canonicalPath,
   noindex = false,
+  jsonLd,
 }: SeoProps) => {
   const siteUrl = getSiteUrl();
   const fullUrl = canonicalPath ? `${siteUrl}${canonicalPath}` : siteUrl;
@@ -29,6 +31,24 @@ const Seo = ({
     ? image
     : `${siteUrl}${image || DEFAULT_IMAGE}`;
   const gscVerification = import.meta.env.VITE_GSC_VERIFICATION;
+
+  // Default Organization JSON-LD
+  const defaultJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "Reclame AQUI",
+    url: siteUrl,
+    logo: `${siteUrl}/favicon-ra.png`,
+    sameAs: [
+      "https://www.facebook.com/ReclameAqui",
+      "https://twitter.com/reclameaqui",
+      "https://www.instagram.com/reclameaqui/",
+      "https://www.linkedin.com/company/reclame-aqui/",
+      "https://www.youtube.com/channel/UCHSTgEYmopZluZ7N4BSGPpw",
+    ],
+  };
+
+  const structuredData = jsonLd || defaultJsonLd;
 
   return (
     <Helmet>
@@ -62,6 +82,11 @@ const Seo = ({
       {gscVerification && (
         <meta name="google-site-verification" content={gscVerification} />
       )}
+
+      {/* JSON-LD Structured Data */}
+      <script type="application/ld+json">
+        {JSON.stringify(structuredData)}
+      </script>
     </Helmet>
   );
 };

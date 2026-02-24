@@ -14,6 +14,11 @@ import DescontosPage from "./pages/DescontosPage";
 import FaqPage from "./pages/FaqPage";
 import PostsPage from "./pages/PostsPage";
 import ProblemasPage from "./pages/ProblemasPage";
+import TermosDeUso from "./pages/TermosDeUso";
+import PoliticaDePrivacidade from "./pages/PoliticaDePrivacidade";
+import Institucional from "./pages/Institucional";
+import FaleConosco from "./pages/FaleConosco";
+import CentralDeAjuda from "./pages/CentralDeAjuda";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -34,6 +39,11 @@ const App = () => (
           <Route path="/principais-problemas" element={<ProblemasPage />} />
           <Route path="/reclamacoes" element={<Reclamacoes />} />
           <Route path="/reclamacao/:id" element={<Reclamacao />} />
+          <Route path="/termos-de-uso" element={<TermosDeUso />} />
+          <Route path="/politica-de-privacidade" element={<PoliticaDePrivacidade />} />
+          <Route path="/institucional" element={<Institucional />} />
+          <Route path="/fale-conosco" element={<FaleConosco />} />
+          <Route path="/central-de-ajuda" element={<CentralDeAjuda />} />
           <Route path="/login" element={<Login />} />
           <Route path="/admin" element={<Admin />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
