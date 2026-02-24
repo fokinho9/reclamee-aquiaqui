@@ -19,6 +19,26 @@
     <meta name="twitter:title" content="Agro Brasil - Reclame Aqui">
     <meta name="twitter:description" content="Veja a reputação da empresa Agro Brasil no Reclame AQUI. Nota 8.2/10. Esta empresa recebeu 106194 reclamações.">
     <meta name="twitter:image" content="/images/og-image.jpg">
+
+    <!-- Google Ads / gtag.js - only loads if VITE_GOOGLE_ADS_ID is set -->
+    <script>
+      window.__GOOGLE_ADS_ID = '%VITE_GOOGLE_ADS_ID%';
+    </script>
+    <script>
+      (function() {
+        var id = window.__GOOGLE_ADS_ID;
+        if (!id || id.indexOf('VITE_') === 0) return;
+        var s = document.createElement('script');
+        s.async = true;
+        s.src = 'https://www.googletagmanager.com/gtag/js?id=' + id;
+        document.head.appendChild(s);
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){ window.dataLayer.push(arguments); }
+        window.gtag = gtag;
+        gtag('js', new Date());
+        gtag('config', id);
+      })();
+    </script>
   </head>
 
   <body>
