@@ -79,13 +79,13 @@ export const TabNav = () => {
 export const CompanyHero = ({ cv }: { cv: (key: string, fallback: string) => string }) => (
   <div className="relative">
     <div className="w-full h-[105px] md:h-[280px]" style={{ backgroundColor: cv('banner_bg_color', '#EF6509') }}>
-      <img src={cv('company_banner', '/images/amazon-banner.jpg')} alt="Banner" className="w-full h-full object-cover max-w-[1920px] mx-auto hidden md:block" />
-      <img src={cv('company_banner_mobile', '/images/amazon-banner-mobile.jpg')} alt="Banner" className="w-full h-full object-cover md:hidden" />
+      <img src={cv('company_banner', '/placeholder.svg')} alt="Banner" className="w-full h-full object-cover max-w-[1920px] mx-auto hidden md:block" />
+      <img src={cv('company_banner_mobile', '/placeholder.svg')} alt="Banner" className="w-full h-full object-cover md:hidden" />
     </div>
     <div className="max-w-[1286px] mx-auto px-4 md:px-10 relative">
       <div className="hidden md:flex items-end gap-6 -mt-16">
         <a href="#" className="flex-none w-[188px] h-[188px] rounded-full bg-[#FAFAFA] shadow-md flex items-center justify-center -mt-8 border-4 border-background overflow-hidden">
-          <img src={cv('company_logo', '/images/amazon-logo.jpg')} alt="Logo" className="w-[170px] h-[170px] rounded-full object-cover" />
+          <img src={cv('company_logo', '/placeholder.svg')} alt="Logo" className="w-[170px] h-[170px] rounded-full object-cover" />
         </a>
         <div className="flex-1 pb-2">
           <div className="flex items-center gap-2">
@@ -103,7 +103,7 @@ export const CompanyHero = ({ cv }: { cv: (key: string, fallback: string) => str
       </div>
       <div className="md:hidden flex flex-col items-center -mt-10">
         <a href="#" className="w-[80px] h-[80px] rounded-full bg-[#FAFAFA] shadow-md flex items-center justify-center border-4 border-background overflow-hidden">
-          <img src={cv('company_logo', '/images/amazon-logo.jpg')} alt="Logo" className="w-[72px] h-[72px] rounded-full object-cover" />
+          <img src={cv('company_logo', '/placeholder.svg')} alt="Logo" className="w-[72px] h-[72px] rounded-full object-cover" />
         </a>
         <div className="flex items-center gap-1.5 mt-2">
           <h1 className="text-lg font-bold text-foreground">{cv('company_name', 'Agro Brasil')}</h1>
