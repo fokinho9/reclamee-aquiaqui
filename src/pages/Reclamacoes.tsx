@@ -161,7 +161,7 @@ const Reclamacoes = () => {
       <div className="bg-background border-b border-border">
         <div className="max-w-[900px] mx-auto px-4 md:px-6 py-4 flex items-center gap-4">
           <Link to="/">
-            <img src="/images/amazon-logo.jpg" alt="Agro Brasil" className="w-12 h-12 rounded-full object-cover border-2 border-border" />
+            <img src="/placeholder.svg" alt="Agro Brasil" className="w-12 h-12 rounded-full object-cover border-2 border-border" />
           </Link>
           <div>
             <div className="flex items-center gap-2">
