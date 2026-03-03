@@ -8,6 +8,8 @@ import { Save, Upload, LogOut, Image, Type, Code, ChevronDown, ChevronRight, Che
 import ImportReviewsSection from "@/components/admin/ImportReviewsSection";
 import ManageReviewsSection from "@/components/admin/ManageReviewsSection";
 import ManageStoresSection from "@/components/admin/ManageStoresSection";
+import StoreSelector from "@/components/admin/StoreSelector";
+import StoreAdminPanel from "@/components/admin/store/StoreAdminPanel";
 import { useToast } from "@/hooks/use-toast";
 
 const SECTION_LABELS: Record<string, string> = {
@@ -425,6 +427,7 @@ const Admin = () => {
   const { data: content, isLoading } = useSiteContent();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("reviews");
+  const [selectedStoreId, setSelectedStoreId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!authLoading && (!user || !isAdmin)) {
@@ -473,6 +476,9 @@ const Admin = () => {
             <span className="text-xs font-semibold px-2 py-1 rounded-full" style={{ backgroundColor: "#E5EEFB", color: "#2B6CB0" }}>
               Admin
             </span>
+            <div className="hidden md:block border-l pl-3 ml-1" style={{ borderColor: "#E8ECF0" }}>
+              <StoreSelector selectedStoreId={selectedStoreId} onSelectStore={(id) => { setSelectedStoreId(id); }} />
+            </div>
           </div>
           <div className="flex items-center gap-4">
             <a href="/" target="_blank" className="text-sm font-medium" style={{ color: "#2B6CB0" }}>
@@ -489,30 +495,41 @@ const Admin = () => {
         </div>
       </header>
 
-      {/* Tab Navigation */}
-      <div className="bg-white border-b" style={{ borderColor: "#E8ECF0" }}>
-        <div className="max-w-6xl mx-auto px-4">
-          <nav className="flex gap-1 overflow-x-auto">
-            {ADMIN_TABS.map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className="px-4 py-3 text-sm font-medium whitespace-nowrap border-b-2 transition-colors"
-                style={{
-                  borderColor: activeTab === tab.id ? "#2B6CB0" : "transparent",
-                  color: activeTab === tab.id ? "#2B6CB0" : "#5A6872",
-                  backgroundColor: activeTab === tab.id ? "#F0F6FF" : "transparent",
-                }}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </nav>
-        </div>
+      {/* Mobile Store Selector */}
+      <div className="md:hidden bg-white border-b px-4 py-2" style={{ borderColor: "#E8ECF0" }}>
+        <StoreSelector selectedStoreId={selectedStoreId} onSelectStore={setSelectedStoreId} />
       </div>
+
+      {/* Tab Navigation (only for general panel) */}
+      {!selectedStoreId && (
+        <div className="bg-white border-b" style={{ borderColor: "#E8ECF0" }}>
+          <div className="max-w-6xl mx-auto px-4">
+            <nav className="flex gap-1 overflow-x-auto">
+              {ADMIN_TABS.map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className="px-4 py-3 text-sm font-medium whitespace-nowrap border-b-2 transition-colors"
+                  style={{
+                    borderColor: activeTab === tab.id ? "#2B6CB0" : "transparent",
+                    color: activeTab === tab.id ? "#2B6CB0" : "#5A6872",
+                    backgroundColor: activeTab === tab.id ? "#F0F6FF" : "transparent",
+                  }}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </nav>
+          </div>
+        </div>
+      )}
 
       {/* Content */}
       <main className="max-w-6xl mx-auto px-4 py-8">
+        {selectedStoreId ? (
+          <StoreAdminPanel storeId={selectedStoreId} />
+        ) : (
+          <>
         {activeTab === "content" && (
           <>
             <div className="mb-8">
@@ -587,6 +604,8 @@ const Admin = () => {
               </p>
             </div>
             <ManageStoresSection />
+          </>
+        )}
           </>
         )}
       </main>
