@@ -20,6 +20,7 @@ import PoliticaDePrivacidade from "./pages/PoliticaDePrivacidade";
 import Institucional from "./pages/Institucional";
 import FaleConosco from "./pages/FaleConosco";
 import CentralDeAjuda from "./pages/CentralDeAjuda";
+import StorePage from "./pages/StorePage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -60,6 +61,7 @@ const App = () => {
           <Route path="/fale-conosco" element={<FaleConosco />} />
           <Route path="/central-de-ajuda" element={<CentralDeAjuda />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/loja/:storeId" element={<StorePage />} />
           <Route path="/admin" element={<Admin />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
