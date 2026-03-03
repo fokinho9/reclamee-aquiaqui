@@ -1,9 +1,14 @@
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Header, Footer } from "@/components/CompanyLayout";
+import { Tag, MessageSquare } from "lucide-react";
+import {
+  Header, Footer, TabNav,
+  TrustCard, ReputationCard, PerformanceCard, EvolutionCard,
+  VisitedAlso, ComplaintsSection, FAQSection, ProblemsSection,
+  SidebarSection, PostCard
+} from "@/components/CompanyLayout";
 import Seo from "@/components/seo/Seo";
-import { ExternalLink, Star, MessageSquare } from "lucide-react";
 
 const StorePage = () => {
   const { storeId } = useParams();
@@ -23,41 +28,39 @@ const StorePage = () => {
     enabled: !!storeId,
   });
 
-  const { data: reviews } = useQuery({
-    queryKey: ["store-page-reviews", storeId],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("reviews")
-        .select("*")
-        .eq("store_id", storeId!)
-        .order("created_at", { ascending: false })
-        .limit(10);
-      if (error) throw error;
-      return data;
-    },
-    enabled: !!storeId,
-  });
-
-  const { data: coupons } = useQuery({
-    queryKey: ["store-page-coupons", storeId],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("coupons")
-        .select("*")
-        .eq("store_id", storeId!)
-        .eq("is_active", true)
-        .order("created_at", { ascending: false });
-      if (error) throw error;
-      return data;
-    },
-    enabled: !!storeId,
-  });
-
-  const statusLabels: Record<string, { label: string; bg: string; color: string }> = {
-    nao_respondida: { label: "Não respondida", bg: "#FFF3E0", color: "#E65100" },
-    respondida: { label: "Respondida", bg: "#E8F5E9", color: "#2E7D32" },
-    avaliada: { label: "Avaliada", bg: "#E5EEFB", color: "#2B6CB0" },
-    finalizada: { label: "Finalizada", bg: "#F3E5F5", color: "#7B1FA2" },
+  // Build a cv function that maps content keys to store fields
+  const cv = (key: string, fallback: string): string => {
+    if (!store) return fallback;
+    const map: Record<string, string | null | undefined> = {
+      company_name: store.name,
+      company_logo: store.logo_url,
+      company_category: store.category,
+      company_banner: store.logo_url, // fallback to logo
+      company_banner_mobile: store.logo_url,
+      banner_bg_color: "#2B6CB0",
+      company_views: "",
+      reputation_label: "Em análise",
+      reputation_description: `A reputação de ${store.name} está sendo avaliada com base nas reclamações recebidas.`,
+      trust_description: `${store.name} é uma empresa cadastrada e verificada.`,
+      about_text: store.description || `${store.name} é uma empresa parceira cadastrada em nossa plataforma.`,
+      cnpj: "",
+      website_url: store.website_url || "",
+      company_registration_time: `Cadastrada em ${new Date(store.created_at).toLocaleDateString("pt-BR")}`,
+      company_brands: store.name,
+      company_position: "--",
+      company_position_label: "",
+      company_position_category: "",
+      youtube_url: "",
+      stat_reclamacoes: "0",
+      stat_respondidas_pct: "0%",
+      stat_aguardando: "0",
+      stat_avaliadas: "0",
+      stat_nota_media: "0",
+      stat_voltariam_pct: "0%",
+      stat_resolvidas_pct: "0%",
+      stat_tempo_resposta: "--",
+    };
+    return map[key] !== undefined ? (map[key] || fallback) : fallback;
   };
 
   if (isLoading) {
@@ -85,107 +88,136 @@ const StorePage = () => {
     );
   }
 
-  const totalReviews = reviews?.length || 0;
-  const responded = reviews?.filter(r => r.status === "respondida" || r.status === "finalizada").length || 0;
+  const companyName = store.name;
+
+  /* ── Hero customizado para a loja ── */
+  const StoreHero = () => (
+    <div className="relative">
+      <div className="w-full h-[105px] md:h-[280px]" style={{ backgroundColor: "#2B6CB0" }}>
+        {store.logo_url && (
+          <div className="w-full h-full flex items-center justify-center">
+            <img src={store.logo_url} alt={store.name} className="max-h-[80%] max-w-[300px] object-contain" />
+          </div>
+        )}
+      </div>
+      <div className="max-w-[1286px] mx-auto px-4 md:px-10 relative">
+        <div className="hidden md:flex items-end gap-6 -mt-16">
+          <a href="#" className="flex-none w-[188px] h-[188px] rounded-full bg-[#FAFAFA] shadow-md flex items-center justify-center -mt-8 border-4 border-background overflow-hidden">
+            {store.logo_url ? (
+              <img src={store.logo_url} alt="Logo" className="w-[170px] h-[170px] rounded-full object-cover" />
+            ) : (
+              <span className="text-6xl">🏪</span>
+            )}
+          </a>
+          <div className="flex-1 pb-2">
+            <div className="flex items-center gap-2">
+              <h1 className="text-2xl font-bold text-foreground">{companyName}</h1>
+            </div>
+            <div className="flex items-center gap-4 text-sm text-muted-foreground mt-1">
+              {store.category && (
+                <span className="flex items-center gap-1">
+                  <img src="/images/icons/store.svg" alt="" className="w-4 h-4" /> {store.category}
+                </span>
+              )}
+            </div>
+            {store.description && (
+              <p className="text-sm text-muted-foreground mt-2">{store.description}</p>
+            )}
+          </div>
+          <button className="mb-3 px-6 py-2.5 rounded-md font-semibold text-sm flex items-center gap-2 text-white hover:opacity-90" style={{ backgroundColor: "#D11F26" }}>
+            <MessageSquare className="w-4 h-4" /> Reclamar
+          </button>
+        </div>
+        <div className="md:hidden flex flex-col items-center -mt-10">
+          <a href="#" className="w-[80px] h-[80px] rounded-full bg-[#FAFAFA] shadow-md flex items-center justify-center border-4 border-background overflow-hidden">
+            {store.logo_url ? (
+              <img src={store.logo_url} alt="Logo" className="w-[72px] h-[72px] rounded-full object-cover" />
+            ) : (
+              <span className="text-3xl">🏪</span>
+            )}
+          </a>
+          <h1 className="text-lg font-bold text-foreground mt-2">{companyName}</h1>
+          {store.category && (
+            <span className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
+              <img src="/images/icons/store.svg" alt="" className="w-3.5 h-3.5" /> {store.category}
+            </span>
+          )}
+        </div>
+        <div className="flex items-center gap-2 mt-3 mb-2 md:justify-start justify-center">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold" style={{ backgroundColor: "#E5EEFB", color: "#0A213D" }}>
+            <img src="/images/icons/rep-em-analise.png" alt="Em análise" className="w-[18px] h-[18px]" /> Em análise
+          </span>
+        </div>
+        <button className="md:hidden w-full py-3 rounded-md font-semibold text-sm flex items-center justify-center gap-2 text-white mt-2 mb-2" style={{ backgroundColor: "#D11F26" }}>
+          <MessageSquare className="w-4 h-4" /> Reclamar
+        </button>
+      </div>
+    </div>
+  );
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#F2F4F6" }}>
       <Seo
-        title={`${store.name} - Reclame Aqui`}
-        description={`Veja a reputação da ${store.name}. Confira reclamações, avaliações e cupons de desconto.`}
+        title={`${companyName} - Reclame Aqui`}
+        description={`Veja a reputação da ${companyName}. Confira reclamações, avaliações e cupons de desconto.`}
         canonicalPath={`/loja/${store.id}`}
       />
       <Header />
+      <StoreHero />
 
-      {/* Hero */}
-      <div className="bg-white border-b" style={{ borderColor: "#E8ECF0" }}>
-        <div className="max-w-4xl mx-auto px-4 py-8 flex items-center gap-6">
-          {store.logo_url ? (
-            <img src={store.logo_url} alt={store.name} className="w-20 h-20 rounded-2xl object-contain border" style={{ borderColor: "#E8ECF0" }} />
-          ) : (
-            <div className="w-20 h-20 rounded-2xl border-2 border-dashed flex items-center justify-center text-3xl" style={{ borderColor: "#CBD5E0" }}>🏪</div>
-          )}
-          <div>
-            <h1 className="text-2xl font-bold" style={{ color: "#1A2B3D" }}>{store.name}</h1>
-            {store.category && <p className="text-sm mt-1" style={{ color: "#8A9BAE" }}>{store.category}</p>}
-            {store.description && <p className="text-sm mt-2" style={{ color: "#5A6872" }}>{store.description}</p>}
-            {store.website_url && (
-              <a href={store.website_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-sm font-medium mt-2" style={{ color: "#2B6CB0" }}>
-                <ExternalLink className="w-4 h-4" /> Visitar site
-              </a>
-            )}
+      <main className="max-w-[1286px] mx-auto px-4 md:px-6 py-6">
+        {/* Mobile */}
+        <div className="lg:hidden">
+          <h2 className="text-[17px] font-bold mb-4" style={{ color: "#1A2B3D" }}>{companyName} é confiável?</h2>
+          <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
+            <div className="flex-none w-[75%]"><ReputationCard cv={cv} /></div>
+            <div className="flex-none w-[75%]"><TrustCard cv={cv} /></div>
           </div>
-        </div>
-      </div>
-
-      <div className="max-w-4xl mx-auto px-4 py-8 space-y-8">
-        {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-          <div className="bg-white rounded-xl p-5 border text-center" style={{ borderColor: "#E8ECF0" }}>
-            <MessageSquare className="w-6 h-6 mx-auto mb-2" style={{ color: "#2B6CB0" }} />
-            <p className="text-2xl font-bold" style={{ color: "#2B6CB0" }}>{totalReviews}</p>
-            <p className="text-xs" style={{ color: "#5A6872" }}>Reclamações</p>
-          </div>
-          <div className="bg-white rounded-xl p-5 border text-center" style={{ borderColor: "#E8ECF0" }}>
-            <Star className="w-6 h-6 mx-auto mb-2" style={{ color: "#2E7D32" }} />
-            <p className="text-2xl font-bold" style={{ color: "#2E7D32" }}>{responded}</p>
-            <p className="text-xs" style={{ color: "#5A6872" }}>Respondidas</p>
-          </div>
-          <div className="bg-white rounded-xl p-5 border text-center" style={{ borderColor: "#E8ECF0" }}>
-            <Star className="w-6 h-6 mx-auto mb-2" style={{ color: "#F57F17" }} />
-            <p className="text-2xl font-bold" style={{ color: "#F57F17" }}>
-              {totalReviews > 0 ? `${((responded / totalReviews) * 100).toFixed(0)}%` : "0%"}
-            </p>
-            <p className="text-xs" style={{ color: "#5A6872" }}>Taxa de Resposta</p>
-          </div>
-        </div>
-
-        {/* Coupons */}
-        {coupons && coupons.length > 0 && (
-          <div>
-            <h2 className="text-lg font-bold mb-4" style={{ color: "#1A2B3D" }}>🎟️ Cupons de Desconto</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {coupons.map(c => (
-                <div key={c.id} className="bg-white rounded-xl p-4 border" style={{ borderColor: "#E8ECF0" }}>
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="font-bold font-mono px-2 py-0.5 rounded text-sm" style={{ backgroundColor: "#F3E5F5", color: "#7B1FA2" }}>{c.code}</span>
-                    <span className="text-sm font-semibold" style={{ color: "#1B8B4F" }}>
-                      {c.discount_type === "percentage" ? `${c.discount_value}% OFF` : `R$ ${c.discount_value} OFF`}
-                    </span>
-                  </div>
-                  {c.description && <p className="text-sm" style={{ color: "#5A6872" }}>{c.description}</p>}
-                  {c.expires_at && <p className="text-xs mt-1" style={{ color: "#8A9BAE" }}>Válido até {new Date(c.expires_at).toLocaleDateString("pt-BR")}</p>}
-                </div>
-              ))}
+          <div className="mt-6"><PerformanceCard content={[]} cv={cv} /></div>
+          <EvolutionCard companyName={companyName} />
+          <ComplaintsSection companyName={companyName} storeId={storeId} />
+          <FAQSection />
+          <ProblemsSection companyName={companyName} />
+          <div className="mt-8">
+            <div className="bg-background rounded-xl p-6 text-center" style={{ border: "1px solid #E8ECF0" }}>
+              <Tag className="w-10 h-10 mx-auto mb-3" style={{ color: "#2B6CB0" }} />
+              <h3 className="text-lg font-bold mb-2" style={{ color: "#1A2B3D" }}>Descontos de {companyName}</h3>
+              <p className="text-sm mb-4" style={{ color: "#5A6872" }}>Confira cupons e ofertas exclusivas disponíveis para você.</p>
+              <a href="#" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-md text-sm font-semibold text-white" style={{ backgroundColor: "#2B6CB0" }}>Ver descontos</a>
             </div>
           </div>
-        )}
+          <VisitedAlso />
+          <div className="mt-6"><SidebarSection cv={cv} /></div>
+        </div>
 
-        {/* Reviews */}
-        {reviews && reviews.length > 0 && (
+        {/* Desktop */}
+        <div className="hidden lg:grid grid-cols-[280px_1fr_280px] gap-6">
           <div>
-            <h2 className="text-lg font-bold mb-4" style={{ color: "#1A2B3D" }}>📝 Reclamações Recentes</h2>
-            <div className="space-y-3">
-              {reviews.map(r => {
-                const st = statusLabels[r.status] || statusLabels.nao_respondida;
-                return (
-                  <div key={r.id} className="bg-white rounded-xl p-4 border" style={{ borderColor: "#E8ECF0" }}>
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-sm font-bold" style={{ color: "#1A2B3D" }}>{r.title}</span>
-                      <span className="text-xs px-2 py-0.5 rounded-full" style={{ backgroundColor: st.bg, color: st.color }}>{st.label}</span>
-                    </div>
-                    <p className="text-sm" style={{ color: "#5A6872" }}>{r.description?.slice(0, 200)}...</p>
-                    <div className="flex gap-3 mt-2 text-xs" style={{ color: "#8A9BAE" }}>
-                      <span>👤 {r.author_name}</span>
-                      <span>📅 {new Date(r.created_at).toLocaleDateString("pt-BR")}</span>
-                    </div>
-                  </div>
-                );
-              })}
+            <h2 className="text-xl font-bold mb-4" style={{ color: "#1A2B3D" }}>{companyName} é confiável?</h2>
+            <div className="space-y-4">
+              <TrustCard cv={cv} />
+              <ReputationCard cv={cv} />
+            </div>
+            <div className="mt-6"><PerformanceCard content={[]} cv={cv} /></div>
+            <EvolutionCard companyName={companyName} />
+            <VisitedAlso />
+          </div>
+          <div className="min-w-0">
+            <ComplaintsSection companyName={companyName} storeId={storeId} />
+            <FAQSection />
+            <ProblemsSection companyName={companyName} />
+            <div className="mt-8">
+              <div className="bg-background rounded-xl p-6 text-center" style={{ border: "1px solid #E8ECF0" }}>
+                <Tag className="w-10 h-10 mx-auto mb-3" style={{ color: "#2B6CB0" }} />
+                <h3 className="text-lg font-bold mb-2" style={{ color: "#1A2B3D" }}>Descontos de {companyName}</h3>
+                <p className="text-sm mb-4" style={{ color: "#5A6872" }}>Confira cupons e ofertas exclusivas disponíveis para você.</p>
+                <a href="#" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-md text-sm font-semibold text-white" style={{ backgroundColor: "#2B6CB0" }}>Ver descontos</a>
+              </div>
             </div>
           </div>
-        )}
-      </div>
+          <div><SidebarSection cv={cv} /></div>
+        </div>
+      </main>
 
       <Footer />
     </div>
