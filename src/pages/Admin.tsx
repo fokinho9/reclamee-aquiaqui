@@ -7,6 +7,7 @@ import { useEffect } from "react";
 import { Save, Upload, LogOut, Image, Type, Code, ChevronDown, ChevronRight, Check, Sparkles, Loader2 } from "lucide-react";
 import ImportReviewsSection from "@/components/admin/ImportReviewsSection";
 import ManageReviewsSection from "@/components/admin/ManageReviewsSection";
+import ManageStoresSection from "@/components/admin/ManageStoresSection";
 import { useToast } from "@/hooks/use-toast";
 
 const SECTION_LABELS: Record<string, string> = {
@@ -416,6 +417,7 @@ const ADMIN_TABS = [
   { id: "import", label: "📥 Importar", description: "Importar do Reclame Aqui" },
   { id: "ai", label: "🤖 IA", description: "Gerar avaliações com IA" },
   { id: "google-ads", label: "📢 Google Ads", description: "Configurar anúncios" },
+  { id: "stores", label: "🏪 Lojas", description: "Cadastrar e gerenciar lojas" },
 ];
 
 const Admin = () => {
@@ -573,6 +575,18 @@ const Admin = () => {
               </p>
             </div>
             <GoogleAdsGuide />
+          </>
+        )}
+
+        {activeTab === "stores" && (
+          <>
+            <div className="mb-8">
+              <h2 className="text-2xl font-bold" style={{ color: "#1A2B3D" }}>Gerenciar Lojas</h2>
+              <p className="text-sm mt-1" style={{ color: "#5A6872" }}>
+                Cadastre, edite e organize as lojas exibidas no site.
+              </p>
+            </div>
+            <ManageStoresSection />
           </>
         )}
       </main>
