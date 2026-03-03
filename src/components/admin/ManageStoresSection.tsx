@@ -1,8 +1,8 @@
 import { useState, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
-import { Save, Trash2, Plus, Upload, Check, Loader2, GripVertical, ExternalLink } from "lucide-react";
+import { Save, Trash2, Plus, Upload, Loader2, ExternalLink } from "lucide-react";
 
 interface Store {
   id: string;
@@ -26,14 +26,17 @@ const useStores = () =>
       if (error) throw error;
       return data as Store[];
     },
+    retry: 1,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: true,
   });
 
 const StoreCard = ({ store, onRefresh }: { store: Store; onRefresh: () => void }) => {
   const [name, setName] = useState(store.name);
-  const [logoUrl, setLogoUrl] = useState(store.logo_url);
-  const [websiteUrl, setWebsiteUrl] = useState(store.website_url);
-  const [description, setDescription] = useState(store.description);
-  const [category, setCategory] = useState(store.category);
+  const [logoUrl, setLogoUrl] = useState(store.logo_url ?? "");
+  const [websiteUrl, setWebsiteUrl] = useState(store.website_url ?? "");
+  const [description, setDescription] = useState(store.description ?? "");
+  const [category, setCategory] = useState(store.category ?? "");
   const [isActive, setIsActive] = useState(store.is_active);
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -232,7 +235,7 @@ const StoreCard = ({ store, onRefresh }: { store: Store; onRefresh: () => void }
 };
 
 const ManageStoresSection = () => {
-  const { data: stores, isLoading, refetch } = useStores();
+  const { data: stores, isLoading, isError, error, fetchStatus, refetch } = useStores();
   const [adding, setAdding] = useState(false);
   const { toast } = useToast();
 
@@ -253,8 +256,40 @@ const ManageStoresSection = () => {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center py-12">
-        <Loader2 className="w-6 h-6 animate-spin" style={{ color: "#2B6CB0" }} />
+      <div className="space-y-3 rounded-xl border p-4" style={{ borderColor: "#E8ECF0" }}>
+        <div className="flex items-center gap-2 text-sm" style={{ color: "#5A6872" }}>
+          <Loader2 className="w-5 h-5 animate-spin" style={{ color: "#2B6CB0" }} />
+          Carregando lojas...
+        </div>
+        {fetchStatus !== "fetching" && (
+          <button
+            onClick={() => refetch()}
+            className="px-3 py-2 rounded-lg text-sm font-medium"
+            style={{ backgroundColor: "#E5EEFB", color: "#2B6CB0" }}
+          >
+            Tentar novamente
+          </button>
+        )}
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="space-y-3 rounded-xl border p-4" style={{ borderColor: "#FECACA", backgroundColor: "#FEF2F2" }}>
+        <p className="text-sm font-medium" style={{ color: "#991B1B" }}>
+          Não foi possível carregar as lojas.
+        </p>
+        <p className="text-xs" style={{ color: "#B91C1C" }}>
+          {(error as Error)?.message || "Erro inesperado ao consultar a tabela stores."}
+        </p>
+        <button
+          onClick={() => refetch()}
+          className="px-3 py-2 rounded-lg text-sm font-medium"
+          style={{ backgroundColor: "#FEE2E2", color: "#B91C1C" }}
+        >
+          Recarregar lista
+        </button>
       </div>
     );
   }
