@@ -335,11 +335,11 @@ export const VisitedAlso = () => {
 };
 
 /* ───────────── COMPLAINTS ───────────── */
-export const ComplaintsSection = ({ companyName }: { companyName?: string }) => {
+export const ComplaintsSection = ({ companyName, storeId }: { companyName?: string; storeId?: string }) => {
   const [tab, setTab] = useState("avaliadas");
   const tabLabels: Record<string, string> = { ultimas: "Últimas", nao_respondidas: "Não respondidas", respondidas: "Respondidas", avaliadas: "Avaliadas" };
   const tabs = Object.keys(tabLabels);
-  const { data: reviews, isLoading } = useReviews(tab);
+  const { data: reviews, isLoading } = useReviews(tab, storeId);
   const displayed = (reviews || []).slice(0, 5);
 
   const formatTime = (dateStr: string) => {

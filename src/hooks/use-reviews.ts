@@ -20,14 +20,18 @@ export interface Review {
   created_at: string;
 }
 
-export function useReviews(statusFilter?: string) {
+export function useReviews(statusFilter?: string, storeId?: string) {
   return useQuery({
-    queryKey: ["reviews", statusFilter],
+    queryKey: ["reviews", statusFilter, storeId],
     queryFn: async () => {
       let query = supabase
         .from("reviews" as any)
         .select("*")
         .order("created_at", { ascending: false });
+
+      if (storeId) {
+        query = query.eq("store_id", storeId);
+      }
 
       if (statusFilter && statusFilter !== "ultimas") {
         const statusMap: Record<string, string> = {
