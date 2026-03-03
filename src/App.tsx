@@ -27,9 +27,11 @@ const queryClient = new QueryClient();
 const App = () => {
   useEffect(() => {
     const handler = (event: PromiseRejectionEvent) => {
-      if (event.reason?.message?.includes?.("MetaMask") || String(event.reason).includes("MetaMask")) {
+      const reason = String(event.reason?.message || event.reason || "");
+      const stack = String(event.reason?.stack || "");
+      if (reason.includes("MetaMask") || stack.includes("chrome-extension://") || stack.includes("moz-extension://")) {
         event.preventDefault();
-        console.warn("MetaMask extension error suppressed");
+        console.warn("Browser extension error suppressed:", reason);
       }
     };
     window.addEventListener("unhandledrejection", handler);
