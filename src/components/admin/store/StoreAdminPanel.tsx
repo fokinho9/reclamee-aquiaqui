@@ -10,8 +10,6 @@ import StoreImportSection from "./StoreImportSection";
 import StoreAISection from "./StoreAISection";
 import StoreContentSection from "./StoreContentSection";
 import StoreGoogleAdsSection from "./StoreGoogleAdsSection";
-import ImportReviewsSection from "@/components/admin/ImportReviewsSection";
-import ManageReviewsSection from "@/components/admin/ManageReviewsSection";
 
 const STORE_TABS = [
   { id: "stats", label: "📊 Estatísticas" },
@@ -96,19 +94,9 @@ export default function StoreAdminPanel({ storeId }: { storeId: string }) {
       {/* Content */}
       {activeTab === "stats" && <StoreStatsSection storeId={storeId} />}
       {activeTab === "data" && <StoreDataSection storeId={storeId} />}
-      {activeTab === "content" && <StoreContentSection />}
-      {activeTab === "reviews" && (
-        <div className="space-y-6">
-          <StoreReviewsSection storeId={storeId} />
-          <ManageReviewsSection />
-        </div>
-      )}
-      {activeTab === "import" && (
-        <div className="space-y-6">
-          <StoreImportSection storeId={storeId} />
-          <ImportReviewsSection />
-        </div>
-      )}
+      {activeTab === "content" && <StoreContentSection storeId={storeId} />}
+      {activeTab === "reviews" && <StoreReviewsSection storeId={storeId} />}
+      {activeTab === "import" && <StoreImportSection storeId={storeId} />}
       {activeTab === "ai" && <StoreAISection storeId={storeId} />}
       {activeTab === "google-ads" && <StoreGoogleAdsSection />}
       {activeTab === "coupons" && <StoreCouponsSection storeId={storeId} />}
