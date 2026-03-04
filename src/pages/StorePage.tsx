@@ -9,6 +9,7 @@ import {
   SidebarSection, PostCard
 } from "@/components/CompanyLayout";
 import Seo from "@/components/seo/Seo";
+import { useStoreContent } from "@/hooks/use-store-content";
 
 const StorePage = () => {
   const { storeId } = useParams();
@@ -28,14 +29,27 @@ const StorePage = () => {
     enabled: !!storeId,
   });
 
-  // Build a cv function that maps content keys to store fields
+  const { data: storeContent } = useStoreContent(storeId || "");
+
+  // Helper to get content value from store_content table
+  const getContent = (key: string): string | undefined => {
+    const item = storeContent?.find((i) => i.content_key === key);
+    return item?.content_value || undefined;
+  };
+
+  // Build a cv function: store_content > store fields > fallback
   const cv = (key: string, fallback: string): string => {
+    // First check store_content table
+    const contentVal = getContent(key);
+    if (contentVal) return contentVal;
+
+    // Then check store fields
     if (!store) return fallback;
     const map: Record<string, string | null | undefined> = {
       company_name: store.name,
       company_logo: store.logo_url,
       company_category: store.category,
-      company_banner: store.logo_url, // fallback to logo
+      company_banner: store.logo_url,
       company_banner_mobile: store.logo_url,
       banner_bg_color: "#2B6CB0",
       company_views: "",
@@ -88,23 +102,32 @@ const StorePage = () => {
     );
   }
 
-  const companyName = store.name;
+  const companyName = cv("company_name", store.name);
+  const bannerBg = cv("banner_bg_color", "#2B6CB0");
+  const bannerDesktop = getContent("company_banner");
+  const bannerMobile = getContent("company_banner_mobile");
+  const repLabel = cv("reputation_label", "Em análise");
 
   /* ── Hero customizado para a loja ── */
   const StoreHero = () => (
     <div className="relative">
-      <div className="w-full h-[105px] md:h-[280px]" style={{ backgroundColor: "#2B6CB0" }}>
-        {store.logo_url && (
+      <div className="w-full h-[105px] md:h-[280px]" style={{ backgroundColor: bannerBg }}>
+        {bannerDesktop ? (
+          <>
+            <img src={bannerDesktop} alt={companyName} className="w-full h-full object-cover max-w-[1920px] mx-auto hidden md:block" />
+            <img src={bannerMobile || bannerDesktop} alt={companyName} className="w-full h-full object-cover md:hidden" />
+          </>
+        ) : store.logo_url ? (
           <div className="w-full h-full flex items-center justify-center">
-            <img src={store.logo_url} alt={store.name} className="max-h-[80%] max-w-[300px] object-contain" />
+            <img src={store.logo_url} alt={companyName} className="max-h-[80%] max-w-[300px] object-contain" />
           </div>
-        )}
+        ) : null}
       </div>
       <div className="max-w-[1286px] mx-auto px-4 md:px-10 relative">
         <div className="hidden md:flex items-end gap-6 -mt-16">
           <a href="#" className="flex-none w-[188px] h-[188px] rounded-full bg-[#FAFAFA] shadow-md flex items-center justify-center -mt-8 border-4 border-background overflow-hidden">
-            {store.logo_url ? (
-              <img src={store.logo_url} alt="Logo" className="w-[170px] h-[170px] rounded-full object-cover" />
+            {cv("company_logo", "") ? (
+              <img src={cv("company_logo", "")} alt="Logo" className="w-[170px] h-[170px] rounded-full object-cover" />
             ) : (
               <span className="text-6xl">🏪</span>
             )}
@@ -114,14 +137,19 @@ const StorePage = () => {
               <h1 className="text-2xl font-bold text-foreground">{companyName}</h1>
             </div>
             <div className="flex items-center gap-4 text-sm text-muted-foreground mt-1">
-              {store.category && (
+              {cv("company_category", "") && (
                 <span className="flex items-center gap-1">
-                  <img src="/images/icons/store.svg" alt="" className="w-4 h-4" /> {store.category}
+                  <img src="/images/icons/store.svg" alt="" className="w-4 h-4" /> {cv("company_category", "")}
+                </span>
+              )}
+              {cv("company_views", "") && (
+                <span className="flex items-center gap-1">
+                  <img src="/images/icons/eye.svg" alt="" className="w-4 h-4" /> {cv("company_views", "")}
                 </span>
               )}
             </div>
-            {store.description && (
-              <p className="text-sm text-muted-foreground mt-2">{store.description}</p>
+            {cv("about_text", "") && (
+              <p className="text-sm text-muted-foreground mt-2 line-clamp-2">{cv("about_text", "")}</p>
             )}
           </div>
           <button className="mb-3 px-6 py-2.5 rounded-md font-semibold text-sm flex items-center gap-2 text-white hover:opacity-90" style={{ backgroundColor: "#D11F26" }}>
@@ -130,22 +158,22 @@ const StorePage = () => {
         </div>
         <div className="md:hidden flex flex-col items-center -mt-10">
           <a href="#" className="w-[80px] h-[80px] rounded-full bg-[#FAFAFA] shadow-md flex items-center justify-center border-4 border-background overflow-hidden">
-            {store.logo_url ? (
-              <img src={store.logo_url} alt="Logo" className="w-[72px] h-[72px] rounded-full object-cover" />
+            {cv("company_logo", "") ? (
+              <img src={cv("company_logo", "")} alt="Logo" className="w-[72px] h-[72px] rounded-full object-cover" />
             ) : (
               <span className="text-3xl">🏪</span>
             )}
           </a>
           <h1 className="text-lg font-bold text-foreground mt-2">{companyName}</h1>
-          {store.category && (
+          {cv("company_category", "") && (
             <span className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
-              <img src="/images/icons/store.svg" alt="" className="w-3.5 h-3.5" /> {store.category}
+              <img src="/images/icons/store.svg" alt="" className="w-3.5 h-3.5" /> {cv("company_category", "")}
             </span>
           )}
         </div>
         <div className="flex items-center gap-2 mt-3 mb-2 md:justify-start justify-center">
           <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold" style={{ backgroundColor: "#E5EEFB", color: "#0A213D" }}>
-            <img src="/images/icons/rep-em-analise.png" alt="Em análise" className="w-[18px] h-[18px]" /> Em análise
+            <img src="/images/icons/rep-em-analise.png" alt={repLabel} className="w-[18px] h-[18px]" /> {repLabel}
           </span>
         </div>
         <button className="md:hidden w-full py-3 rounded-md font-semibold text-sm flex items-center justify-center gap-2 text-white mt-2 mb-2" style={{ backgroundColor: "#D11F26" }}>
@@ -175,6 +203,14 @@ const StorePage = () => {
           </div>
           <div className="mt-6"><PerformanceCard content={[]} cv={cv} /></div>
           <EvolutionCard companyName={companyName} />
+          {cv("youtube_url", "") && (
+            <div className="mt-6">
+              <h3 className="text-[17px] font-bold mb-3" style={{ color: "#1A2B3D" }}>Veja mais sobre {companyName}</h3>
+              <div className="rounded-xl overflow-hidden" style={{ border: "1px solid #E8ECF0" }}>
+                <iframe width="100%" height="200" src={cv("youtube_url", "")} title="Vídeo" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen className="w-full" />
+              </div>
+            </div>
+          )}
           <ComplaintsSection companyName={companyName} storeId={storeId} />
           <FAQSection />
           <ProblemsSection companyName={companyName} />
@@ -203,6 +239,14 @@ const StorePage = () => {
             <VisitedAlso />
           </div>
           <div className="min-w-0">
+            {cv("youtube_url", "") && (
+              <>
+                <h3 className="text-lg font-bold mb-3" style={{ color: "#1A2B3D" }}>Veja mais sobre {companyName}</h3>
+                <div className="rounded-xl overflow-hidden mb-4" style={{ border: "1px solid #E8ECF0" }}>
+                  <iframe width="100%" height="280" src={cv("youtube_url", "")} title="Vídeo" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen className="w-full" />
+                </div>
+              </>
+            )}
             <ComplaintsSection companyName={companyName} storeId={storeId} />
             <FAQSection />
             <ProblemsSection companyName={companyName} />
