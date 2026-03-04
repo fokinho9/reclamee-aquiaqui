@@ -192,7 +192,7 @@ const StorePage = () => {
       />
       <Header />
       <StoreHero />
-      <TabNav />
+      <TabNav basePath={`/loja/${storeId}`} />
 
       <main className="max-w-[1286px] mx-auto px-4 md:px-6 py-6">
         {/* Mobile */}
