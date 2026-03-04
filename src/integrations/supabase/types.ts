@@ -192,6 +192,41 @@ export type Database = {
         }
         Relationships: []
       }
+      store_content: {
+        Row: {
+          content_key: string
+          content_value: string
+          created_at: string
+          id: string
+          store_id: string
+          updated_at: string
+        }
+        Insert: {
+          content_key: string
+          content_value?: string
+          created_at?: string
+          id?: string
+          store_id: string
+          updated_at?: string
+        }
+        Update: {
+          content_key?: string
+          content_value?: string
+          created_at?: string
+          id?: string
+          store_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "store_content_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       store_users: {
         Row: {
           created_at: string

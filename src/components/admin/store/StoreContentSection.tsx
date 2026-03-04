@@ -1,24 +1,91 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Save, Upload, Check, Loader2 } from "lucide-react";
+import { Save, Upload, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useUploadAsset } from "@/hooks/use-site-content";
+import { useStoreContent, useUpsertStoreContent } from "@/hooks/use-store-content";
 
 interface Props {
   storeId: string;
 }
+
+const FIELD_GROUPS = [
+  {
+    title: "🏪 Dados da Loja",
+    fields: [
+      { key: "name", label: "Nome da Loja", type: "text", source: "store" },
+      { key: "category", label: "Categoria", type: "text", source: "store" },
+      { key: "website_url", label: "Website URL", type: "text", source: "store" },
+      { key: "description", label: "Descrição / Sobre a empresa", type: "textarea", source: "store" },
+    ],
+  },
+  {
+    title: "🎨 Banner e Visual",
+    fields: [
+      { key: "company_banner", label: "Banner Desktop (URL)", type: "text", source: "content" },
+      { key: "company_banner_mobile", label: "Banner Mobile (URL)", type: "text", source: "content" },
+      { key: "banner_bg_color", label: "Cor de fundo do banner (hex)", type: "text", source: "content" },
+      { key: "company_views", label: "Visualizações (texto)", type: "text", source: "content" },
+    ],
+  },
+  {
+    title: "⭐ Reputação",
+    fields: [
+      { key: "reputation_label", label: "Label da reputação (ex: Ótimo, Bom, Regular)", type: "text", source: "content" },
+      { key: "reputation_description", label: "Descrição da reputação (HTML permitido)", type: "textarea", source: "content" },
+      { key: "trust_description", label: "Descrição de confiança", type: "textarea", source: "content" },
+    ],
+  },
+  {
+    title: "📊 Estatísticas",
+    fields: [
+      { key: "stat_reclamacoes", label: "Total de Reclamações", type: "text", source: "content" },
+      { key: "stat_respondidas_pct", label: "% Respondidas", type: "text", source: "content" },
+      { key: "stat_aguardando", label: "Reclamações Aguardando", type: "text", source: "content" },
+      { key: "stat_avaliadas", label: "Reclamações Avaliadas", type: "text", source: "content" },
+      { key: "stat_nota_media", label: "Nota Média", type: "text", source: "content" },
+      { key: "stat_voltariam_pct", label: "% Voltariam a fazer negócio", type: "text", source: "content" },
+      { key: "stat_resolvidas_pct", label: "% Resolvidas", type: "text", source: "content" },
+      { key: "stat_tempo_resposta", label: "Tempo Médio de Resposta", type: "text", source: "content" },
+    ],
+  },
+  {
+    title: "ℹ️ Sidebar / Sobre",
+    fields: [
+      { key: "about_text", label: "Texto 'Sobre' na sidebar", type: "textarea", source: "content" },
+      { key: "cnpj", label: "CNPJ", type: "text", source: "content" },
+      { key: "company_registration_time", label: "Tempo de cadastro (ex: Cadastrada há 20 anos)", type: "text", source: "content" },
+      { key: "company_brands", label: "Marcas da empresa", type: "text", source: "content" },
+    ],
+  },
+  {
+    title: "🏆 Posição / Ranking",
+    fields: [
+      { key: "company_position", label: "Posição no ranking", type: "text", source: "content" },
+      { key: "company_position_label", label: "Label da posição", type: "text", source: "content" },
+      { key: "company_position_category", label: "Categoria da posição", type: "text", source: "content" },
+    ],
+  },
+  {
+    title: "🎥 Mídia",
+    fields: [
+      { key: "youtube_url", label: "URL do vídeo YouTube (embed)", type: "text", source: "content" },
+    ],
+  },
+];
 
 export default function StoreContentSection({ storeId }: Props) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const uploadAsset = useUploadAsset();
   const [saving, setSaving] = useState(false);
-  const [form, setForm] = useState<Record<string, string>>({});
+  const [storeForm, setStoreForm] = useState<Record<string, string>>({});
+  const [contentForm, setContentForm] = useState<Record<string, string>>({});
   const logoRef = useRef<HTMLInputElement>(null);
 
-  const { data: store, isLoading } = useQuery({
-    queryKey: ["store-content", storeId],
+  const { data: store, isLoading: loadingStore } = useQuery({
+    queryKey: ["store-content-detail", storeId],
     queryFn: async () => {
       const { data, error } = await supabase.from("stores").select("*").eq("id", storeId).single();
       if (error) throw error;
@@ -26,29 +93,61 @@ export default function StoreContentSection({ storeId }: Props) {
     },
   });
 
-  const val = (key: string) => form[key] ?? (store as any)?.[key] ?? "";
+  const { data: storeContent, isLoading: loadingContent } = useStoreContent(storeId);
+  const upsertContent = useUpsertStoreContent();
+
+  const storeVal = (key: string) => storeForm[key] ?? (store as any)?.[key] ?? "";
+  const contentVal = (key: string) => {
+    if (contentForm[key] !== undefined) return contentForm[key];
+    const item = storeContent?.find((i) => i.content_key === key);
+    return item?.content_value ?? "";
+  };
+
+  const getVal = (key: string, source: string) => source === "store" ? storeVal(key) : contentVal(key);
+  const setVal = (key: string, value: string, source: string) => {
+    if (source === "store") {
+      setStoreForm((prev) => ({ ...prev, [key]: value }));
+    } else {
+      setContentForm((prev) => ({ ...prev, [key]: value }));
+    }
+  };
 
   const handleSave = async () => {
     setSaving(true);
     try {
-      const { error } = await supabase
-        .from("stores")
-        .update({
-          name: val("name"),
-          description: val("description"),
-          website_url: val("website_url"),
-          logo_url: val("logo_url"),
-          category: val("category"),
-        })
-        .eq("id", storeId);
-      if (error) throw error;
-      queryClient.invalidateQueries({ queryKey: ["store-content", storeId] });
+      // Save store fields
+      if (Object.keys(storeForm).length > 0) {
+        const { error } = await supabase
+          .from("stores")
+          .update({
+            name: storeVal("name"),
+            description: storeVal("description"),
+            website_url: storeVal("website_url"),
+            logo_url: storeVal("logo_url"),
+            category: storeVal("category"),
+          })
+          .eq("id", storeId);
+        if (error) throw error;
+      }
+
+      // Save content fields
+      const contentEntries = Object.entries(contentForm).map(([content_key, content_value]) => ({
+        content_key,
+        content_value,
+      }));
+      if (contentEntries.length > 0) {
+        await upsertContent.mutateAsync({ storeId, entries: contentEntries });
+      }
+
+      queryClient.invalidateQueries({ queryKey: ["store-content-detail", storeId] });
       queryClient.invalidateQueries({ queryKey: ["store-detail", storeId] });
+      queryClient.invalidateQueries({ queryKey: ["store-name", storeId] });
       queryClient.invalidateQueries({ queryKey: ["admin-stores-selector"] });
-      setForm({});
-      toast({ title: "Salvo!", description: "Conteúdo da loja atualizado." });
-    } catch {
-      toast({ title: "Erro", description: "Não foi possível salvar.", variant: "destructive" });
+      setStoreForm({});
+      setContentForm({});
+      toast({ title: "Salvo!", description: "Todos os dados da loja foram atualizados." });
+    } catch (err: any) {
+      toast({ title: "Erro", description: err.message || "Não foi possível salvar.", variant: "destructive" });
     }
     setSaving(false);
   };
@@ -58,23 +157,28 @@ export default function StoreContentSection({ storeId }: Props) {
     if (!file) return;
     try {
       const url = await uploadAsset.mutateAsync(file);
-      setForm({ ...form, logo_url: url });
+      setStoreForm((prev) => ({ ...prev, logo_url: url }));
       toast({ title: "Logo enviado!" });
     } catch {
       toast({ title: "Erro no upload", variant: "destructive" });
     }
   };
 
-  if (isLoading) return <p style={{ color: "#5A6872" }}>Carregando conteúdo...</p>;
+  const handleBannerUpload = async (e: React.ChangeEvent<HTMLInputElement>, key: string) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      const url = await uploadAsset.mutateAsync(file);
+      setContentForm((prev) => ({ ...prev, [key]: url }));
+      toast({ title: "Banner enviado!" });
+    } catch {
+      toast({ title: "Erro no upload", variant: "destructive" });
+    }
+  };
 
-  const hasChanges = Object.keys(form).length > 0;
+  if (loadingStore || loadingContent) return <p style={{ color: "#5A6872" }}>Carregando conteúdo...</p>;
 
-  const fields = [
-    { key: "name", label: "Nome da Loja", type: "text" },
-    { key: "category", label: "Categoria", type: "text" },
-    { key: "website_url", label: "Website URL", type: "text" },
-    { key: "description", label: "Descrição / Sobre a empresa", type: "textarea" },
-  ];
+  const hasChanges = Object.keys(storeForm).length > 0 || Object.keys(contentForm).length > 0;
 
   return (
     <div className="space-y-6">
@@ -82,18 +186,16 @@ export default function StoreContentSection({ storeId }: Props) {
       <div className="bg-white rounded-xl p-5 border" style={{ borderColor: "#E8ECF0" }}>
         <h3 className="text-base font-bold mb-3" style={{ color: "#1A2B3D" }}>🖼️ Logo da Loja</h3>
         <div className="flex items-center gap-4">
-          {val("logo_url") ? (
-            <img src={val("logo_url")} alt="Logo" className="w-20 h-20 rounded-xl object-cover border" style={{ borderColor: "#E8ECF0" }} />
+          {storeVal("logo_url") ? (
+            <img src={storeVal("logo_url")} alt="Logo" className="w-20 h-20 rounded-xl object-cover border" style={{ borderColor: "#E8ECF0" }} />
           ) : (
-            <div className="w-20 h-20 rounded-xl border-2 border-dashed flex items-center justify-center text-2xl" style={{ borderColor: "#CBD5E0" }}>
-              🏪
-            </div>
+            <div className="w-20 h-20 rounded-xl border-2 border-dashed flex items-center justify-center text-2xl" style={{ borderColor: "#CBD5E0" }}>🏪</div>
           )}
           <div className="flex-1 space-y-2">
             <input
               type="text"
-              value={val("logo_url")}
-              onChange={(e) => setForm({ ...form, logo_url: e.target.value })}
+              value={storeVal("logo_url")}
+              onChange={(e) => setStoreForm((prev) => ({ ...prev, logo_url: e.target.value }))}
               className="w-full px-3 py-2 border rounded-lg text-sm"
               style={{ borderColor: "#E8ECF0" }}
               placeholder="URL do logo"
@@ -112,45 +214,69 @@ export default function StoreContentSection({ storeId }: Props) {
         </div>
       </div>
 
-      {/* Fields */}
-      <div className="bg-white rounded-xl p-5 border" style={{ borderColor: "#E8ECF0" }}>
-        <h3 className="text-base font-bold mb-4" style={{ color: "#1A2B3D" }}>📄 Dados e Conteúdo</h3>
-        <div className="space-y-4">
-          {fields.map((f) => (
-            <div key={f.key}>
-              <label className="block text-sm font-semibold mb-1" style={{ color: "#1A2B3D" }}>{f.label}</label>
-              {f.type === "textarea" ? (
-                <textarea
-                  value={val(f.key)}
-                  onChange={(e) => setForm({ ...form, [f.key]: e.target.value })}
-                  rows={4}
-                  className="w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1B8B4F]/30"
-                  style={{ borderColor: "#E8ECF0" }}
-                />
-              ) : (
-                <input
-                  type="text"
-                  value={val(f.key)}
-                  onChange={(e) => setForm({ ...form, [f.key]: e.target.value })}
-                  className="w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1B8B4F]/30"
-                  style={{ borderColor: "#E8ECF0" }}
-                />
-              )}
-            </div>
-          ))}
+      {/* Field Groups */}
+      {FIELD_GROUPS.map((group) => (
+        <div key={group.title} className="bg-white rounded-xl p-5 border" style={{ borderColor: "#E8ECF0" }}>
+          <h3 className="text-base font-bold mb-4" style={{ color: "#1A2B3D" }}>{group.title}</h3>
+          <div className="space-y-4">
+            {group.fields.map((f) => (
+              <div key={f.key}>
+                <label className="block text-sm font-semibold mb-1" style={{ color: "#1A2B3D" }}>{f.label}</label>
+                {f.type === "textarea" ? (
+                  <textarea
+                    value={getVal(f.key, f.source)}
+                    onChange={(e) => setVal(f.key, e.target.value, f.source)}
+                    rows={4}
+                    className="w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1B8B4F]/30"
+                    style={{ borderColor: "#E8ECF0" }}
+                  />
+                ) : (
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={getVal(f.key, f.source)}
+                      onChange={(e) => setVal(f.key, e.target.value, f.source)}
+                      className="flex-1 px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1B8B4F]/30"
+                      style={{ borderColor: "#E8ECF0" }}
+                    />
+                    {(f.key === "company_banner" || f.key === "company_banner_mobile") && (
+                      <>
+                        <input type="file" accept="image/*" onChange={(e) => handleBannerUpload(e, f.key)} className="hidden" id={`upload-${f.key}`} />
+                        <button
+                          onClick={() => document.getElementById(`upload-${f.key}`)?.click()}
+                          className="px-3 py-2 rounded-lg text-sm font-medium flex items-center gap-1 flex-none"
+                          style={{ backgroundColor: "#E5EEFB", color: "#2B6CB0" }}
+                        >
+                          <Upload className="w-4 h-4" />
+                        </button>
+                      </>
+                    )}
+                  </div>
+                )}
+                {f.key === "banner_bg_color" && getVal(f.key, f.source) && (
+                  <div className="mt-1 flex items-center gap-2">
+                    <div className="w-6 h-6 rounded border" style={{ backgroundColor: getVal(f.key, f.source), borderColor: "#E8ECF0" }} />
+                    <span className="text-xs" style={{ color: "#8A9BAE" }}>Preview</span>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
+      ))}
 
       {/* Save */}
       {hasChanges && (
-        <button
-          onClick={handleSave}
-          disabled={saving}
-          className="px-5 py-2.5 rounded-lg text-sm font-semibold text-white flex items-center gap-2 disabled:opacity-50"
-          style={{ backgroundColor: "#1B8B4F" }}
-        >
-          {saving ? <><Loader2 className="w-4 h-4 animate-spin" /> Salvando...</> : <><Save className="w-4 h-4" /> Salvar Conteúdo</>}
-        </button>
+        <div className="sticky bottom-4 z-10">
+          <button
+            onClick={handleSave}
+            disabled={saving}
+            className="px-6 py-3 rounded-xl text-sm font-bold text-white flex items-center gap-2 disabled:opacity-50 shadow-lg"
+            style={{ backgroundColor: "#1B8B4F" }}
+          >
+            {saving ? <><Loader2 className="w-4 h-4 animate-spin" /> Salvando...</> : <><Save className="w-4 h-4" /> Salvar Todas as Alterações</>}
+          </button>
+        </div>
       )}
     </div>
   );
