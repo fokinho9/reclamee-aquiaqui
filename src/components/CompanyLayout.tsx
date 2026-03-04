@@ -105,12 +105,14 @@ export const CompanyHero = ({ cv }: { cv: (key: string, fallback: string) => str
         <div className="flex-1 pb-2">
           <div className="flex items-center gap-2">
             <h1 className="text-2xl font-bold text-foreground">{cv('company_name', 'Agro Brasil')}</h1>
-            <img src="/images/seal-ra-verified.png" alt="RA Verificada" className="w-6 h-6" />
           </div>
           <div className="flex items-center gap-4 text-sm text-muted-foreground mt-1">
             <span className="flex items-center gap-1"><img src="/images/icons/store.svg" alt="" className="w-4 h-4" /> {cv('company_category', 'Varejo - Marketplaces')}</span>
             <span className="flex items-center gap-1"><img src="/images/icons/eye.svg" alt="" className="w-4 h-4" /> {cv('company_views', '+ 2.4 milhões de visualizações')}</span>
           </div>
+          {cv('about_text', '') && (
+            <p className="text-sm text-muted-foreground mt-2 line-clamp-2">{cv('about_text', '')}</p>
+          )}
         </div>
         <button className="mb-3 px-6 py-2.5 rounded-md font-semibold text-sm flex items-center gap-2 text-white hover:opacity-90" style={{ backgroundColor: '#D11F26' }}>
           <MessageSquare className="w-4 h-4" /> Reclamar
@@ -120,10 +122,7 @@ export const CompanyHero = ({ cv }: { cv: (key: string, fallback: string) => str
         <a href="#" className="w-[80px] h-[80px] rounded-full bg-[#FAFAFA] shadow-md flex items-center justify-center border-4 border-background overflow-hidden">
           <img src={cv('company_logo', '/placeholder.svg')} alt="Logo" className="w-[72px] h-[72px] rounded-full object-cover" />
         </a>
-        <div className="flex items-center gap-1.5 mt-2">
-          <h1 className="text-lg font-bold text-foreground">{cv('company_name', 'Agro Brasil')}</h1>
-          <img src="/images/seal-ra-verified.png" alt="RA Verificada" className="w-5 h-5" />
-        </div>
+        <h1 className="text-lg font-bold text-foreground mt-2">{cv('company_name', 'Agro Brasil')}</h1>
         <div className="flex items-center gap-3 text-xs text-muted-foreground mt-1">
           <span className="flex items-center gap-1"><img src="/images/icons/store.svg" alt="" className="w-3.5 h-3.5" /> {cv('company_category', 'Varejo - Marketplaces')}</span>
           <span className="flex items-center gap-1"><img src="/images/icons/eye.svg" alt="" className="w-3.5 h-3.5" /> {cv('company_views', '+ 2.4 milhões de visualizações')}</span>
@@ -132,9 +131,6 @@ export const CompanyHero = ({ cv }: { cv: (key: string, fallback: string) => str
       <div className="flex items-center gap-2 mt-3 mb-2 md:justify-start justify-center">
         <a href="#" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold" style={{ backgroundColor: '#F1F9E6', color: '#0A213D' }}>
           <img src="/images/reputation-otimo.webp" alt="Ótimo" className="w-[18px] h-[18px]" /> {cv('reputation_label', 'Ótimo')}
-        </a>
-        <a href="#" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold" style={{ backgroundColor: '#E5EEFB', color: '#0A213D' }}>
-          <img src="/images/seal-ra-verified.png" alt="Verificada" className="w-[18px] h-[18px]" /> Verificada
         </a>
       </div>
       <button className="md:hidden w-full py-3 rounded-md font-semibold text-sm flex items-center justify-center gap-2 text-white mt-2 mb-2" style={{ backgroundColor: '#D11F26' }}>
