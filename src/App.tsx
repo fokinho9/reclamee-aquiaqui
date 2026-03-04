@@ -21,6 +21,12 @@ import Institucional from "./pages/Institucional";
 import FaleConosco from "./pages/FaleConosco";
 import CentralDeAjuda from "./pages/CentralDeAjuda";
 import StorePage from "./pages/StorePage";
+import StoreSobre from "./pages/store/StoreSobre";
+import StoreReclamacoes from "./pages/store/StoreReclamacoes";
+import StoreDescontos from "./pages/store/StoreDescontos";
+import StoreFaq from "./pages/store/StoreFaq";
+import StorePosts from "./pages/store/StorePosts";
+import StoreProblemas from "./pages/store/StoreProblemas";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -62,6 +68,12 @@ const App = () => {
           <Route path="/central-de-ajuda" element={<CentralDeAjuda />} />
           <Route path="/login" element={<Login />} />
           <Route path="/loja/:storeId" element={<StorePage />} />
+          <Route path="/loja/:storeId/sobre" element={<StoreSobre />} />
+          <Route path="/loja/:storeId/reclamacoes" element={<StoreReclamacoes />} />
+          <Route path="/loja/:storeId/descontos" element={<StoreDescontos />} />
+          <Route path="/loja/:storeId/faq" element={<StoreFaq />} />
+          <Route path="/loja/:storeId/posts" element={<StorePosts />} />
+          <Route path="/loja/:storeId/problemas" element={<StoreProblemas />} />
           <Route path="/admin" element={<Admin />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

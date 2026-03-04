@@ -1,8 +1,11 @@
 import { Home, Building2, MessageSquare, Tag, HelpCircle, FileText, AlertTriangle, Eye, ExternalLink, ThumbsUp, MoreVertical, Globe, Info, Calendar } from "lucide-react";
 import { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
 import { useSiteContent, useContentValue } from "@/hooks/use-site-content";
+import { useStoreContent } from "@/hooks/use-store-content";
 import { useReviews } from "@/hooks/use-reviews";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 import React from "react";
 
 /* ───────────── HEADER ───────────── */
@@ -36,6 +39,17 @@ export const Header = () => (
 );
 
 /* ───────────── TAB NAV ───────────── */
+const getTabRoutes = (basePath = ""): Record<string, string> => ({
+  "Home": basePath || "/",
+  "Sobre": `${basePath}/sobre`,
+  "Reclamações": `${basePath}/reclamacoes`,
+  "Descontos": `${basePath}/descontos`,
+  "FAQ": `${basePath}/faq`,
+  "Posts": `${basePath}/posts`,
+  "Principais problemas": `${basePath}/problemas`,
+});
+
+// Keep old tabRoutes for backward compat
 const tabRoutes: Record<string, string> = {
   "Home": "/",
   "Sobre": "/sobre",
@@ -46,8 +60,9 @@ const tabRoutes: Record<string, string> = {
   "Principais problemas": "/principais-problemas",
 };
 
-export const TabNav = () => {
+export const TabNav = ({ basePath }: { basePath?: string } = {}) => {
   const location = useLocation();
+  const routes = basePath ? getTabRoutes(basePath) : tabRoutes;
   const allTabs = [
     { icon: Home, label: "Home" },
     { icon: Building2, label: "Sobre" },
@@ -58,13 +73,13 @@ export const TabNav = () => {
     { icon: AlertTriangle, label: "Principais problemas" },
   ];
 
-  const activeTab = Object.entries(tabRoutes).find(([, path]) => path === location.pathname)?.[0] || "Home";
+  const activeTab = Object.entries(routes).find(([, path]) => path === location.pathname)?.[0] || "Home";
 
   return (
     <div className="border-b border-border bg-background sticky top-0 z-10">
       <div className="max-w-[1286px] mx-auto px-4 md:px-6 flex gap-1 overflow-x-auto scrollbar-hide">
         {allTabs.map(({ icon: Icon, label }, idx) => (
-          <Link key={label} to={tabRoutes[label]}
+          <Link key={label} to={routes[label]}
             className={`flex items-center gap-1.5 px-3 md:px-4 py-3 text-xs md:text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${activeTab === label ? "border-primary text-primary" : "border-transparent text-muted-foreground hover:text-foreground"} ${idx > 2 ? "hidden md:flex" : ""}`}>
             <Icon className="w-4 h-4" /> {label}
           </Link>
@@ -766,6 +781,57 @@ export const CompanyPage = ({ children }: { children: (props: CompanyRenderProps
       <TabNav />
       <main className="max-w-[1286px] mx-auto px-4 md:px-6 py-6">
         {children({ content: content || [], cv })}
+      </main>
+      <Footer />
+    </div>
+  );
+};
+
+/* ───────────── STORE PAGE WRAPPER ───────────── */
+export const StoreCompanyPage = ({ children }: { children: (props: CompanyRenderProps) => React.ReactNode }) => {
+  const { storeId } = useParams();
+
+  const { data: store } = useQuery({
+    queryKey: ["store-page", storeId],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("stores").select("*").eq("id", storeId!).eq("is_active", true).single();
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!storeId,
+  });
+
+  const { data: storeContent } = useStoreContent(storeId || "");
+
+  const cv = (key: string, fallback: string): string => {
+    // First check store_content
+    const contentItem = storeContent?.find((i) => i.content_key === key);
+    if (contentItem?.content_value) return contentItem.content_value;
+    // Then store fields
+    if (!store) return fallback;
+    const map: Record<string, string | null | undefined> = {
+      company_name: store.name,
+      company_logo: store.logo_url,
+      company_category: store.category,
+      banner_bg_color: "#2B6CB0",
+      reputation_label: "Em análise",
+      about_text: store.description || `${store.name} é uma empresa parceira.`,
+      website_url: store.website_url || "",
+      company_registration_time: `Cadastrada em ${new Date(store.created_at).toLocaleDateString("pt-BR")}`,
+      company_brands: store.name,
+    };
+    return map[key] !== undefined ? (map[key] || fallback) : fallback;
+  };
+
+  const basePath = `/loja/${storeId}`;
+
+  return (
+    <div className="min-h-screen" style={{ backgroundColor: '#F2F4F6' }}>
+      <Header />
+      <CompanyHero cv={cv} />
+      <TabNav basePath={basePath} />
+      <main className="max-w-[1286px] mx-auto px-4 md:px-6 py-6">
+        {children({ content: storeContent as any || [], cv })}
       </main>
       <Footer />
     </div>
