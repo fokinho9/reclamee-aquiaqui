@@ -23,6 +23,7 @@ const FIELD_GROUPS = [
   {
     title: "🎨 Banner e Visual",
     fields: [
+      { key: "company_logo", label: "Logo (URL)", type: "text", source: "content" },
       { key: "company_banner", label: "Banner Desktop (URL)", type: "text", source: "content" },
       { key: "company_banner_mobile", label: "Banner Mobile (URL)", type: "text", source: "content" },
       { key: "banner_bg_color", label: "Cor de fundo do banner (hex)", type: "text", source: "content" },
@@ -33,12 +34,13 @@ const FIELD_GROUPS = [
     title: "⭐ Reputação",
     fields: [
       { key: "reputation_label", label: "Label da reputação (ex: Ótimo, Bom, Regular)", type: "text", source: "content" },
+      { key: "reputation_score", label: "Nota da reputação (ex: 8.2)", type: "text", source: "content" },
       { key: "reputation_description", label: "Descrição da reputação (HTML permitido)", type: "textarea", source: "content" },
       { key: "trust_description", label: "Descrição de confiança", type: "textarea", source: "content" },
     ],
   },
   {
-    title: "📊 Estatísticas",
+    title: "📊 Estatísticas / Desempenho",
     fields: [
       { key: "stat_reclamacoes", label: "Total de Reclamações", type: "text", source: "content" },
       { key: "stat_respondidas_pct", label: "% Respondidas", type: "text", source: "content" },
@@ -57,6 +59,7 @@ const FIELD_GROUPS = [
       { key: "cnpj", label: "CNPJ", type: "text", source: "content" },
       { key: "company_registration_time", label: "Tempo de cadastro (ex: Cadastrada há 20 anos)", type: "text", source: "content" },
       { key: "company_brands", label: "Marcas da empresa", type: "text", source: "content" },
+      { key: "company_name", label: "Nome de exibição no site", type: "text", source: "content" },
     ],
   },
   {
@@ -71,6 +74,16 @@ const FIELD_GROUPS = [
     title: "🎥 Mídia",
     fields: [
       { key: "youtube_url", label: "URL do vídeo YouTube (embed)", type: "text", source: "content" },
+    ],
+  },
+  {
+    title: "📱 Contato e Redes Sociais",
+    fields: [
+      { key: "contact_phone", label: "Telefone", type: "text", source: "content" },
+      { key: "contact_email", label: "E-mail", type: "text", source: "content" },
+      { key: "social_facebook", label: "Facebook URL", type: "text", source: "content" },
+      { key: "social_instagram", label: "Instagram URL", type: "text", source: "content" },
+      { key: "social_twitter", label: "Twitter/X URL", type: "text", source: "content" },
     ],
   },
 ];
