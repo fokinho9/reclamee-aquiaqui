@@ -8,19 +8,26 @@ interface Props {
   storeId: string;
 }
 
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
 export default function StoreDataSection({ storeId }: Props) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [saving, setSaving] = useState(false);
 
-  const { data: store, isLoading } = useQuery({
-    queryKey: ["store-detail", storeId],
+  const normalizedStoreId = storeId.trim();
+  const isValidStoreId = UUID_REGEX.test(normalizedStoreId);
+
+  const { data: store, isLoading, isError, error } = useQuery({
+    queryKey: ["store-detail", normalizedStoreId],
+    enabled: isValidStoreId,
+    retry: false,
     queryFn: async () => {
       const { data, error } = await supabase
         .from("stores")
         .select("*")
-        .eq("id", storeId)
-        .single();
+        .eq("id", normalizedStoreId)
+        .maybeSingle();
       if (error) throw error;
       return data;
     },
@@ -42,9 +49,9 @@ export default function StoreDataSection({ storeId }: Props) {
           logo_url: val("logo_url"),
           category: val("category"),
         })
-        .eq("id", storeId);
+        .eq("id", normalizedStoreId);
       if (error) throw error;
-      queryClient.invalidateQueries({ queryKey: ["store-detail", storeId] });
+      queryClient.invalidateQueries({ queryKey: ["store-detail", normalizedStoreId] });
       queryClient.invalidateQueries({ queryKey: ["admin-stores-selector"] });
       setForm({});
       toast({ title: "Salvo!", description: "Dados da loja atualizados." });
@@ -54,7 +61,10 @@ export default function StoreDataSection({ storeId }: Props) {
     setSaving(false);
   };
 
+  if (!isValidStoreId) return <p style={{ color: "#DC2626" }}>ID de loja inválido.</p>;
   if (isLoading) return <p style={{ color: "#5A6872" }}>Carregando dados da loja...</p>;
+  if (isError) return <p style={{ color: "#DC2626" }}>{(error as Error)?.message || "Erro ao carregar os dados da loja."}</p>;
+  if (!store) return <p style={{ color: "#DC2626" }}>Loja não encontrada.</p>;
 
   const fields = [
     { key: "name", label: "Nome da Loja" },

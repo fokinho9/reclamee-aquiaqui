@@ -12,21 +12,27 @@ const STATUS_LABELS: Record<string, { label: string; bg: string; color: string }
   finalizada: { label: "Finalizada", bg: "#F3E5F5", color: "#7B1FA2" },
 };
 
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
 export default function StoreReviewsSection({ storeId }: { storeId: string }) {
   const [page, setPage] = useState(0);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editValues, setEditValues] = useState<Record<string, string>>({});
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const normalizedStoreId = storeId.trim();
+  const isValidStoreId = UUID_REGEX.test(normalizedStoreId);
 
-  const { data, isLoading } = useQuery({
-    queryKey: ["store-reviews", storeId, page],
+  const { data, isLoading, isError, error } = useQuery({
+    queryKey: ["store-reviews", normalizedStoreId, page],
+    enabled: isValidStoreId,
+    retry: false,
     queryFn: async () => {
       const from = page * PAGE_SIZE;
       const { data, error, count } = await supabase
         .from("reviews")
         .select("*", { count: "exact" })
-        .eq("store_id", storeId)
+        .eq("store_id", normalizedStoreId)
         .order("created_at", { ascending: false })
         .range(from, from + PAGE_SIZE - 1);
       if (error) throw error;
@@ -54,7 +60,7 @@ export default function StoreReviewsSection({ storeId }: { storeId: string }) {
     } else {
       toast({ title: "Salvo!" });
       setEditingId(null);
-      queryClient.invalidateQueries({ queryKey: ["store-reviews", storeId] });
+      queryClient.invalidateQueries({ queryKey: ["store-reviews", normalizedStoreId] });
     }
   };
 
@@ -65,11 +71,13 @@ export default function StoreReviewsSection({ storeId }: { storeId: string }) {
       toast({ title: "Erro", description: error.message, variant: "destructive" });
     } else {
       toast({ title: "Excluída!" });
-      queryClient.invalidateQueries({ queryKey: ["store-reviews", storeId] });
+      queryClient.invalidateQueries({ queryKey: ["store-reviews", normalizedStoreId] });
     }
   };
 
+  if (!isValidStoreId) return <p style={{ color: "#DC2626" }}>ID de loja inválido.</p>;
   if (isLoading) return <p style={{ color: "#5A6872" }}>Carregando reclamações...</p>;
+  if (isError) return <p style={{ color: "#DC2626" }}>{(error as Error)?.message || "Erro ao carregar reclamações."}</p>;
 
   if (reviews.length === 0) {
     return (
