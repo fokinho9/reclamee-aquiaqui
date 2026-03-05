@@ -1,1 +1,13 @@
 project_id = "rqzejkvwwxyzmzjnhcmm"
+
+[functions.auto-import-reviews]
+verify_jwt = false
+
+[functions.scrape-reclameaqui]
+verify_jwt = false
+
+[functions.import-individual-reviews]
+verify_jwt = false
+
+[functions.generate-reviews]
+verify_jwt = false
