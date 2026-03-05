@@ -13,7 +13,7 @@ export const Header = () => (
   <header className="bg-background border-b border-border">
     <div className="max-w-[1286px] mx-auto flex items-center justify-between px-4 md:px-6 py-2">
       <div className="flex items-center gap-2">
-        <Link to="/"><img src="/images/logo-25-anos.svg" alt="ReclameAQUI 25 anos" className="w-[202px] h-[36px]" /></Link>
+        <img src="/images/logo-25-anos.svg" alt="ReclameAQUI 25 anos" className="w-[202px] h-[36px]" />
       </div>
       <div className="flex-1 max-w-md mx-8 hidden md:block">
         <div className="relative">
