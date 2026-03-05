@@ -1,6 +1,9 @@
 import { useParams, Link } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import { useReview } from "@/hooks/use-reviews";
 import { useSiteContent, useContentValue } from "@/hooks/use-site-content";
+import { useStoreContent } from "@/hooks/use-store-content";
+import { supabase } from "@/integrations/supabase/client";
 import { Header } from "@/components/CompanyLayout";
 import { MapPin, Calendar, ThumbsUp, Hand, Angry, Share2 } from "lucide-react";
 import Seo from "@/components/seo/Seo";
@@ -30,10 +33,53 @@ const Reclamacao = () => {
   const isUuid = id && id.length > 10;
   const { data: dbReview, isLoading } = useReview(isUuid ? id : undefined);
   const { data: content } = useSiteContent();
-  const cv = (key: string, fallback: string) => useContentValue(content, key, fallback);
+  const globalCv = (key: string, fallback: string) => useContentValue(content, key, fallback);
 
-  const companyName = cv("company_name", "Agro Brasil");
+  // Fetch store-specific data if review belongs to a store
+  const storeId = dbReview?.store_id;
+  const { data: store } = useQuery({
+    queryKey: ["store-for-review", storeId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("stores")
+        .select("*")
+        .eq("id", storeId!)
+        .single();
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!storeId,
+  });
+
+  const { data: storeContent } = useStoreContent(storeId || "");
+
+  // Use store data if available, otherwise fall back to global site_content
+  const getStoreContentValue = (key: string): string | undefined => {
+    const item = storeContent?.find((i) => i.content_key === key);
+    return item?.content_value || undefined;
+  };
+
+  const cv = (key: string, fallback: string): string => {
+    if (storeId && store) {
+      // Check store_content first
+      const scVal = getStoreContentValue(key);
+      if (scVal) return scVal;
+      // Then store fields
+      const storeMap: Record<string, string | null | undefined> = {
+        company_name: store.name,
+        company_logo: store.logo_url,
+        company_category: store.category,
+        reputation_label: undefined,
+        reputation_score: undefined,
+      };
+      if (storeMap[key] !== undefined && storeMap[key]) return storeMap[key]!;
+    }
+    return globalCv(key, fallback);
+  };
+
+  const companyName = cv("company_name", "Empresa");
   const companyLogo = cv("company_logo", "/placeholder.svg");
+  const companyBasePath = storeId ? `/loja/${storeId}` : "";
 
   if (isLoading) {
     return (
@@ -103,10 +149,10 @@ const Reclamacao = () => {
                   <nav className="mt-2 mb-4 max-lg:hidden">
                     <ul className="flex gap-5 items-center">
                       <li className="text-sm text-muted-foreground">Veja também</li>
-                      <li><Link to="/empresa-reclamacoes" className="text-sm text-primary hover:underline">todas as reclamações</Link></li>
-                      <li><Link to="/empresa-reclamacoes?status=nao_respondidas" className="text-sm text-primary hover:underline">não respondidas</Link></li>
-                      <li><Link to="/empresa-reclamacoes?status=respondidas" className="text-sm text-primary hover:underline">respondidas</Link></li>
-                      <li><Link to="/empresa-reclamacoes?status=avaliadas" className="text-sm text-primary hover:underline">finalizadas</Link></li>
+                      <li><Link to={`${companyBasePath}/empresa-reclamacoes`} className="text-sm text-primary hover:underline">todas as reclamações</Link></li>
+                      <li><Link to={`${companyBasePath}/empresa-reclamacoes?status=nao_respondidas`} className="text-sm text-primary hover:underline">não respondidas</Link></li>
+                      <li><Link to={`${companyBasePath}/empresa-reclamacoes?status=respondidas`} className="text-sm text-primary hover:underline">respondidas</Link></li>
+                      <li><Link to={`${companyBasePath}/empresa-reclamacoes?status=avaliadas`} className="text-sm text-primary hover:underline">finalizadas</Link></li>
                     </ul>
                   </nav>
 
@@ -140,7 +186,7 @@ const Reclamacao = () => {
               {/* Company name + meta */}
               <section className="mb-4">
                 <div>
-                  <Link to="/" className="text-primary font-bold text-base">{companyName}</Link>
+                  <Link to={companyBasePath || "/"} className="text-primary font-bold text-base">{companyName}</Link>
                 </div>
 
                 <div className="flex gap-4 mt-2 max-lg:flex-wrap text-sm text-foreground">
@@ -347,7 +393,7 @@ const Reclamacao = () => {
               </section>
 
               <div className="mt-5 text-center">
-                <Link to="/sobre" className="text-primary text-sm inline-flex items-center gap-1">
+                <Link to={`${companyBasePath}/sobre`} className="text-primary text-sm inline-flex items-center gap-1">
                   Entenda sobre a verificação
                   <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 6v2h8.59L5 17.59 6.41 19 16 9.41V18h2V6z" /></svg>
                 </Link>
@@ -367,7 +413,7 @@ const Reclamacao = () => {
                 </div>
               </section>
 
-              <Link to="/" className="text-primary text-sm font-normal inline-flex items-center gap-1 justify-center w-full mb-5">
+              <Link to={companyBasePath || "/"} className="text-primary text-sm font-normal inline-flex items-center gap-1 justify-center w-full mb-5">
                 Ver página da empresa
                 <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 6v2h8.59L5 17.59 6.41 19 16 9.41V18h2V6z" /></svg>
               </Link>
@@ -380,7 +426,7 @@ const Reclamacao = () => {
                   Está com problema com <b>{companyName}</b>?
                 </p>
                 <Link
-                  to="/empresa-reclamacoes"
+                  to={`${companyBasePath}/empresa-reclamacoes`}
                   className="inline-flex items-center justify-center gap-2 rounded-xl text-sm bg-destructive text-destructive-foreground hover:bg-destructive/90 h-12 px-4 w-full font-bold py-7"
                 >
                   📢 Reclamar

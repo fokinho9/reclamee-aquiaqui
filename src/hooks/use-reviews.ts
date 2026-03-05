@@ -18,6 +18,7 @@ export interface Review {
   response_time: string | null;
   is_ai_generated: boolean;
   created_at: string;
+  store_id: string | null;
 }
 
 export function useReviews(statusFilter?: string, storeId?: string) {
