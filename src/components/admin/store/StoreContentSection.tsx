@@ -164,11 +164,20 @@ export default function StoreContentSection({ storeId }: Props) {
         if (error) throw error;
       }
 
-      // Save content fields
-      const contentEntries = Object.entries(contentForm).map(([content_key, content_value]) => ({
+      // Save content fields (including mirrored store fields used as fallback on public pages)
+      const mergedContentForm: Record<string, string> = { ...contentForm };
+
+      if (storeForm.name !== undefined && mergedContentForm.company_name === undefined) mergedContentForm.company_name = storeForm.name;
+      if (storeForm.description !== undefined && mergedContentForm.about_text === undefined) mergedContentForm.about_text = storeForm.description;
+      if (storeForm.website_url !== undefined && mergedContentForm.website_url === undefined) mergedContentForm.website_url = storeForm.website_url;
+      if (storeForm.logo_url !== undefined && mergedContentForm.company_logo === undefined) mergedContentForm.company_logo = storeForm.logo_url;
+      if (storeForm.category !== undefined && mergedContentForm.company_category === undefined) mergedContentForm.company_category = storeForm.category;
+
+      const contentEntries = Object.entries(mergedContentForm).map(([content_key, content_value]) => ({
         content_key,
         content_value,
       }));
+
       if (contentEntries.length > 0) {
         await upsertContent.mutateAsync({ storeId: normalizedStoreId, entries: contentEntries });
       }
