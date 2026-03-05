@@ -149,10 +149,12 @@ Deno.serve(async (req) => {
     // Parse request body for page and url parameters
     let requestedPage: number | null = null;
     let requestedUrl: string | null = null;
+    let requestedStoreId: string | null = null;
     try {
       const body = await req.json();
       if (body?.page) requestedPage = parseInt(body.page);
       if (body?.url) requestedUrl = body.url;
+      if (body?.storeId) requestedStoreId = body.storeId;
     } catch { /* no body, use config */ }
 
     // Get config
@@ -239,7 +241,7 @@ Deno.serve(async (req) => {
 
     let importedCount = 0;
     for (const c of newComplaints) {
-      const review = {
+      const review: Record<string, any> = {
         title: applyReplacements(cleanText(c.title), activeReplacements),
         description: applyReplacements(cleanText(c.description || c.title), activeReplacements),
         full_text: applyReplacements(cleanText(c.description || c.title), activeReplacements),
@@ -256,6 +258,7 @@ Deno.serve(async (req) => {
         is_ai_generated: false,
         created_at: c.timeAgo ? parseTimeAgoToDate(c.timeAgo) : new Date().toISOString(),
       };
+      if (requestedStoreId) review.store_id = requestedStoreId;
 
       const { error: insertError } = await supabase.from('reviews').insert(review);
       if (insertError) {
