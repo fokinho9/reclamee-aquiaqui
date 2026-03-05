@@ -104,7 +104,7 @@ export const CompanyHero = ({ cv }: { cv: (key: string, fallback: string) => str
         </a>
         <div className="flex-1 pb-2">
           <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold text-foreground">{cv('company_name', 'Agro Brasil')}</h1>
+            <h1 className="text-2xl font-bold text-foreground">{cv('company_name', 'Empresa')}</h1>
             <img src="/images/seal-ra-verified.png" alt="RA Verificada" className="w-6 h-6" />
           </div>
           <div className="flex items-center gap-4 text-sm text-muted-foreground mt-1">
@@ -121,7 +121,7 @@ export const CompanyHero = ({ cv }: { cv: (key: string, fallback: string) => str
           <img src={cv('company_logo', '/placeholder.svg')} alt="Logo" className="w-[72px] h-[72px] rounded-full object-cover" />
         </a>
         <div className="flex items-center gap-1.5 mt-2">
-          <h1 className="text-lg font-bold text-foreground">{cv('company_name', 'Agro Brasil')}</h1>
+          <h1 className="text-lg font-bold text-foreground">{cv('company_name', 'Empresa')}</h1>
           <img src="/images/seal-ra-verified.png" alt="RA Verificada" className="w-5 h-5" />
         </div>
         <div className="flex items-center gap-3 text-xs text-muted-foreground mt-1">
@@ -147,7 +147,7 @@ export const CompanyHero = ({ cv }: { cv: (key: string, fallback: string) => str
 /* ───────────── TRUST & REPUTATION ───────────── */
 export const TrustCard = ({ cv }: { cv: (key: string, fallback: string) => string }) => (
   <div className="rounded-xl p-4 shadow-sm min-w-[220px] md:min-w-0" style={{ background: '#EDF7E1' }}>
-    <p className="text-xs font-medium mb-3" style={{ color: '#5A6872' }}>{cv('company_name', 'Agro Brasil')} existe?</p>
+    <p className="text-xs font-medium mb-3" style={{ color: '#5A6872' }}>{cv('company_name', 'Empresa')} existe?</p>
     <div className="flex items-center gap-3 mb-2">
       <img src="/images/seal-ra-verified.png" alt="Verificada" className="w-9 h-9" />
       <p className="font-bold text-[15px]" style={{ color: '#1A2B3D' }}>Empresa verificada</p>
@@ -158,7 +158,7 @@ export const TrustCard = ({ cv }: { cv: (key: string, fallback: string) => strin
 
 export const ReputationCard = ({ cv }: { cv: (key: string, fallback: string) => string }) => (
   <div className="rounded-xl p-4 shadow-sm min-w-[220px] md:min-w-0" style={{ background: '#EDF7E1' }}>
-    <p className="text-xs font-medium mb-3" style={{ color: '#5A6872' }}>Qual a reputação de {cv('company_name', 'Agro Brasil')}?</p>
+    <p className="text-xs font-medium mb-3" style={{ color: '#5A6872' }}>Qual a reputação de {cv('company_name', 'Empresa')}?</p>
     <div className="flex items-center gap-3 mb-2">
       <img src="/images/reputation-otimo.webp" alt="Ótimo" className="w-11 h-11" />
       <div>
@@ -234,7 +234,7 @@ export const PerformanceCard = ({ content, cv }: { content?: any[]; cv: (key: st
 
   return (
     <div className="bg-background rounded-xl border border-border p-5">
-      <h3 className="text-[17px] font-bold mb-4" style={{ color: '#1A2B3D' }}>Desempenho de {cv('company_name', 'Agro Brasil')}</h3>
+      <h3 className="text-[17px] font-bold mb-4" style={{ color: '#1A2B3D' }}>Desempenho de {cv('company_name', 'Empresa')}</h3>
       <div className="flex gap-4 border-b border-border mb-5">
         {periods.map(p => (
           <button key={p} onClick={() => setPeriod(p)}
@@ -268,7 +268,7 @@ export const EvolutionCard = ({ companyName }: { companyName?: string }) => (
     </div>
     <div className="flex items-center gap-3 mt-3">
       <img src="/images/icons/chart-trending.svg" alt="" className="w-5 h-5 flex-none" />
-      <p className="text-[13px]" style={{ color: '#5A6872' }}>Confira a evolução de {companyName || 'Agro Brasil'} nos últimos 12 meses</p>
+      <p className="text-[13px]" style={{ color: '#5A6872' }}>Confira a evolução de {companyName || 'Empresa'} nos últimos 12 meses</p>
     </div>
   </div>
 );
@@ -375,7 +375,7 @@ export const ComplaintsSection = ({ companyName, storeId }: { companyName?: stri
 
   return (
     <div className="mt-8">
-      <h2 className="text-[17px] font-bold mb-4" style={{ color: '#1A2B3D' }}>O que estão falando sobre {companyName || 'Agro Brasil'}</h2>
+      <h2 className="text-[17px] font-bold mb-4" style={{ color: '#1A2B3D' }}>O que estão falando sobre {companyName || 'Empresa'}</h2>
       <div className="bg-background rounded-xl overflow-hidden" style={{ border: '1px solid #E8ECF0' }}>
         <div className="px-4 pt-4">
           <p className="text-sm font-bold mb-0" style={{ color: '#1A2B3D' }}>Reclamações</p>
@@ -422,10 +422,10 @@ export const ComplaintsSection = ({ companyName, storeId }: { companyName?: stri
 export const FAQSection = () => {
   const faqs = [
     { title: "Entrega Atrasada", desc: "A maioria dos pacotes chega a tempo. Às vezes, os pedidos são entregues após a data estimada de entrega. Possíveis razões para o atraso na entrega inc..." },
-    { title: "Quando vou receber meu reembolso?", desc: "Quando você devolve um produto enviado pela Agro Brasil, o reembolso é emitido de acordo com a forma de pagamento usada no momento da compra. O..." },
+    { title: "Quando vou receber meu reembolso?", desc: "Quando você devolve um produto, o reembolso é emitido de acordo com a forma de pagamento usada no momento da compra. O..." },
     { title: "Cobranças desconhecidas", desc: "Confira a seguir alguns motivos comuns para cobranças desconhecidas: Um pedido foi feito por um membro da família, amigo ou colega de trabalho com..." },
     { title: "Cancelar sua assinatura", desc: "Você pode cancelar sua assinatura em Gerenciar sua assinatura. Importante lembrar que: \\- Você pode estar qualificado para um reembolso se seus..." },
-    { title: "Como faço para devolver meu pedido?", desc: "Para pedidos vendidos e enviados pela Agro Brasil, acesse os Seus Pedidos. 1. Acesse o pedido que deseja devolver. 2. Clique em \"Devolver..." },
+    { title: "Como faço para devolver meu pedido?", desc: "Acesse os Seus Pedidos. 1. Acesse o pedido que deseja devolver. 2. Clique em \"Devolver..." },
   ];
   return (
     <div className="mt-8">
@@ -490,7 +490,7 @@ export const ProblemsSection = ({ companyName }: { companyName?: string }) => {
   return (
     <div className="mt-8">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-[17px] font-bold" style={{ color: '#1A2B3D' }}>Saiba quais são os principais problemas de {companyName || 'Agro Brasil'}</h2>
+        <h2 className="text-[17px] font-bold" style={{ color: '#1A2B3D' }}>Saiba quais são os principais problemas de {companyName || 'Empresa'}</h2>
         <div className="flex items-center gap-2">
           <button
             onClick={() => scroll('left')}
@@ -540,11 +540,11 @@ export const ProblemsSection = ({ companyName }: { companyName?: string }) => {
 export const SidebarSection = ({ cv }: { cv: (key: string, fallback: string) => string }) => (
   <aside className="space-y-5">
     <div>
-      <h3 className="text-[17px] font-bold mb-3 lg:hidden" style={{ color: '#1A2B3D' }}>Veja mais informações sobre {cv('company_name', 'Agro Brasil')}</h3>
+      <h3 className="text-[17px] font-bold mb-3 lg:hidden" style={{ color: '#1A2B3D' }}>Veja mais informações sobre {cv('company_name', 'Empresa')}</h3>
       <div className="rounded-xl p-4 bg-background" style={{ border: '1px solid #E8ECF0' }}>
         <h4 className="font-bold text-sm mb-2" style={{ color: '#1A2B3D' }}>Sobre</h4>
-        <p className="text-[13px] leading-relaxed mb-3" style={{ color: '#5A6872' }}>{cv('about_text', 'A Agro Brasil oferece milhares de ofertas e produtos em diversas categorias.')}</p>
-        <p className="text-[13px]" style={{ color: '#1A2B3D' }}><strong>CNPJ:</strong> <span style={{ color: '#2B6CB0' }}>{cv('cnpj', '15.436.940/0001-03')}</span></p>
+        <p className="text-[13px] leading-relaxed mb-3" style={{ color: '#5A6872' }}>{cv('about_text', 'Esta empresa oferece produtos e serviços em diversas categorias.')}</p>
+        <p className="text-[13px]" style={{ color: '#1A2B3D' }}><strong>CNPJ:</strong> <span style={{ color: '#2B6CB0' }}>{cv('cnpj', '--')}</span></p>
         <p className="text-xs mt-1" style={{ color: '#8A9BAE' }}>Informações cadastradas pela empresa</p>
         <div className="flex items-center gap-1.5 mt-3 text-xs" style={{ color: '#8A9BAE' }}>
           <img src="/images/icons/calendar-star.svg" alt="" className="w-4 h-4" /> {cv('company_registration_time', 'Cadastrada há 20 anos')}
@@ -569,7 +569,7 @@ export const SidebarSection = ({ cv }: { cv: (key: string, fallback: string) => 
     </div>
 
     <div className="rounded-xl p-4 bg-background" style={{ border: '1px solid #E8ECF0' }}>
-      <p className="text-xs mb-2" style={{ color: '#8A9BAE' }}>Qual a posição de {cv('company_name', 'Agro Brasil')} ?</p>
+      <p className="text-xs mb-2" style={{ color: '#8A9BAE' }}>Qual a posição de {cv('company_name', 'Empresa')} ?</p>
       <div className="flex items-center gap-3">
         <span className="text-3xl font-bold" style={{ color: '#1A2B3D' }}>{cv('company_position', '12º')}</span>
         <span className="text-sm font-bold" style={{ color: '#1A2B3D' }}>{cv('company_position_label', 'Melhor empresa')}</span>
@@ -581,7 +581,7 @@ export const SidebarSection = ({ cv }: { cv: (key: string, fallback: string) => 
     </div>
 
     <div>
-      <h4 className="text-sm font-bold mb-2" style={{ color: '#1A2B3D' }}>Marcas {cv('company_name', 'Agro Brasil')}</h4>
+      <h4 className="text-sm font-bold mb-2" style={{ color: '#1A2B3D' }}>Marcas {cv('company_name', 'Empresa')}</h4>
       {cv('company_brands', '') ? (
         <div className="flex gap-2 flex-wrap">
           {cv('company_brands', '').split(',').map((brand: string) => brand.trim()).filter(Boolean).map((brand: string) => (
@@ -593,7 +593,7 @@ export const SidebarSection = ({ cv }: { cv: (key: string, fallback: string) => 
       ) : (
         <div className="flex gap-2">
           <span className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-full" style={{ border: '1px solid #E8ECF0', color: '#1A2B3D', backgroundColor: '#F7F9FB' }}>
-            <span className="w-5 h-5 rounded-full bg-[#1A2B3D] text-white text-[10px] font-bold flex items-center justify-center">A</span> Agro Brasil
+            <span className="w-5 h-5 rounded-full bg-[#1A2B3D] text-white text-[10px] font-bold flex items-center justify-center">E</span> {cv('company_name', 'Empresa')}
           </span>
         </div>
       )}
