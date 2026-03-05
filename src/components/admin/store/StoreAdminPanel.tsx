@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { ExternalLink, Copy, Check } from "lucide-react";
 import StoreDataSection from "./StoreDataSection";
@@ -24,20 +24,39 @@ const STORE_TABS = [
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
+type StoreSummary = { id: string; name: string; logo_url: string | null };
+
 export default function StoreAdminPanel({ storeId }: { storeId: string }) {
   const [activeTab, setActiveTab] = useState("stats");
   const [copied, setCopied] = useState(false);
   const normalizedStoreId = storeId.trim();
   const isValidStoreId = UUID_REGEX.test(normalizedStoreId);
+  const queryClient = useQueryClient();
+
+  const cachedStores = queryClient.getQueryData<StoreSummary[]>(["admin-stores-selector"]);
+  const cachedStore = cachedStores?.find((s) => s.id === normalizedStoreId) ?? null;
 
   const { data: store, isLoading: loadingStore, isError: isStoreError, error: storeError } = useQuery({
     queryKey: ["store-name", normalizedStoreId],
-    enabled: isValidStoreId,
+    enabled: isValidStoreId && !cachedStore,
     retry: false,
+    initialData: cachedStore ?? undefined,
     queryFn: async () => {
-      const { data, error } = await supabase.from("stores").select("name, logo_url").eq("id", normalizedStoreId).maybeSingle();
-      if (error) throw error;
-      return data;
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 10000);
+      try {
+        const { data, error } = await supabase
+          .from("stores")
+          .select("name, logo_url")
+          .eq("id", normalizedStoreId)
+          .abortSignal(controller.signal)
+          .maybeSingle();
+
+        if (error) throw error;
+        return data;
+      } finally {
+        clearTimeout(timeout);
+      }
     },
   });
 
@@ -50,8 +69,14 @@ export default function StoreAdminPanel({ storeId }: { storeId: string }) {
   };
 
   if (!isValidStoreId) return <p style={{ color: "#DC2626" }}>ID de loja inválido.</p>;
-  if (loadingStore) return <p style={{ color: "#5A6872" }}>Carregando dados da loja...</p>;
-  if (isStoreError) return <p style={{ color: "#DC2626" }}>{(storeError as Error)?.message || "Erro ao carregar a loja."}</p>;
+  if (loadingStore && !store) return <p style={{ color: "#5A6872" }}>Carregando dados da loja...</p>;
+  if (isStoreError) {
+    const errorMessage = (storeError as Error)?.message || "Erro ao carregar a loja.";
+    const friendlyMessage = /abort|timeout|timed out/i.test(errorMessage)
+      ? "Tempo esgotado ao carregar loja. Tente novamente."
+      : errorMessage;
+    return <p style={{ color: "#DC2626" }}>{friendlyMessage}</p>;
+  }
   if (!store) return <p style={{ color: "#DC2626" }}>Loja não encontrada.</p>;
 
   return (
