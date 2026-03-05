@@ -9,18 +9,21 @@ export interface StoreContentItem {
 }
 
 export function useStoreContent(storeId: string) {
+  const normalizedStoreId = storeId.trim();
+
   return useQuery({
-    queryKey: ["store-content-kv", storeId],
+    queryKey: ["store-content-kv", normalizedStoreId],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("store_content" as any)
         .select("*")
-        .eq("store_id", storeId)
+        .eq("store_id", normalizedStoreId)
         .order("content_key");
       if (error) throw error;
       return (data || []) as unknown as StoreContentItem[];
     },
-    enabled: !!storeId,
+    enabled: !!normalizedStoreId,
+    retry: false,
   });
 }
 

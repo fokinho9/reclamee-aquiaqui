@@ -88,6 +88,8 @@ const FIELD_GROUPS = [
   },
 ];
 
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
 export default function StoreContentSection({ storeId }: Props) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -96,17 +98,31 @@ export default function StoreContentSection({ storeId }: Props) {
   const [storeForm, setStoreForm] = useState<Record<string, string>>({});
   const [contentForm, setContentForm] = useState<Record<string, string>>({});
   const logoRef = useRef<HTMLInputElement>(null);
+  const normalizedStoreId = storeId.trim();
+  const isValidStoreId = UUID_REGEX.test(normalizedStoreId);
 
-  const { data: store, isLoading: loadingStore } = useQuery({
-    queryKey: ["store-content-detail", storeId],
+  const {
+    data: store,
+    isLoading: loadingStore,
+    isError: isStoreError,
+    error: storeError,
+  } = useQuery({
+    queryKey: ["store-content-detail", normalizedStoreId],
+    enabled: isValidStoreId,
+    retry: false,
     queryFn: async () => {
-      const { data, error } = await supabase.from("stores").select("*").eq("id", storeId).single();
+      const { data, error } = await supabase.from("stores").select("*").eq("id", normalizedStoreId).maybeSingle();
       if (error) throw error;
       return data;
     },
   });
 
-  const { data: storeContent, isLoading: loadingContent } = useStoreContent(storeId);
+  const {
+    data: storeContent,
+    isLoading: loadingContent,
+    isError: isContentError,
+    error: contentError,
+  } = useStoreContent(normalizedStoreId);
   const upsertContent = useUpsertStoreContent();
 
   const storeVal = (key: string) => storeForm[key] ?? (store as any)?.[key] ?? "";
@@ -126,6 +142,11 @@ export default function StoreContentSection({ storeId }: Props) {
   };
 
   const handleSave = async () => {
+    if (!isValidStoreId) {
+      toast({ title: "ID inválido", description: "Selecione uma loja válida.", variant: "destructive" });
+      return;
+    }
+
     setSaving(true);
     try {
       // Save store fields
@@ -139,7 +160,7 @@ export default function StoreContentSection({ storeId }: Props) {
             logo_url: storeVal("logo_url"),
             category: storeVal("category"),
           })
-          .eq("id", storeId);
+          .eq("id", normalizedStoreId);
         if (error) throw error;
       }
 
@@ -149,12 +170,12 @@ export default function StoreContentSection({ storeId }: Props) {
         content_value,
       }));
       if (contentEntries.length > 0) {
-        await upsertContent.mutateAsync({ storeId, entries: contentEntries });
+        await upsertContent.mutateAsync({ storeId: normalizedStoreId, entries: contentEntries });
       }
 
-      queryClient.invalidateQueries({ queryKey: ["store-content-detail", storeId] });
-      queryClient.invalidateQueries({ queryKey: ["store-detail", storeId] });
-      queryClient.invalidateQueries({ queryKey: ["store-name", storeId] });
+      queryClient.invalidateQueries({ queryKey: ["store-content-detail", normalizedStoreId] });
+      queryClient.invalidateQueries({ queryKey: ["store-detail", normalizedStoreId] });
+      queryClient.invalidateQueries({ queryKey: ["store-name", normalizedStoreId] });
       queryClient.invalidateQueries({ queryKey: ["admin-stores-selector"] });
       setStoreForm({});
       setContentForm({});
@@ -189,7 +210,13 @@ export default function StoreContentSection({ storeId }: Props) {
     }
   };
 
+  if (!isValidStoreId) return <p style={{ color: "#DC2626" }}>ID de loja inválido.</p>;
   if (loadingStore || loadingContent) return <p style={{ color: "#5A6872" }}>Carregando conteúdo...</p>;
+  if (isStoreError || isContentError) {
+    const message = (storeError as Error)?.message || (contentError as Error)?.message || "Erro ao carregar conteúdo da loja.";
+    return <p style={{ color: "#DC2626" }}>{message}</p>;
+  }
+  if (!store) return <p style={{ color: "#DC2626" }}>Loja não encontrada.</p>;
 
   const hasChanges = Object.keys(storeForm).length > 0 || Object.keys(contentForm).length > 0;
 

@@ -1,16 +1,24 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
 export default function StoreStatsSection({ storeId }: { storeId: string }) {
-  const { data: stats, isLoading } = useQuery({
-    queryKey: ["store-stats", storeId],
+  const normalizedStoreId = storeId.trim();
+  const isValidStoreId = UUID_REGEX.test(normalizedStoreId);
+
+  const { data: stats, isLoading, isError, error } = useQuery({
+    queryKey: ["store-stats", normalizedStoreId],
+    enabled: isValidStoreId,
+    retry: false,
     queryFn: async () => {
-      const { data: reviews, error } = await supabase
+      const { data, error } = await supabase
         .from("reviews")
         .select("status, rating, created_at")
-        .eq("store_id", storeId);
+        .eq("store_id", normalizedStoreId);
       if (error) throw error;
 
+      const reviews = data || [];
       const total = reviews.length;
       const responded = reviews.filter((r) => r.status === "respondida" || r.status === "finalizada").length;
       const evaluated = reviews.filter((r) => r.status === "avaliada").length;
@@ -24,7 +32,9 @@ export default function StoreStatsSection({ storeId }: { storeId: string }) {
     },
   });
 
+  if (!isValidStoreId) return <p style={{ color: "#DC2626" }}>ID de loja inválido.</p>;
   if (isLoading) return <p style={{ color: "#5A6872" }}>Carregando estatísticas...</p>;
+  if (isError) return <p style={{ color: "#DC2626" }}>{(error as Error)?.message || "Erro ao carregar estatísticas."}</p>;
 
   const cards = [
     { label: "Total de Reclamações", value: stats?.total || 0, icon: "📋", bg: "#E5EEFB", color: "#2B6CB0" },

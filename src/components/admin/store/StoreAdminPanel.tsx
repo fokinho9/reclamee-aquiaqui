@@ -22,25 +22,37 @@ const STORE_TABS = [
   { id: "coupons", label: "🎟️ Cupons" },
 ];
 
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
 export default function StoreAdminPanel({ storeId }: { storeId: string }) {
   const [activeTab, setActiveTab] = useState("stats");
   const [copied, setCopied] = useState(false);
+  const normalizedStoreId = storeId.trim();
+  const isValidStoreId = UUID_REGEX.test(normalizedStoreId);
 
-  const { data: store } = useQuery({
-    queryKey: ["store-name", storeId],
+  const { data: store, isLoading: loadingStore, isError: isStoreError, error: storeError } = useQuery({
+    queryKey: ["store-name", normalizedStoreId],
+    enabled: isValidStoreId,
+    retry: false,
     queryFn: async () => {
-      const { data } = await supabase.from("stores").select("name, logo_url").eq("id", storeId).single();
+      const { data, error } = await supabase.from("stores").select("name, logo_url").eq("id", normalizedStoreId).maybeSingle();
+      if (error) throw error;
       return data;
     },
   });
 
-  const storeUrl = `${window.location.origin}/loja/${storeId}`;
+  const storeUrl = `${window.location.origin}/loja/${normalizedStoreId}`;
 
   const handleCopy = () => {
     navigator.clipboard.writeText(storeUrl);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
+
+  if (!isValidStoreId) return <p style={{ color: "#DC2626" }}>ID de loja inválido.</p>;
+  if (loadingStore) return <p style={{ color: "#5A6872" }}>Carregando dados da loja...</p>;
+  if (isStoreError) return <p style={{ color: "#DC2626" }}>{(storeError as Error)?.message || "Erro ao carregar a loja."}</p>;
+  if (!store) return <p style={{ color: "#DC2626" }}>Loja não encontrada.</p>;
 
   return (
     <div>
@@ -92,14 +104,14 @@ export default function StoreAdminPanel({ storeId }: { storeId: string }) {
       </div>
 
       {/* Content */}
-      {activeTab === "stats" && <StoreStatsSection storeId={storeId} />}
-      {activeTab === "data" && <StoreDataSection storeId={storeId} />}
-      {activeTab === "content" && <StoreContentSection storeId={storeId} />}
-      {activeTab === "reviews" && <StoreReviewsSection storeId={storeId} />}
-      {activeTab === "import" && <StoreImportSection storeId={storeId} />}
-      {activeTab === "ai" && <StoreAISection storeId={storeId} />}
+      {activeTab === "stats" && <StoreStatsSection storeId={normalizedStoreId} />}
+      {activeTab === "data" && <StoreDataSection storeId={normalizedStoreId} />}
+      {activeTab === "content" && <StoreContentSection storeId={normalizedStoreId} />}
+      {activeTab === "reviews" && <StoreReviewsSection storeId={normalizedStoreId} />}
+      {activeTab === "import" && <StoreImportSection storeId={normalizedStoreId} />}
+      {activeTab === "ai" && <StoreAISection storeId={normalizedStoreId} />}
       {activeTab === "google-ads" && <StoreGoogleAdsSection />}
-      {activeTab === "coupons" && <StoreCouponsSection storeId={storeId} />}
+      {activeTab === "coupons" && <StoreCouponsSection storeId={normalizedStoreId} />}
     </div>
   );
 }
