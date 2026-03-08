@@ -151,9 +151,9 @@ const Reclamacoes = () => {
   return (
     <div className="min-h-screen bg-[#F5F7FA]">
       <Seo
-        title="Reclamações Agro Brasil - Reclame Aqui"
-        description="Veja todas as reclamações sobre Agro Brasil no Reclame AQUI. Confira as últimas, respondidas, não respondidas e avaliadas pelos consumidores."
-        keywords={["reclamações", "agro brasil", "consumidor", "reclame aqui"]}
+        title="Reclamações - Reclame Aqui"
+        description="Veja todas as reclamações no Reclame AQUI. Confira as últimas, respondidas, não respondidas e avaliadas pelos consumidores."
+        keywords={["reclamações", "consumidor", "reclame aqui"]}
         canonicalPath="/reclamacoes"
       />
       <Header />
