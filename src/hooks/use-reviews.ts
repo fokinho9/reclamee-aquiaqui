@@ -26,7 +26,7 @@ export function useReviews(statusFilter?: string, storeId?: string) {
     queryKey: ["reviews", statusFilter, storeId],
     queryFn: async () => {
       let query = supabase
-        .from("reviews" as any)
+        .from("reviews")
         .select("*")
         .order("created_at", { ascending: false });
 
@@ -58,7 +58,7 @@ export function useReview(id: string | undefined) {
     queryFn: async () => {
       if (!id) return null;
       const { data, error } = await supabase
-        .from("reviews" as any)
+        .from("reviews")
         .select("*")
         .eq("id", id)
         .single();

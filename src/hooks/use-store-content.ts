@@ -15,7 +15,7 @@ export function useStoreContent(storeId: string) {
     queryKey: ["store-content-kv", normalizedStoreId],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("store_content" as any)
+        .from("store_content")
         .select("*")
         .eq("store_id", normalizedStoreId)
         .order("content_key");
@@ -48,7 +48,7 @@ export function useUpsertStoreContent() {
       entries: { content_key: string; content_value: string }[];
     }) => {
       for (const entry of entries) {
-        const { error } = await (supabase.from("store_content" as any) as any).upsert(
+        const { error } = await (supabase.from("store_content") as any).upsert(
           {
             store_id: storeId,
             content_key: entry.content_key,

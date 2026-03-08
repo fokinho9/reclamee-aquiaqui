@@ -57,6 +57,17 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        // RA semantic tokens
+        "ra-heading": "hsl(var(--ra-heading))",
+        "ra-body": "hsl(var(--ra-body))",
+        "ra-subtle": "hsl(var(--ra-subtle))",
+        "ra-surface": "hsl(var(--ra-surface))",
+        "ra-border": "hsl(var(--ra-border))",
+        "ra-link": "hsl(var(--ra-link))",
+        "ra-danger": "hsl(var(--ra-danger))",
+        "ra-success": "hsl(var(--ra-success))",
+        "ra-warning": "hsl(var(--ra-warning))",
+        "ra-info": "hsl(var(--ra-info))",
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -65,20 +76,12 @@ export default {
       },
       keyframes: {
         "accordion-down": {
-          from: {
-            height: "0",
-          },
-          to: {
-            height: "var(--radix-accordion-content-height)",
-          },
+          from: { height: "0" },
+          to: { height: "var(--radix-accordion-content-height)" },
         },
         "accordion-up": {
-          from: {
-            height: "var(--radix-accordion-content-height)",
-          },
-          to: {
-            height: "0",
-          },
+          from: { height: "var(--radix-accordion-content-height)" },
+          to: { height: "0" },
         },
       },
       animation: {
