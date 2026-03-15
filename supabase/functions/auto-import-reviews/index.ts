@@ -46,7 +46,11 @@ function parseComplaintsFromMarkdown(markdown: string): ParsedComplaint[] {
       !title.includes('Icone') &&
       !title.includes('selo') &&
       !title.toLowerCase().includes('reclamar') &&
-      !title.toLowerCase().includes('saiba mais')
+      !title.toLowerCase().includes('saiba mais') &&
+      !title.toLowerCase().includes('reputação') &&
+      !title.toLowerCase().includes('indicadores') &&
+      !/^https?:\/\//i.test(title) &&
+      !title.includes('](')
     ) {
       matches.push({ title, index: match.index + match[0].length });
     }
@@ -65,9 +69,14 @@ function parseComplaintsFromMarkdown(markdown: string): ParsedComplaint[] {
       .trim();
 
     let status = 'nao_respondida';
-    if (/respondida/i.test(afterText) && !/não respondida/i.test(afterText)) status = 'respondida';
-    if (/não respondida/i.test(afterText)) status = 'nao_respondida';
-    if (/avaliada/i.test(afterText)) status = 'avaliada';
+    // Check status - order matters: most specific first
+    if (/avaliada|Avaliado pelo consumidor/i.test(afterText)) {
+      status = 'avaliada';
+    } else if (/não\s*respondida|Nao respondida|Aguardando/i.test(afterText)) {
+      status = 'nao_respondida';
+    } else if (/respondida|Respondido/i.test(afterText)) {
+      status = 'respondida';
+    }
 
     let timeAgo = '';
     const timeMatch = afterText.match(/Há\s+\d+\s+(?:hora|horas|minuto|minutos|dia|dias|semana|semanas|mês|meses|ano|anos)/i);
@@ -100,7 +109,12 @@ function parseComplaintsFromMarkdown(markdown: string): ParsedComplaint[] {
       .replace(/\s+/g, ' ')
       .trim();
 
-    if (title.length > 15) {
+    // Skip entries with garbage descriptions (markdown artifacts, links, etc.)
+    const isGarbage = /^\[?\s*\w+\]\(https?:\/\//i.test(description) || 
+                      description.length < 10 ||
+                      /^Regular|^Ótimo|^Bom|^Ruim|^Não recomendada/i.test(description);
+
+    if (title.length > 15 && !isGarbage) {
       complaints.push({
         title: cleanText(title.substring(0, 200)),
         description: cleanText(description.substring(0, 300) || title),
