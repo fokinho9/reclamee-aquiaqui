@@ -109,7 +109,12 @@ function parseComplaintsFromMarkdown(markdown: string): ParsedComplaint[] {
       .replace(/\s+/g, ' ')
       .trim();
 
-    if (title.length > 15) {
+    // Skip entries with garbage descriptions (markdown artifacts, links, etc.)
+    const isGarbage = /^\[?\s*\w+\]\(https?:\/\//i.test(description) || 
+                      description.length < 10 ||
+                      /^Regular|^Ótimo|^Bom|^Ruim|^Não recomendada/i.test(description);
+
+    if (title.length > 15 && !isGarbage) {
       complaints.push({
         title: cleanText(title.substring(0, 200)),
         description: cleanText(description.substring(0, 300) || title),
