@@ -69,9 +69,14 @@ function parseComplaintsFromMarkdown(markdown: string): ParsedComplaint[] {
       .trim();
 
     let status = 'nao_respondida';
-    if (/respondida/i.test(afterText) && !/não respondida/i.test(afterText)) status = 'respondida';
-    if (/não respondida/i.test(afterText)) status = 'nao_respondida';
-    if (/avaliada/i.test(afterText)) status = 'avaliada';
+    // Check status - order matters: most specific first
+    if (/avaliada|Avaliado pelo consumidor/i.test(afterText)) {
+      status = 'avaliada';
+    } else if (/não\s*respondida|Nao respondida|Aguardando/i.test(afterText)) {
+      status = 'nao_respondida';
+    } else if (/respondida|Respondido/i.test(afterText)) {
+      status = 'respondida';
+    }
 
     let timeAgo = '';
     const timeMatch = afterText.match(/Há\s+\d+\s+(?:hora|horas|minuto|minutos|dia|dias|semana|semanas|mês|meses|ano|anos)/i);
