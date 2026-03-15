@@ -46,7 +46,11 @@ function parseComplaintsFromMarkdown(markdown: string): ParsedComplaint[] {
       !title.includes('Icone') &&
       !title.includes('selo') &&
       !title.toLowerCase().includes('reclamar') &&
-      !title.toLowerCase().includes('saiba mais')
+      !title.toLowerCase().includes('saiba mais') &&
+      !title.toLowerCase().includes('reputação') &&
+      !title.toLowerCase().includes('indicadores') &&
+      !/^https?:\/\//i.test(title) &&
+      !title.includes('](')
     ) {
       matches.push({ title, index: match.index + match[0].length });
     }
