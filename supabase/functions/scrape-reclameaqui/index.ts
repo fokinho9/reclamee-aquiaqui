@@ -150,7 +150,26 @@ Deno.serve(async (req) => {
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     const body = await req.json();
-    const { url, saveToDb, deleteAll, deleteSearch, bulkReplace } = body;
+    const { url, saveToDb, deleteAll, deleteSearch, bulkReplace, addReplacement } = body;
+
+    // Add word replacement
+    if (addReplacement) {
+      const { error } = await supabase.from('word_replacements').insert({
+        original_word: addReplacement.original,
+        replacement_word: addReplacement.replacement,
+        is_active: true,
+      });
+      if (error) {
+        return new Response(
+          JSON.stringify({ success: false, error: error.message }),
+          { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+      return new Response(
+        JSON.stringify({ success: true, added: true }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
 
     // Bulk replace: apply word replacements to all existing reviews (optionally filtered by storeId)
     if (bulkReplace) {
