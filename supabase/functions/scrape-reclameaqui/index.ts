@@ -150,7 +150,52 @@ Deno.serve(async (req) => {
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     const body = await req.json();
-    const { url, saveToDb, deleteAll, deleteSearch } = body;
+    const { url, saveToDb, deleteAll, deleteSearch, bulkReplace } = body;
+
+    // Bulk replace: apply word replacements to all existing reviews (optionally filtered by storeId)
+    if (bulkReplace) {
+      const { data: replacements } = await supabase
+        .from('word_replacements')
+        .select('original_word, replacement_word')
+        .eq('is_active', true);
+      const activeReplacements = replacements || [];
+
+      if (activeReplacements.length === 0) {
+        return new Response(
+          JSON.stringify({ success: true, updated: 0, message: 'No active word replacements found' }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
+      // Build search pattern from all original words
+      const searchTerms = activeReplacements.map(r => r.original_word);
+      let query = supabase.from('reviews').select('id, title, description, full_text');
+      if (bulkReplace.storeId) {
+        query = query.eq('store_id', bulkReplace.storeId);
+      }
+      const { data: allReviews } = await query;
+      
+      let updatedCount = 0;
+      for (const review of allReviews || []) {
+        const newTitle = applyReplacements(review.title, activeReplacements);
+        const newDesc = applyReplacements(review.description, activeReplacements);
+        const newFull = applyReplacements(review.full_text || '', activeReplacements);
+        
+        if (newTitle !== review.title || newDesc !== review.description || newFull !== review.full_text) {
+          await supabase.from('reviews').update({
+            title: newTitle,
+            description: newDesc,
+            full_text: newFull,
+          }).eq('id', review.id);
+          updatedCount++;
+        }
+      }
+
+      return new Response(
+        JSON.stringify({ success: true, updated: updatedCount }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
 
     // Delete reviews
     if (deleteAll || deleteSearch) {
