@@ -519,7 +519,7 @@ export const ProblemsSection = ({ companyName, basePath }: { companyName?: strin
         {problems.map((p, i) => (
           <Link
             key={i}
-            to="/principais-problemas"
+            to={basePath ? `${basePath}/problemas` : "/principais-problemas"}
             className="flex-none w-[240px] bg-background rounded-xl p-4 hover:shadow-md transition-shadow"
             style={{ border: '1px solid #E8ECF0', scrollSnapAlign: 'start' }}
           >
