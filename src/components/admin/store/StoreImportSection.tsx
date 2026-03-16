@@ -324,9 +324,14 @@ export default function StoreImportSection({ storeId }: { storeId: string }) {
         </div>
         <div className="flex gap-2 items-center flex-wrap">
           {!paginationImporting ? (
-            <button onClick={startPaginationImport} disabled={deepImporting} className="px-4 py-2 rounded-lg text-sm font-semibold text-white flex items-center gap-2 disabled:opacity-50" style={{ backgroundColor: "#2B6CB0" }}>
-              <Play className="w-4 h-4" /> Iniciar Importação
-            </button>
+            <div className="flex gap-2">
+              <button onClick={() => startPaginationImport(false)} disabled={deepImporting} className="px-4 py-2 rounded-lg text-sm font-semibold text-white flex items-center gap-2 disabled:opacity-50" style={{ backgroundColor: "#2B6CB0" }}>
+                <Play className="w-4 h-4" /> Iniciar Importação
+              </button>
+              <button onClick={() => startPaginationImport(true)} disabled={deepImporting} className="px-4 py-2 rounded-lg text-sm font-semibold text-white flex items-center gap-2 disabled:opacity-50" style={{ backgroundColor: "#E53E3E" }}>
+                <Trash2 className="w-4 h-4" /> Reimportar (Deletar e Reimportar)
+              </button>
+            </div>
           ) : (
             <button onClick={handleStopImport} className="px-4 py-2 rounded-lg text-sm font-semibold text-white flex items-center gap-2" style={{ backgroundColor: "#DC2626" }}>
               <Square className="w-4 h-4" /> Parar
