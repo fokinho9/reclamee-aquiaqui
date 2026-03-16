@@ -221,10 +221,12 @@ Deno.serve(async (req) => {
       let query = supabase.from('reviews').delete();
       if (deleteSearch) {
         query = query.ilike('title', `%${deleteSearch}%`);
+      } else if (body.storeId) {
+        query = query.eq('store_id', body.storeId);
       } else {
         query = query.neq('id', '00000000-0000-0000-0000-000000000000'); // delete all
       }
-      const { error: delError, count } = await query;
+      const { error: delError } = await query;
       if (delError) {
         return new Response(
           JSON.stringify({ success: false, error: delError.message }),
