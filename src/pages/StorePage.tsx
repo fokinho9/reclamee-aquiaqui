@@ -252,9 +252,9 @@ const StorePage = () => {
                 </div>
               </>
             )}
-            <ComplaintsSection companyName={companyName} storeId={storeId} />
+            <ComplaintsSection companyName={companyName} storeId={storeId} basePath={`/loja/${storeId}`} />
             <FAQSection />
-            <ProblemsSection companyName={companyName} />
+            <ProblemsSection companyName={companyName} basePath={`/loja/${storeId}`} />
             <div className="mt-8">
               <div className="bg-background rounded-xl p-6 text-center" style={{ border: "1px solid #E8ECF0" }}>
                 <Tag className="w-10 h-10 mx-auto mb-3" style={{ color: "#2B6CB0" }} />
