@@ -456,7 +456,7 @@ export const FAQSection = () => {
 };
 
 /* ───────────── PROBLEMAS ───────────── */
-export const ProblemsSection = ({ companyName }: { companyName?: string }) => {
+export const ProblemsSection = ({ companyName, basePath }: { companyName?: string; basePath?: string }) => {
   const scrollRef = React.useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = React.useState(false);
   const [canScrollRight, setCanScrollRight] = React.useState(true);
