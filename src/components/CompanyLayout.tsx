@@ -350,7 +350,7 @@ export const VisitedAlso = () => {
 };
 
 /* ───────────── COMPLAINTS ───────────── */
-export const ComplaintsSection = ({ companyName, storeId }: { companyName?: string; storeId?: string }) => {
+export const ComplaintsSection = ({ companyName, storeId, basePath }: { companyName?: string; storeId?: string; basePath?: string }) => {
   const [tab, setTab] = useState("avaliadas");
   const tabLabels: Record<string, string> = { ultimas: "Últimas", nao_respondidas: "Não respondidas", respondidas: "Respondidas", avaliadas: "Avaliadas" };
   const tabs = Object.keys(tabLabels);
