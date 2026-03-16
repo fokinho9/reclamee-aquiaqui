@@ -75,7 +75,7 @@ export default function StoreImportSection({ storeId }: { storeId: string }) {
   };
 
   // Pagination import
-  const startPaginationImport = async () => {
+  const startPaginationImport = async (reimport = false) => {
     if (!paginationUrl.trim()) {
       toast({ title: "Erro", description: "Cole a URL do Reclame Aqui.", variant: "destructive" });
       return;
@@ -85,6 +85,22 @@ export default function StoreImportSection({ storeId }: { storeId: string }) {
     setCurrentPage(1);
     setTotalImported(0);
     setPageLog([]);
+
+    // If reimport, delete existing reviews for this store first
+    if (reimport) {
+      setPageLog(["🗑️ Deletando reclamações existentes desta loja..."]);
+      try {
+        const { data, error } = await supabase.functions.invoke("scrape-reclameaqui", {
+          body: { deleteAll: true, storeId },
+        });
+        if (error) throw error;
+        setPageLog(["✅ Reclamações anteriores deletadas.", ""]);
+      } catch (err: any) {
+        setPageLog([`❌ Erro ao deletar: ${err.message}`]);
+        setPaginationImporting(false);
+        return;
+      }
+    }
 
     let page = 1;
     let hasMore = true;
@@ -130,6 +146,18 @@ export default function StoreImportSection({ storeId }: { storeId: string }) {
     if (!stopRef) {
       setPageLog(prev => [...prev, `🏁 Importação completa! Total: ${total} reclamações.`]);
     }
+
+    // Apply word replacements after import
+    if (total > 0) {
+      setPageLog(prev => [...prev, `🔄 Aplicando substituições de palavras...`]);
+      try {
+        await supabase.functions.invoke("scrape-reclameaqui", {
+          body: { bulkReplace: { storeId } },
+        });
+        setPageLog(prev => [...prev, `✅ Substituições aplicadas.`]);
+      } catch { /* ignore */ }
+    }
+
     toast({ title: "Finalizado", description: `${total} reclamações importadas.` });
     setPaginationImporting(false);
     invalidateStore();
