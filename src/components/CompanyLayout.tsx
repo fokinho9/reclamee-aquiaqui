@@ -410,8 +410,8 @@ export const ComplaintsSection = ({ companyName, storeId, basePath }: { companyN
           })}
         </div>
         <div className="py-4 text-center space-y-2" style={{ borderTop: '1px solid #E8ECF0' }}>
-          <Link to="/reclamacoes" className="text-sm font-semibold block" style={{ color: '#2B6CB0' }}>Ler mais</Link>
-          <Link to="/reclamacoes" className="text-sm font-bold block" style={{ color: '#2B6CB0' }}>Ver todas as reclamações</Link>
+          <Link to={basePath ? `${basePath}/reclamacoes` : "/reclamacoes"} className="text-sm font-semibold block" style={{ color: '#2B6CB0' }}>Ler mais</Link>
+          <Link to={basePath ? `${basePath}/reclamacoes` : "/reclamacoes"} className="text-sm font-bold block" style={{ color: '#2B6CB0' }}>Ver todas as reclamações</Link>
         </div>
       </div>
     </div>
