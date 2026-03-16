@@ -350,7 +350,7 @@ export const VisitedAlso = () => {
 };
 
 /* ───────────── COMPLAINTS ───────────── */
-export const ComplaintsSection = ({ companyName, storeId }: { companyName?: string; storeId?: string }) => {
+export const ComplaintsSection = ({ companyName, storeId, basePath }: { companyName?: string; storeId?: string; basePath?: string }) => {
   const [tab, setTab] = useState("avaliadas");
   const tabLabels: Record<string, string> = { ultimas: "Últimas", nao_respondidas: "Não respondidas", respondidas: "Respondidas", avaliadas: "Avaliadas" };
   const tabs = Object.keys(tabLabels);
@@ -410,8 +410,8 @@ export const ComplaintsSection = ({ companyName, storeId }: { companyName?: stri
           })}
         </div>
         <div className="py-4 text-center space-y-2" style={{ borderTop: '1px solid #E8ECF0' }}>
-          <Link to="/reclamacoes" className="text-sm font-semibold block" style={{ color: '#2B6CB0' }}>Ler mais</Link>
-          <Link to="/reclamacoes" className="text-sm font-bold block" style={{ color: '#2B6CB0' }}>Ver todas as reclamações</Link>
+          <Link to={basePath ? `${basePath}/reclamacoes` : "/reclamacoes"} className="text-sm font-semibold block" style={{ color: '#2B6CB0' }}>Ler mais</Link>
+          <Link to={basePath ? `${basePath}/reclamacoes` : "/reclamacoes"} className="text-sm font-bold block" style={{ color: '#2B6CB0' }}>Ver todas as reclamações</Link>
         </div>
       </div>
     </div>
@@ -456,7 +456,7 @@ export const FAQSection = () => {
 };
 
 /* ───────────── PROBLEMAS ───────────── */
-export const ProblemsSection = ({ companyName }: { companyName?: string }) => {
+export const ProblemsSection = ({ companyName, basePath }: { companyName?: string; basePath?: string }) => {
   const scrollRef = React.useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = React.useState(false);
   const [canScrollRight, setCanScrollRight] = React.useState(true);
@@ -519,7 +519,7 @@ export const ProblemsSection = ({ companyName }: { companyName?: string }) => {
         {problems.map((p, i) => (
           <Link
             key={i}
-            to="/principais-problemas"
+            to={basePath ? `${basePath}/problemas` : "/principais-problemas"}
             className="flex-none w-[240px] bg-background rounded-xl p-4 hover:shadow-md transition-shadow"
             style={{ border: '1px solid #E8ECF0', scrollSnapAlign: 'start' }}
           >
